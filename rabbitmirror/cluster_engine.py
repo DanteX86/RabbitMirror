@@ -5,6 +5,8 @@ import numpy as np
 
 class ClusterEngine:
     def __init__(self, eps: float = 0.3, min_samples: int = 5):
+        self.eps = eps
+        self.min_samples = min_samples
         self.vectorizer = TfidfVectorizer(stop_words='english')
         self.clustering = DBSCAN(eps=eps, min_samples=min_samples)
 

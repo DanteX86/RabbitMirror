@@ -88,11 +88,12 @@ def parse(history_file: str, output: Optional[str], format: str, verbose: bool =
         entries = parser.parse()
         
         if output:
-            exporter = ExportFormatter()
+            output_path = Path(output)
+            exporter = ExportFormatter(output_dir=output_path.parent)
             output_file = exporter.export_data(
                 {'entries': entries}, 
                 format, 
-                Path(output).stem if output else 'parsed_history'
+                output_path.stem
             )
             click.echo(f"✅ Exported {len(entries)} entries to {output_file}")
         else:
@@ -119,11 +120,12 @@ def cluster(history_file: str, eps: float, min_samples: int, output: Optional[st
         clusters = engine.cluster_videos(entries)
         
         if output:
-            exporter = ExportFormatter()
+            output_path = Path(output)
+            exporter = ExportFormatter(output_dir=output_path.parent)
             output_file = exporter.export_data(
                 clusters, 
                 format, 
-                Path(output).stem if output else 'video_clusters'
+                output_path.stem
             )
             click.echo(f"✅ Exported cluster analysis to {output_file}")
         else:
@@ -150,11 +152,12 @@ def analyze_suppression(history_file: str, period: int, output: Optional[str], f
         results = analyzer.calculate_suppression(entries)
         
         if output:
-            exporter = ExportFormatter()
+            output_path = Path(output)
+            exporter = ExportFormatter(output_dir=output_path.parent)
             output_file = exporter.export_data(
                 results, 
                 format, 
-                Path(output).stem if output else 'suppression_analysis'
+                output_path.stem
             )
             click.echo(f"✅ Exported suppression analysis to {output_file}")
         else:
@@ -181,11 +184,12 @@ def detect_patterns(history_file: str, threshold: float, output: Optional[str], 
         patterns = profiler.identify_adversarial_patterns(entries)
         
         if output:
-            exporter = ExportFormatter()
+            output_path = Path(output)
+            exporter = ExportFormatter(output_dir=output_path.parent)
             output_file = exporter.export_data(
                 patterns, 
                 format, 
-                Path(output).stem if output else 'adversarial_patterns'
+                output_path.stem
             )
             click.echo(f"✅ Exported pattern analysis to {output_file}")
         else:
