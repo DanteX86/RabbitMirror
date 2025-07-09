@@ -48,7 +48,7 @@ class ExportFormatter:
 
             else:
                 raise ValueError(
-                    f"Unsupported file format: {format}. "\n"
+                    f"Unsupported file format: {format}. "
                     "Supported formats: .json, .yaml, .yml, .csv, .xlsx, .xls"
                 )
 
@@ -88,7 +88,10 @@ class ExportFormatter:
         output_path = self.output_dir / f"{filename}.csv"
         
         # Convert the data to a format suitable for CSV
-        if isinstance(data, dict) and all(isinstance(v, list) for v in data.values()):
+        if isinstance(data, dict) and 'entries' in data and isinstance(data['entries'], list):
+            # If data has an 'entries' list, use that directly
+            df = pd.DataFrame(data['entries'])
+        elif isinstance(data, dict) and all(isinstance(v, list) for v in data.values()):
             # If data is a dict of lists, convert to DataFrame directly
             df = pd.DataFrame(data)
         elif isinstance(data, list):

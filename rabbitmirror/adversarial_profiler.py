@@ -8,7 +8,7 @@ import numpy as np
 import re
 
 class AdversarialProfiler:
-def __init__(self, 
+    def __init__(self,
                  similarity_threshold: float = 0.7,
                  rapid_view_threshold: int = 5,  # minutes
                  session_gap: int = 30,  # minutes
@@ -74,24 +74,24 @@ def __init__(self,
                 'urgency': ['breaking', 'urgent', 'latest', 'now'],
                 'controversy': ['vs', 'debate', 'fight', 'drama']
             }
-        },
-
+        }
+        
         # Motivation indicators
-        'motivational_patterns': {
+        self.motivational_patterns = {
             'aspiration': ['goal', 'success', 'achievement', 'dream'],
-            'fear_of_missing_out': ['exclusive', 'limited', 'don’t miss', 'opportunity'],
+            'fear_of_missing_out': ['exclusive', 'limited', "don't miss", 'opportunity'],
             'reward': ['bonus', 'win', 'offer', 'deal']
-        },
+        }
 
         # Attention types
-        'attention_patterns': {
+        self.attention_patterns = {
             'focused': ['detailed', 'deep dive', 'analysis'],
             'divided': ['multitask', 'overview', 'broad'],
             'sustained': ['continuous', 'series', 'episode']
-        },
+        }
 
         # Social dynamics
-        'social_patterns': {
+        self.social_patterns = {
             'collaboration': ['team', 'group', 'together'],
             'competition': ['vs', 'challenge', 'battle'],
             'support': ['help', 'support', 'assist']
@@ -1100,13 +1100,7 @@ def __init__(self,
             'attention_stability': self._calculate_attention_stability(entries)
         }
 
-    def _analyze_content_preferences(self, entries: List[Dict[str, Any]]) -Dict[str, Any]:
-        """Enhanced analysis of content preferences."""
-        genre_metrics = self._analyze_genre_preferences(entries)
-        habit_metrics = self._analyze_viewing_habits(entries)
-        production_metrics = self._analyze_production_types(entries)
-
-        return {
+    def _analyze_content_preferences(self, entries: List[Dict[str, Any]]) -> Dict[str, Any]:
         """Analyze detailed content preferences and viewing patterns."""
         format_preferences = defaultdict(int)
         quality_preferences = defaultdict(int)
@@ -1166,7 +1160,7 @@ def __init__(self,
             'preference_stability': self._calculate_preference_stability(entries)
         }
 
-    def _analyze_genre_preferences(self, entries: List[Dict[str, Any]]) -Dict[str, Any]:
+    def _analyze_genre_preferences(self, entries: List[Dict[str, Any]]) -> Dict[str, Any]:
         """Analyze user preferences by genre."""
         for entry in entries:
             title = entry['title'].lower()
@@ -1257,7 +1251,7 @@ def __init__(self,
                 self.viewing_habits['time_slices'][slice_name]['count'] += 1
 
     def _process_entry_content(self, entry: Dict[str, Any], 
-                             content_timing: DefaultDict[str, List]) -> None:
+                             content_timing: defaultdict) -> None:
         """Process content-related timing information."""
         duration = entry.get('duration', 0)
         watched = entry.get('watched_duration', 0)
@@ -1273,7 +1267,7 @@ def __init__(self,
                 content_timing['abandonment_points'].append(watched / duration)
 
     def _process_entry_device(self, entry: Dict[str, Any], 
-                            device_usage: DefaultDict[str, List]) -> None:
+                            device_usage: defaultdict) -> None:
         """Process device-related information."""
         device = entry.get('device_type', 'unknown')
         platform = entry.get('platform', 'unknown')
@@ -1283,7 +1277,7 @@ def __init__(self,
         device_usage['platforms'].append((platform, timestamp))
 
     def _process_entry_location(self, entry: Dict[str, Any], 
-                              location_data: DefaultDict[str, List]) -> None:
+                              location_data: defaultdict) -> None:
         """Process location-related information."""
         location = entry.get('location', 'unknown')
         timestamp = datetime.fromisoformat(entry['timestamp'])
@@ -1431,7 +1425,7 @@ def __init__(self,
             'return_patterns': metrics.get('returns', {})
         })
 
-    def _update_content_timing(self, timing_data: DefaultDict[str, List]) -> None:
+    def _update_content_timing(self, timing_data: defaultdict) -> None:
         """Update content timing metrics."""
         if not timing_data:
             return
@@ -1457,7 +1451,7 @@ def __init__(self,
             'abandonment_points': self._analyze_abandonment_points(abandonment_points)
         })
 
-    def _update_device_patterns(self, device_data: DefaultDict[str, List]) -> None:
+    def _update_device_patterns(self, device_data: defaultdict) -> None:
         """Update device usage pattern metrics."""
         if not device_data:
             return
@@ -1487,7 +1481,7 @@ def __init__(self,
             'platform_switches': platform_switches
         })
 
-    def _update_location_patterns(self, location_data: DefaultDict[str, List]) -> None:
+    def _update_location_patterns(self, location_data: defaultdict) -> None:
         """Update location pattern metrics."""
         if not location_data:
             return
@@ -1623,7 +1617,7 @@ def __init__(self,
         end_time = datetime.fromisoformat(session[-1]['timestamp'])
         return (end_time - start_time).total_seconds() / 3600
 
-    def _analyze_production_types(self, entries: List[Dict[str, Any]]) -Dict[str, Any]:
+    def _analyze_production_types(self, entries: List[Dict[str, Any]]) -> Dict[str, Any]:
         """Analyze user preference for various production types."""
         production_preferences = defaultdict(int)
 
@@ -1640,7 +1634,7 @@ def __init__(self,
             'dominant_production': dominant_production
         }
 
-    def _analyze_interaction_signatures(self, entries: List[Dict[str, Any]]) -Dict[str, Any]:
+    def _analyze_interaction_signatures(self, entries: List[Dict[str, Any]]) -> Dict[str, Any]:
         """Analyze detailed interaction patterns and signatures."""
         viewing_patterns = []
         engagement_levels = []

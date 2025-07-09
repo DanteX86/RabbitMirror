@@ -25,11 +25,11 @@ from .report_generator import ReportGenerator
 from .qr_generator import QRGenerator
 from .export_formatter import ExportFormatter
 from .symbolic_logger import SymbolicLogger
-from .profile_comparator import ProfileComparator
-from .trend_analyzer import TrendAnalyzer
-from .config_manager import ConfigManager
-from .schema_validator import SchemaValidator
-from .dashboard_generator import DashboardGenerator
+# from .profile_comparator import ProfileComparator
+# from .trend_analyzer import TrendAnalyzer
+# from .config_manager import ConfigManager
+# from .schema_validator import SchemaValidator
+# from .dashboard_generator import DashboardGenerator
 
 # Initialize logger
 symbolic_logger = SymbolicLogger()
@@ -76,12 +76,12 @@ def utils_group():
 def config_group():
     pass
 
-@process_group.command(name='parse', aliases=['p', 'read'])
+@process_group.command(name='parse')
 @click.argument('history_file', type=click.Path(exists=True))
 @click.option('--output', '-o', type=click.Path(), help='Output file for parsed data')
 @click.option('--format', '-f', type=click.Choice(['json', 'csv', 'yaml', 'excel']), default='json')
 @click.option('--verbose', '-v', is_flag=True, help='Enable verbose output')
-def parse(history_file: str, output: Optional[str], format: str):
+def parse(history_file: str, output: Optional[str], format: str, verbose: bool = False):
     """Parse a YouTube watch history file."""
     try:
         parser = HistoryParser(history_file)
@@ -102,14 +102,14 @@ def parse(history_file: str, output: Optional[str], format: str):
         symbolic_logger.log_error('parse_error', e)
         click.echo(f"❌ Error parsing history: {str(e)}", err=True)
 
-@analyze_group.command(name='cluster', aliases=['c', 'group'])
+@analyze_group.command(name='cluster')
 @click.argument('history_file', type=click.Path(exists=True))
 @click.option('--eps', type=float, default=0.3, help='DBSCAN eps parameter')
 @click.option('--min-samples', type=int, default=5, help='DBSCAN min_samples parameter')
 @click.option('--output', '-o', type=click.Path(), help='Output file for cluster data')
 @click.option('--format', '-f', type=click.Choice(['json', 'csv', 'yaml', 'excel']), default='json')
 @click.option('--visualization', '-viz', is_flag=True, help='Generate cluster visualization')
-def cluster(history_file: str, eps: float, min_samples: int, output: Optional[str], format: str):
+def cluster(history_file: str, eps: float, min_samples: int, output: Optional[str], format: str, visualization: bool = False):
     """Cluster videos in watch history."""
     try:
         parser = HistoryParser(history_file)
@@ -133,7 +133,7 @@ def cluster(history_file: str, eps: float, min_samples: int, output: Optional[st
         symbolic_logger.log_error('cluster_error', e)
         click.echo(f"❌ Error clustering videos: {str(e)}", err=True)
 
-@analyze_group.command(name='analyze-suppression', aliases=['as', 'suppression'])
+@analyze_group.command(name='analyze-suppression')
 @click.argument('history_file', type=click.Path(exists=True))
 @click.option('--period', type=int, default=30, help='Baseline period in days')
 @click.option('--output', '-o', type=click.Path(), help='Output file for suppression data')
@@ -164,20 +164,20 @@ def analyze_suppression(history_file: str, period: int, output: Optional[str], f
         symbolic_logger.log_error('suppression_error', e)
         click.echo(f"❌ Error analyzing suppression: {str(e)}", err=True)
 
-@analyze_group.command(name='detect-patterns', aliases=['dp', 'patterns'])
+@analyze_group.command(name='detect-patterns')
 @click.argument('history_file', type=click.Path(exists=True))
 @click.option('--threshold', type=float, default=0.7, help='Similarity threshold')
 @click.option('--output', '-o', type=click.Path(), help='Output file for adversarial patterns')
 @click.option('--format', '-f', type=click.Choice(['json', 'csv', 'yaml', 'excel']), default='json')
 @click.option('--pattern-types', '-pt', multiple=True, help='Specific pattern types to detect')
 @click.option('--min-confidence', '-mc', type=float, default=0.5, help='Minimum confidence threshold')
-def detect_patterns(history_file: str, threshold: float, output: Optional[str], format: str):
+def detect_patterns(history_file: str, threshold: float, output: Optional[str], format: str, pattern_types: tuple = (), min_confidence: float = 0.5):
     """Detect potential adversarial patterns."""
     try:
         parser = HistoryParser(history_file)
         entries = parser.parse()
         
-        profiler = AdversarialProfiler(threshold=threshold)
+        profiler = AdversarialProfiler(similarity_threshold=threshold)
         patterns = profiler.identify_adversarial_patterns(entries)
         
         if output:
@@ -195,7 +195,7 @@ def detect_patterns(history_file: str, threshold: float, output: Optional[str], 
         symbolic_logger.log_error('pattern_detection_error', e)
         click.echo(f"❌ Error detecting patterns: {str(e)}", err=True)
 
-@analyze_group.command(name='simulate', aliases=['sim', 'synthetic'])
+@analyze_group.command(name='simulate')
 @click.argument('history_file', type=click.Path(exists=True))
 @click.option('--duration', type=int, default=30, help='Simulation duration in days')
 @click.option('--seed', type=int, help='Random seed for simulation')
@@ -227,7 +227,7 @@ def simulate(history_file: str, duration: int, seed: Optional[int], output: Opti
         symbolic_logger.log_error('simulation_error', e)
         click.echo(f"❌ Error simulating profile: {str(e)}", err=True)
 
-@report_group.command(name='generate-report', aliases=['gr', 'report'])
+@report_group.command(name='generate-report')
 @click.argument('data_file', type=click.Path(exists=True))
 @click.argument('template_file', type=click.Path(exists=True))
 @click.argument('output_file', type=click.Path())
@@ -251,15 +251,8 @@ def generate_report(data_file: str, template_file: str, output_file: str):
         symbolic_logger.log_error('report_generation_error', e)
         click.echo(f"❌ Error generating report: {str(e)}", err=True)
 
-@utils_group.command(name='generate-qr', aliases=['qr', 'qrcode'])
-@click.argument('data', type=str)
-@click.option('--output', '-o', type=click.Path(), help='Output file for QR code')
-@click.option('--size', '-s', type=int, default=10, help='QR code size')
-@click.option('--error-correction', '-e', type=click.Choice(['L', 'M', 'Q', 'H']), default='M')
-@click.option('--color', '-c', type=str, default='black', help='QR code color')
-
 # New Commands
-@process_group.command(name='batch-process', aliases=['bp', 'batch'])
+@process_group.command(name='batch-process')
 @click.argument('input_dir', type=click.Path(exists=True))
 @click.option('--output-dir', '-o', type=click.Path(), help='Output directory')
 @click.option('--format', '-f', type=click.Choice(['json', 'csv', 'yaml', 'excel']), default='json')
@@ -317,17 +310,17 @@ def batch_process(input_dir: str, output_dir: Optional[str], format: str, recurs
         symbolic_logger.log_error('batch_process_error', e)
         click.echo(f"❌ Error during batch processing: {str(e)}", err=True)
 
-@analyze_group.command(name='compare-profiles', aliases=['cp', 'compare'])
-@click.argument('profile1', type=click.Path(exists=True))
-@click.argument('profile2', type=click.Path(exists=True))
-@click.option('--metrics', '-m', multiple=True, help='Specific metrics to compare')
-@click.option('--output', '-o', type=click.Path(), help='Output file for comparison')
-@click.option('--format', '-f', type=click.Choice(['json', 'csv', 'yaml', 'excel']), default='json')
-def compare_profiles(profile1: str, profile2: str, metrics: List[str], output: Optional[str], format: str):
-    """Compare two watch history profiles."""
-    try:
-        comparator = ProfileComparator()
-        comparison = comparator.compare_profiles(profile1, profile2, metrics)
+# @analyze_group.command(name='compare-profiles', aliases=['cp', 'compare'])
+# @click.argument('profile1', type=click.Path(exists=True))
+# @click.argument('profile2', type=click.Path(exists=True))
+# @click.option('--metrics', '-m', multiple=True, help='Specific metrics to compare')
+# @click.option('--output', '-o', type=click.Path(), help='Output file for comparison')
+# @click.option('--format', '-f', type=click.Choice(['json', 'csv', 'yaml', 'excel']), default='json')
+# def compare_profiles(profile1: str, profile2: str, metrics: List[str], output: Optional[str], format: str):
+#     """Compare two watch history profiles."""
+#     try:
+#         comparator = ProfileComparator()
+#         comparison = comparator.compare_profiles(profile1, profile2, metrics)
         
         # Print summary
         click.echo(f"\nProfile Comparison Results:")
@@ -373,26 +366,26 @@ def compare_profiles(profile1: str, profile2: str, metrics: List[str], output: O
         symbolic_logger.log_error('profile_comparison_error', e)
         click.echo(f"❌ Error comparing profiles: {str(e)}", err=True)
 
-@analyze_group.command(name='trend-analysis', aliases=['ta', 'trends'])
-@click.argument('history_file', type=click.Path(exists=True))
-@click.option('--period', type=click.Choice(['daily', 'weekly', 'monthly']), default='daily')
-@click.option('--metrics', '-m', multiple=True, help='Metrics to analyze')
-@click.option('--output', '-o', type=click.Path(), help='Output file for trends')
-@click.option('--format', '-f', type=click.Choice(['json', 'csv', 'yaml', 'excel']), default='json')
-@click.option('--normalize', '-n', is_flag=True, help='Normalize trend values')
-def trend_analysis(history_file: str, period: str, metrics: List[str], output: Optional[str], format: str, normalize: bool):
-    """Analyze trends in watch history."""
-    try:
-        # Parse history file
-        parser = HistoryParser(history_file)
-        entries = parser.parse()
-        
-        # Calculate trends
-        analyzer = TrendAnalyzer(
-            period_type=period,
-            normalize=normalize
-        )
-        trends = analyzer.analyze_trends(entries, metrics if metrics else None)
+# @analyze_group.command(name='trend-analysis', aliases=['ta', 'trends'])
+# @click.argument('history_file', type=click.Path(exists=True))
+# @click.option('--period', type=click.Choice(['daily', 'weekly', 'monthly']), default='daily')
+# @click.option('--metrics', '-m', multiple=True, help='Metrics to analyze')
+# @click.option('--output', '-o', type=click.Path(), help='Output file for trends')
+# @click.option('--format', '-f', type=click.Choice(['json', 'csv', 'yaml', 'excel']), default='json')
+# @click.option('--normalize', '-n', is_flag=True, help='Normalize trend values')
+# def trend_analysis(history_file: str, period: str, metrics: List[str], output: Optional[str], format: str, normalize: bool):
+#     """Analyze trends in watch history."""
+#     try:
+#         # Parse history file
+#         parser = HistoryParser(history_file)
+#         entries = parser.parse()
+#         
+#         # Calculate trends
+#         analyzer = TrendAnalyzer(
+#             period_type=period,
+#             normalize=normalize
+#         )
+#         trends = analyzer.analyze_trends(entries, metrics if metrics else None)
         
         # Print summary
         click.echo(f"\nTrend Analysis Results:")
@@ -438,35 +431,35 @@ def trend_analysis(history_file: str, period: str, metrics: List[str], output: O
         symbolic_logger.log_error('trend_analysis_error', e)
         click.echo(f"❌ Error analyzing trends: {str(e)}", err=True)
 
-@report_group.command(name='export-dashboard', aliases=['ed', 'dashboard'])
-@click.argument('data_file', type=click.Path(exists=True))
-@click.option('--template', '-t', type=click.Choice(['basic', 'advanced', 'custom']), default='basic')
-@click.option('--output', '-o', type=click.Path(), help='Output directory')
-@click.option('--interactive', '-i', is_flag=True, help='Generate interactive dashboard')
-@click.option('--theme', '-th', type=click.Choice(['light', 'dark']), default='light')
-@click.option('--include-plots', '-p', is_flag=True, help='Include plot visualizations')
-def export_dashboard(data_file: str, template: str, output: Optional[str], interactive: bool, theme: str, include_plots: bool):
-    """Export data as an interactive dashboard."""
-    try:
-        # Load data
-        exporter = ExportFormatter()
-        with open(data_file, 'r') as f:
-            data = exporter._load_data(data_file)
-            
-        # Determine output path
-        output_path = Path(output) if output else Path('dashboard_output')
-        output_path.mkdir(parents=True, exist_ok=True)
-        
-        # Create dashboard
-        dashboard = DashboardGenerator(
-            template=template,
-            interactive=interactive,
-            theme=theme,
-            include_plots=include_plots
-        )
-        
-        # Generate dashboard files
-        dashboard_files = dashboard.generate_dashboard(data, output_path)
+# @report_group.command(name='export-dashboard', aliases=['ed', 'dashboard'])
+# @click.argument('data_file', type=click.Path(exists=True))
+# @click.option('--template', '-t', type=click.Choice(['basic', 'advanced', 'custom']), default='basic')
+# @click.option('--output', '-o', type=click.Path(), help='Output directory')
+# @click.option('--interactive', '-i', is_flag=True, help='Generate interactive dashboard')
+# @click.option('--theme', '-th', type=click.Choice(['light', 'dark']), default='light')
+# @click.option('--include-plots', '-p', is_flag=True, help='Include plot visualizations')
+# def export_dashboard(data_file: str, template: str, output: Optional[str], interactive: bool, theme: str, include_plots: bool):
+#     """Export data as an interactive dashboard."""
+#     try:
+#         # Load data
+#         exporter = ExportFormatter()
+#         with open(data_file, 'r') as f:
+#             data = exporter._load_data(data_file)
+#             
+#         # Determine output path
+#         output_path = Path(output) if output else Path('dashboard_output')
+#         output_path.mkdir(parents=True, exist_ok=True)
+#         
+#         # Create dashboard
+#         dashboard = DashboardGenerator(
+#             template=template,
+#             interactive=interactive,
+#             theme=theme,
+#             include_plots=include_plots
+#         )
+#         
+#         # Generate dashboard files
+#         dashboard_files = dashboard.generate_dashboard(data, output_path)
         
         # Print summary
         click.echo(f"\nDashboard Generation Complete:")
@@ -492,62 +485,35 @@ def export_dashboard(data_file: str, template: str, output: Optional[str], inter
         symbolic_logger.log_error('dashboard_export_error', e)
         click.echo(f"❌ Error exporting dashboard: {str(e)}", err=True)
 
-@config_group.command(name='set', aliases=['s'])
-@click.argument('key', type=str)
-@click.argument('value', type=str)
-@click.option('--global/--local', default=False, help='Store in global or local config')
-def set_config(key: str, value: str, global_: bool):
-    """Set a configuration value."""
-    try:
-        config = ConfigManager(use_global=global_)
-        config.set(key, value)
-        click.echo(f"✅ Set {key} = {value} in {'global' if global_ else 'local'} config")
-    except Exception as e:
-        symbolic_logger.log_error('config_set_error', e)
-        click.echo(f"❌ Error setting config: {str(e)}", err=True)
+# @config_group.command(name='set', aliases=['s'])
+# @click.argument('key', type=str)
+# @click.argument('value', type=str)
+# @click.option('--global/--local', default=False, help='Store in global or local config')
+# def set_config(key: str, value: str, global_: bool):
+#     """Set a configuration value."""
+#     try:
+#         config = ConfigManager(use_global=global_)
+#         config.set(key, value)
+#         click.echo(f"✅ Set {key} = {value} in {'global' if global_ else 'local'} config")
+#     except Exception as e:
+#         symbolic_logger.log_error('config_set_error', e)
+#         click.echo(f"❌ Error setting config: {str(e)}", err=True)
 
-@config_group.command(name='get', aliases=['g'])
+@config_group.command(name='get')
 @click.argument('key', type=str)
 @click.option('--global/--local', default=False, help='Read from global or local config')
 def get_config(key: str, global_: bool):
     """Get a configuration value."""
-    try:
-        config = ConfigManager(use_global=global_)
-        value = config.get(key)
-        if value is not None:
-            click.echo(f"{key} = {value}")
-        else:
-            click.echo(f"❌ Key '{key}' not found in {'global' if global_ else 'local'} config")
-    except Exception as e:
-        symbolic_logger.log_error('config_get_error', e)
-        click.echo(f"❌ Error getting config: {str(e)}", err=True)
+    click.echo("Configuration management not yet implemented")
 
-@config_group.command(name='list', aliases=['l', 'ls'])
+@config_group.command(name='list')
 @click.option('--global/--local', default=False, help='List global or local config')
 @click.option('--format', '-f', type=click.Choice(['text', 'json', 'yaml']), default='text')
 def list_config(global_: bool, format: str):
     """List all configuration values."""
-    try:
-        config = ConfigManager(use_global=global_)
-        values = config.list_all()
-        
-        if not values:
-            click.echo(f"No configuration values found in {'global' if global_ else 'local'} config")
-            return
-            
-        if format == 'text':
-            click.echo(f"\n{'Global' if global_ else 'Local'} Configuration:")
-            for key, value in sorted(values.items()):
-                click.echo(f"{key} = {value}")
-        elif format == 'json':
-            click.echo(json.dumps(values, indent=2))
-        elif format == 'yaml':
-            click.echo(yaml.dump(values, default_flow_style=False))
-    except Exception as e:
-        symbolic_logger.log_error('config_list_error', e)
-        click.echo(f"❌ Error listing config: {str(e)}", err=True)
+    click.echo("Configuration management not yet implemented")
 
-@utils_group.command(name='validate', aliases=['v', 'check'])
+@utils_group.command(name='validate')
 @click.argument('file', type=click.Path(exists=True))
 @click.option('--schema', '-s', type=click.Path(exists=True), help='Schema file for validation')
 @click.option('--format', '-f', type=click.Choice(['json', 'yaml']), default='json')
@@ -585,35 +551,14 @@ def validate_file(file: str, schema: Optional[str], format: str):
                 }
             }
 
-        # Validate data against schema
-        validator = SchemaValidator()
-        validation_result = validator.validate(data, schema_data)
-
-        if validation_result.is_valid:
-            click.echo("✅ File is valid")
-            click.echo(f"\nValidation Summary:")
-            click.echo(f"- Total objects validated: {validation_result.total_validated}")
-            if validation_result.warnings:
-                click.echo("\nWarnings:")
-                for warning in validation_result.warnings:
-                    click.echo(f"⚠️  {warning}")
-        else:
-            click.echo("❌ File is invalid")
-            click.echo("\nValidation Errors:")
-            for error in validation_result.errors:
-                click.echo(f"- {error}")
-                if error.path:
-                    click.echo(f"  at: {' → '.join(error.path)}")
-                if error.value:
-                    click.echo(f"  got: {error.value}")
-                if error.expected:
-                    click.echo(f"  expected: {error.expected}")
+        # Schema validation not yet implemented
+        click.echo("Schema validation not yet implemented")
 
     except Exception as e:
         symbolic_logger.log_error('validation_error', e)
         click.echo(f"❌ Error validating file: {str(e)}", err=True)
 
-@utils_group.command(name='convert', aliases=['conv'])
+@utils_group.command(name='convert')
 @click.argument('input_file', type=click.Path(exists=True))
 @click.argument('output_format', type=click.Choice(['json', 'csv', 'yaml', 'excel']))
 @click.option('--output', '-o', type=click.Path(), help='Output file')
@@ -647,7 +592,7 @@ def completion(shell: str):
     """Generate shell completion script."""
     click.echo(click_completion.get_code(shell))
 
-@utils_group.command(name='generate-qr', aliases=['qr', 'qrcode'])
+@utils_group.command(name='generate-qr')
 @click.argument('data', type=str)
 @click.option('--output', '-o', type=click.Path(), help='Output file for QR code')
 @click.option('--size', '-s', type=int, default=10, help='QR code size')

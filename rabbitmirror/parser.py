@@ -1,6 +1,8 @@
 from bs4 import BeautifulSoup
 from loguru import logger
 from typing import List, Dict, Any
+from datetime import datetime
+import re
 
 class HistoryParser:
     def __init__(self, file_path: str):
@@ -24,13 +26,32 @@ class HistoryParser:
     def _parse_entry(self, entry) -> Dict[str, Any]:
         """Parse a single watch history entry."""
         title_tag = entry.find('a')
-        timestamp_tag = entry.find_next_sibling('div', class_='mdl-typography--caption')
+        timestamp_tag = entry.find('div', class_='mdl-typography--caption')
 
-        if not (title_tag and timestamp_tag):
+        if not title_tag:
             return None
 
+        # Extract timestamp from the timestamp tag or use a default
+        timestamp_raw = timestamp_tag.get_text(strip=True) if timestamp_tag else "Unknown"
+        timestamp = self._convert_timestamp(timestamp_raw)
+        
         return {
             'title': title_tag.get_text(strip=True),
             'url': title_tag.get('href', '').strip(),
-            'timestamp': timestamp_tag.get_text(strip=True)
+            'timestamp': timestamp
         }
+    
+    def _convert_timestamp(self, timestamp_str: str) -> str:
+        """Convert timestamp from YouTube format to ISO format."""
+        if timestamp_str == "Unknown":
+            return datetime.now().isoformat()
+        
+        try:
+            # Parse YouTube format: "Dec 15, 2023, 2:30:45 PM PST"
+            # Remove timezone for now and parse
+            timestamp_clean = re.sub(r'\s+[A-Z]{3}$', '', timestamp_str)
+            dt = datetime.strptime(timestamp_clean, '%b %d, %Y, %I:%M:%S %p')
+            return dt.isoformat()
+        except ValueError:
+            # If parsing fails, return current time
+            return datetime.now().isoformat()
