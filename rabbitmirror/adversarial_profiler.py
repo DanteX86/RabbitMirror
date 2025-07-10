@@ -863,9 +863,9 @@ class AdversarialProfiler:
         titles = [entry["title"] for entry in sequence]
         if len(set(titles)) == 1:
             return "exact_repetition"
-        elif self._has_numeric_progression(titles):
+        if self._has_numeric_progression(titles):
             return "numeric_progression"
-        elif self._has_similar_structure(titles):
+        if self._has_similar_structure(titles):
             return "similar_structure"
         return "high_similarity"
 
@@ -2209,11 +2209,11 @@ class AdversarialProfiler:
         # Simple topic detection based on keywords
         if any(word in title for word in ["tutorial", "guide", "how to"]):
             return "educational"
-        elif any(word in title for word in ["game", "gaming", "playthrough"]):
+        if any(word in title for word in ["game", "gaming", "playthrough"]):
             return "gaming"
-        elif any(word in title for word in ["music", "song", "audio"]):
+        if any(word in title for word in ["music", "song", "audio"]):
             return "music"
-        elif any(word in title for word in ["news", "update", "report"]):
+        if any(word in title for word in ["news", "update", "report"]):
             return "news"
         return "other"
 
@@ -2332,53 +2332,53 @@ class AdversarialProfiler:
         if context_type == "time_of_day":
             return self._calculate_temporal_weight(value, base_weight)
 
-        elif context_type == "day_of_week":
+        if context_type == "day_of_week":
             return self._calculate_day_weight(value, base_weight)
 
-        elif context_type == "seasonal_pattern":
+        if context_type == "seasonal_pattern":
             return self._calculate_seasonal_weight(value, base_weight)
 
         # User behavior factors
-        elif context_type == "session_position":
+        if context_type == "session_position":
             return self._calculate_session_weight(value, base_weight)
 
-        elif context_type == "interaction_pattern":
+        if context_type == "interaction_pattern":
             return self._calculate_interaction_weight(value, base_weight)
 
-        elif context_type == "device_consistency":
+        if context_type == "device_consistency":
             return self._calculate_device_weight(value, base_weight)
 
-        elif context_type == "speed_pattern":
+        if context_type == "speed_pattern":
             return self._calculate_speed_weight(value, base_weight)
 
         # Content factors
-        elif context_type == "content_category":
+        if context_type == "content_category":
             return self._calculate_category_weight(value, base_weight)
 
-        elif context_type == "content_length":
+        if context_type == "content_length":
             return self._calculate_length_weight(value, base_weight)
 
-        elif context_type == "content_popularity":
+        if context_type == "content_popularity":
             return self._calculate_popularity_weight(value, base_weight)
 
-        elif context_type == "channel_reputation":
+        if context_type == "channel_reputation":
             return self._calculate_reputation_weight(value, base_weight)
 
         # Network factors
-        elif context_type == "ip_pattern":
+        if context_type == "ip_pattern":
             return self._calculate_ip_weight(value, base_weight)
 
-        elif context_type == "network_type":
+        if context_type == "network_type":
             return self._calculate_network_weight(value, base_weight)
 
         # Engagement factors
-        elif context_type == "completion_rate":
+        if context_type == "completion_rate":
             return self._calculate_completion_weight(value, base_weight)
 
-        elif context_type == "interaction_depth":
+        if context_type == "interaction_depth":
             return self._calculate_depth_weight(value, base_weight)
 
-        elif context_type == "social_signals":
+        if context_type == "social_signals":
             return self._calculate_social_weight(value, base_weight)
 
         return base_weight
@@ -2389,9 +2389,9 @@ class AdversarialProfiler:
         # Higher weight for unusual hours
         if 0 <= hour <= 4:  # Very late night
             return base_weight * 2.0
-        elif 4 < hour <= 6:  # Early morning
+        if 4 < hour <= 6:  # Early morning
             return base_weight * 1.5
-        elif 22 <= hour <= 23:  # Late night
+        if 22 <= hour <= 23:  # Late night
             return base_weight * 1.3
         return base_weight
 
@@ -2401,7 +2401,7 @@ class AdversarialProfiler:
         # Higher weight for weekends and holidays
         if day >= 5:  # Weekend
             return base_weight * 1.3
-        elif self._is_holiday(value):  # Holiday
+        if self._is_holiday(value):  # Holiday
             return base_weight * 1.5
         return base_weight
 
@@ -2424,7 +2424,7 @@ class AdversarialProfiler:
         position = float(value["current"]) / float(value["total"])
         if position < 0.1 or position > 0.9:  # Very early or late in session
             return base_weight * 1.5
-        elif position < 0.2 or position > 0.8:  # Early or late in session
+        if position < 0.2 or position > 0.8:  # Early or late in session
             return base_weight * 1.3
         return base_weight
 
@@ -2436,7 +2436,7 @@ class AdversarialProfiler:
             clicks = value["clicks_per_minute"]
             if clicks > 20:  # Unusually high interaction rate
                 return base_weight * 2.0
-            elif clicks > 10:
+            if clicks > 10:
                 return base_weight * 1.5
         return base_weight
 
@@ -2467,7 +2467,7 @@ class AdversarialProfiler:
 
         if speed > 2.0 or speed < 0.5:  # Unusual playback speed
             return base_weight * 1.5
-        elif consistency < 0.5:  # Inconsistent speed changes
+        if consistency < 0.5:  # Inconsistent speed changes
             return base_weight * 1.3
         return base_weight
 
@@ -2477,7 +2477,7 @@ class AdversarialProfiler:
         """Calculate weight based on content category."""
         if self._is_suspicious_category(value):
             return base_weight * 1.5
-        elif "category_switches" in value and value["category_switches"] > 5:
+        if "category_switches" in value and value["category_switches"] > 5:
             return base_weight * 1.3
         return base_weight
 
@@ -2490,7 +2490,7 @@ class AdversarialProfiler:
 
         if duration < 30 and completion < 0.5:  # Short videos with low completion
             return base_weight * 1.5
-        elif (
+        if (
             duration > 3600 and completion > 0.95
         ):  # Long videos with suspiciously high completion
             return base_weight * 1.3
@@ -2505,7 +2505,7 @@ class AdversarialProfiler:
 
         if views / age < 1:  # Very unpopular content
             return base_weight * 1.5
-        elif views / age > 1000000:  # Extremely viral content
+        if views / age > 1000000:  # Extremely viral content
             return base_weight * 1.3
         return base_weight
 
@@ -2518,7 +2518,7 @@ class AdversarialProfiler:
 
         if subscriber_count < 100 and age_days < 30:  # New, small channels
             return base_weight * 1.5
-        elif subscriber_count > 1000000:  # Very large channels
+        if subscriber_count > 1000000:  # Very large channels
             return base_weight * 0.8
         return base_weight
 
@@ -2529,7 +2529,7 @@ class AdversarialProfiler:
 
         if changes / timespan_hours > 0.5:  # More than 1 IP change per 2 hours
             return base_weight * 2.0
-        elif changes / timespan_hours > 0.2:
+        if changes / timespan_hours > 0.2:
             return base_weight * 1.5
         return base_weight
 
@@ -2540,9 +2540,9 @@ class AdversarialProfiler:
         network_type = value.get("network_type", "")
         changes = value.get("network_changes", 0)
 
-        if network_type == "proxy" or network_type == "vpn":
+        if network_type in ("proxy", "vpn"):
             return base_weight * 1.5
-        elif changes > 5:  # Frequent network type changes
+        if changes > 5:  # Frequent network type changes
             return base_weight * 1.3
         return base_weight
 
@@ -2558,7 +2558,7 @@ class AdversarialProfiler:
 
         if completion_rate > threshold + 0.2:  # Suspiciously high completion
             return base_weight * 1.5
-        elif completion_rate < threshold - 0.4:  # Very low completion
+        if completion_rate < threshold - 0.4:  # Very low completion
             return base_weight * 1.3
         return base_weight
 
@@ -2571,7 +2571,7 @@ class AdversarialProfiler:
 
         if depth / duration > 5:  # More than 5 interactions per minute
             return base_weight * 1.5
-        elif depth == 0 and duration > 30:  # No interaction on long videos
+        if depth == 0 and duration > 30:  # No interaction on long videos
             return base_weight * 1.3
         return base_weight
 
