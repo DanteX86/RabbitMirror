@@ -114,6 +114,42 @@ python run.py report generate-report data.json template.html report.html --forma
 
 ## 🔧 Configuration
 
+### Configuration Management
+
+RabbitMirror includes a built-in configuration system to manage persistent settings:
+
+#### Set Configuration Values
+```bash
+# Set local configuration (project-specific)
+python run.py config set api_key "your-api-key"
+python run.py config set default_output_format "json"
+
+# Set global configuration (user-wide)
+python run.py config set default_theme "dark" --global
+python run.py config set analysis_threshold "0.7" --global
+```
+
+#### Get Configuration Values
+```bash
+# Get local configuration
+python run.py config get api_key
+
+# Get global configuration
+python run.py config get default_theme --global
+```
+
+#### List All Configuration
+```bash
+# List all configuration (text format)
+python run.py config list
+
+# List in JSON format
+python run.py config list --format json
+
+# List in YAML format
+python run.py config list --format yaml
+```
+
 ### Output Formats
 RabbitMirror supports multiple output formats:
 - **JSON**: Default format, preserves all data structure
@@ -149,6 +185,7 @@ RabbitMirror/
 │   ├── report_generator.py      # Report generation
 │   ├── export_formatter.py      # Data export utilities
 │   ├── qr_generator.py          # QR code generation
+│   ├── config_manager.py        # Configuration management
 │   └── symbolic_logger.py       # Logging utilities
 ├── data/                        # Input data directory
 ├── exports/                     # Output data directory

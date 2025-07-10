@@ -12,6 +12,9 @@ numpy
 scipy
 pyyaml
 openpyxl
+plotly
+jinja2
+jsonschema
 
 # Testing dependencies
 pytest>=7.0.0

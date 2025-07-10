@@ -7,6 +7,7 @@ from typing import Optional
 import click
 import click_aliases
 import click_completion
+import jsonschema
 import yaml
 
 from .adversarial_profiler import AdversarialProfiler
@@ -24,9 +25,9 @@ click_completion.init()
 
 # from .profile_comparator import ProfileComparator
 # from .trend_analyzer import TrendAnalyzer
-# from .config_manager import ConfigManager
-# from .schema_validator import SchemaValidator
-# from .dashboard_generator import DashboardGenerator
+from .config_manager import ConfigManager
+from .dashboard_generator import DashboardGenerator
+from .schema_validator import SchemaValidator
 
 # Initialize logger
 symbolic_logger = SymbolicLogger()
@@ -523,95 +524,133 @@ def batch_process(
         symbolic_logger.log_error("trend_analysis_error", e)
         click.echo(f"❌ Error analyzing trends: {str(e)}", err=True)
 
-        # @report_group.command(name='export-dashboard', aliases=['ed', 'dashboard'])
-        # @click.argument('data_file', type=click.Path(exists=True))
-        # @click.option('--template', '-t', type=click.Choice(['basic', 'advanced', 'custom']), default='basic')
-        # @click.option('--output', '-o', type=click.Path(), help='Output directory')
-        # @click.option('--interactive', '-i', is_flag=True, help='Generate interactive dashboard')
-        # @click.option('--theme', '-th', type=click.Choice(['light', 'dark']), default='light')
-        # @click.option('--include-plots', '-p', is_flag=True, help='Include plot visualizations')
-        # def export_dashboard(data_file: str, template: str, output: Optional[str], interactive: bool, theme: str, include_plots: bool):
-        #     """Export data as an interactive dashboard."""
-        #     try:
-        #         # Load data
-        #         exporter = ExportFormatter()
-        #         with open(data_file, 'r', encoding='utf-8') as f:
-        #             data = exporter._load_data(data_file)
-        #
-        #         # Determine output path
-        #         output_path = Path(output) if output else Path('dashboard_output')
-        #         output_path.mkdir(parents=True, exist_ok=True)
-        #
-        #         # Create dashboard
-        #         dashboard = DashboardGenerator(
-        #             template=template,
-        #             interactive=interactive,
-        #             theme=theme,
-        #             include_plots=include_plots
-        #         )
-        #
-        #         # Generate dashboard files
-        #         dashboard_files = dashboard.generate_dashboard(data, output_path)
+
+@report_group.command(name="export-dashboard")
+@click.argument("data_file", type=click.Path(exists=True))
+@click.option(
+    "--template",
+    "-t",
+    type=click.Choice(["basic", "advanced", "custom"]),
+    default="basic",
+)
+@click.option("--output", "-o", type=click.Path(), help="Output directory")
+@click.option(
+    "--interactive", "-i", is_flag=True, help="Generate interactive dashboard"
+)
+@click.option("--theme", "-th", type=click.Choice(["light", "dark"]), default="light")
+@click.option("--include-plots", "-p", is_flag=True, help="Include plot visualizations")
+def export_dashboard(
+    data_file: str,
+    template: str,
+    output: Optional[str],
+    interactive: bool,
+    theme: str,
+    include_plots: bool,
+):
+    """Export data as an interactive dashboard."""
+    try:
+        # Load data
+        exporter = ExportFormatter()
+        with open(data_file, "r", encoding="utf-8") as f:
+            data = exporter._load_data(data_file)
+
+        # Determine output path
+        output_path = Path(output) if output else Path("dashboard_output")
+        output_path.mkdir(parents=True, exist_ok=True)
+
+        # Create dashboard
+        dashboard = DashboardGenerator(
+            template=template,
+            interactive=interactive,
+            theme=theme,
+            include_plots=include_plots,
+        )
+
+        # Generate dashboard files
+        dashboard_files = dashboard.generate_dashboard(data, output_path)
 
         # Print summary (commented out due to missing implementation)
-        # click.echo(f"\nDashboard Generation Complete:")
-        # click.echo(f"Template: {template}")
-        # click.echo(f"Interactive: {'Yes' if interactive else 'No'}")
-        # click.echo(f"Theme: {theme}")
+        click.echo(f"\nDashboard Generation Complete:")
+        click.echo(f"Template: {template}")
+        click.echo(f"Interactive: {'Yes' if interactive else 'No'}")
+        click.echo(f"Theme: {theme}")
 
         # List generated files
-        # click.echo("\nGenerated Files:")
-        # for file_type, file_path in dashboard_files.items():
-        #     click.echo(f"- {file_type}: {file_path}")
+        click.echo("\nGenerated Files:")
+        for file_type, file_path in dashboard_files.items():
+            click.echo(f"- {file_type}: {file_path}")
 
         # Print instructions for viewing
-        # if interactive:
-        #     click.echo("\nTo view the dashboard:")
-        #     click.echo(f"1. Navigate to: {output_path}")
-        #     click.echo(f"2. Start a local server: python -m http.server")
-        #     click.echo(f"3. Open in browser: http://localhost:8000")
-        # else:
-        #     click.echo(f"\nDashboard exported to: {output_path}")
-        click.echo("Dashboard export not yet implemented")
+        if interactive:
+            click.echo("\nTo view the dashboard:")
+            click.echo(f"1. Navigate to: {output_path}")
+            click.echo(f"2. Start a local server: python -m http.server")
+            click.echo(f"3. Open in browser: http://localhost:8000")
+        else:
+            click.echo(f"\nDashboard exported to: {output_path}")
 
     except Exception as e:
         symbolic_logger.log_error("dashboard_export_error", e)
         click.echo(f"❌ Error exporting dashboard: {str(e)}", err=True)
 
 
-# @config_group.command(name='set', aliases=['s'])
-# @click.argument('key', type=str)
-# @click.argument('value', type=str)
-# @click.option('--global/--local', default=False, help='Store in global or local config')
-# def set_config(key: str, value: str, global_: bool):
-#     """Set a configuration value."""
-#     try:
-#         config = ConfigManager(use_global=global_)
-#         config.set(key, value)
-#         click.echo(f"✅ Set {key} = {value} in {'global' if global_ else 'local'} config")
-#     except Exception as e:
-#         symbolic_logger.log_error('config_set_error', e)
-#         click.echo(f"❌ Error setting config: {str(e)}", err=True)
+@config_group.command(name="set")
+@click.argument("key", type=str)
+@click.argument("value", type=str)
+@click.option(
+    "--global/--local", "global_", default=False, help="Store in global or local config"
+)
+def set_config(key: str, value: str, global_: bool):
+    """Set a configuration value."""
+    try:
+        config = ConfigManager(use_global=global_)
+        config.set(key, value)
+        click.echo(
+            f"✅ Set {key} = {value} in {'global' if global_ else 'local'} config"
+        )
+    except Exception as e:
+        symbolic_logger.log_error("config_set_error", e)
+        click.echo(f"❌ Error setting config: {str(e)}", err=True)
 
 
 @config_group.command(name="get")
 @click.argument("key", type=str)
 @click.option(
-    "--global/--local", default=False, help="Read from global or local config"
+    "--global/--local",
+    "is_global",
+    default=False,
+    help="Read from global or local config",
 )
-def get_config(key: str, **kwargs):
+def get_config(key: str, is_global: bool):
     """Get a configuration value."""
-    click.echo("Configuration management not yet implemented")
+    try:
+        config = ConfigManager(use_global=is_global)
+        value = config.get(key)
+        if value is not None:
+            click.echo(f"{key} = {value}")
+        else:
+            click.echo(f"❌ Key '{key}' not found.", err=True)
+    except Exception as e:
+        symbolic_logger.log_error("config_get_error", e)
+        click.echo(f"❌ Error getting config: {str(e)}", err=True)
 
 
 @config_group.command(name="list")
-@click.option("--global/--local", default=False, help="List global or local config")
+@click.option(
+    "--global/--local", "is_global", default=False, help="List global or local config"
+)
 @click.option(
     "--format", "-f", type=click.Choice(["text", "json", "yaml"]), default="text"
 )
-def list_config(**kwargs):
+def list_config(is_global: bool, format: str):
     """List all configuration values."""
-    click.echo("Configuration management not yet implemented")
+    try:
+        config = ConfigManager(use_global=is_global)
+        config_list = config.list(as_json=(format == "json"))
+        click.echo(config_list)
+    except Exception as e:
+        symbolic_logger.log_error("config_list_error", e)
+        click.echo(f"❌ Error listing config: {str(e)}", err=True)
 
 
 @utils_group.command(name="validate")
@@ -626,38 +665,83 @@ def validate_file(file: str, schema: Optional[str], format: str):
         # Load data file
         with open(file, "r", encoding="utf-8") as f:
             if format == "json":
-                json.load(f)
+                data = json.load(f)
             else:
-                yaml.safe_load(f)
+                data = yaml.safe_load(f)
 
-        # Load schema if provided, otherwise use default schema
+        # Load custom schema if provided
         if schema:
             with open(schema, "r", encoding="utf-8") as f:
-                json.load(f) if format == "json" else yaml.safe_load(f)
-        else:
-            # Default schema for watch history
-            # default_schema = {
-            #     "type": "object",
-            #     "properties": {
-            #         "entries": {
-            #             "type": "array",
-            #             "items": {
-            #                 "type": "object",
-            #                 "required": ["timestamp", "title"],
-            #                 "properties": {
-            #                     "timestamp": {"type": "string", "format": "date-time"},
-            #                     "title": {"type": "string"},
-            #                     "videoId": {"type": "string"},
-            #                     "channelId": {"type": "string"},
-            #                 },
-            #             },
-            #         }
-            #     },
-            # }
-            pass
+                custom_schema = json.load(f) if format == "json" else yaml.safe_load(f)
 
-        # Schema validation not yet implemented
-        click.echo("Schema validation not yet implemented")
+            # Validate against custom schema
+            try:
+                jsonschema.validate(instance=data, schema=custom_schema)
+                click.echo(f"✅ {file} is valid against custom schema.")
+            except jsonschema.exceptions.ValidationError as ve:
+                click.echo(f"❌ Validation failed: {ve.message}")
+                click.echo(
+                    f"   Path: {' -> '.join(str(p) for p in ve.absolute_path) if ve.absolute_path else 'root'}"
+                )
+                return
+        else:
+            # Validate against default schemas with auto-detection
+            schema_validator = SchemaValidator()
+
+            # Try auto-detection first
+            detected_schema = schema_validator.auto_detect_schema(data)
+
+            if detected_schema:
+                # Validate against detected schema
+                validation_result = schema_validator.validate_with_details(
+                    data, detected_schema
+                )
+
+                if validation_result["valid"]:
+                    click.echo(
+                        f"✅ {file} is valid against {detected_schema} schema (auto-detected)."
+                    )
+                else:
+                    click.echo(
+                        f"❌ {file} failed validation against {detected_schema} schema:"
+                    )
+                    click.echo(f"   Error: {validation_result['error']}")
+                    if validation_result.get("path"):
+                        click.echo(
+                            f"   Path: {' -> '.join(str(p) for p in validation_result['path'])}"
+                        )
+            else:
+                # Manual schema checking if auto-detection fails
+                available_schemas = schema_validator.get_available_schemas()
+                validation_success = False
+
+                click.echo(
+                    f"⚠️  Could not auto-detect schema. Trying all available schemas..."
+                )
+
+                for schema_type in available_schemas:
+                    validation_result = schema_validator.validate_with_details(
+                        data, schema_type
+                    )
+
+                    if validation_result["valid"]:
+                        click.echo(f"✅ {file} is valid against {schema_type} schema.")
+                        validation_success = True
+                        break
+
+                if not validation_success:
+                    click.echo(f"❌ {file} does not match any known schema types.")
+                    click.echo(
+                        f"   Available schema types: {', '.join(available_schemas)}"
+                    )
+
+                    # Show similarity scores for debugging
+                    click.echo("\n   Similarity analysis:")
+                    for schema_type in available_schemas[:3]:  # Show top 3
+                        score = schema_validator._calculate_structure_similarity(
+                            data, schema_type
+                        )
+                        click.echo(f"   - {schema_type}: {score}% similarity")
 
     except Exception as e:
         symbolic_logger.log_error("validation_error", e)

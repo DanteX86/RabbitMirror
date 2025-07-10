@@ -1,0 +1,6 @@
+{
+  "api_key": "test-api-key-123",
+  "default_theme": "dark",
+  "max_retries": "5",
+  "test_key": "\"test_value\""
+}

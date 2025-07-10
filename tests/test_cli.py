@@ -1,3 +1,6 @@
+import os
+from pathlib import Path
+
 from click.testing import CliRunner
 
 from rabbitmirror.cli import cli
@@ -117,6 +120,49 @@ class TestCLI:
         assert result.exit_code == 0, result.output
         assert output_file.exists(), "Patterns output file was not created."
         assert "✅ Exported pattern analysis to" in result.output
+
+    def test_generate_report_help(self):
+        """Test generate-report command help."""
+        runner = CliRunner()
+        result = runner.invoke(cli, ["report", "generate-report", "--help"])
+        assert result.exit_code == 0
+        assert "Generate a report using a template" in result.output
+
+    def test_batch_process_recursive(self, sample_history_dir, temp_output_dir):
+        """Test batch-process command with recursive option."""
+        runner = CliRunner()
+        result = runner.invoke(
+            cli,
+            [
+                "process",
+                "batch-process",
+                str(sample_history_dir),
+                "--output-dir",
+                str(temp_output_dir),
+                "--format",
+                "json",
+                "--recursive",
+            ],
+        )
+
+        assert result.exit_code == 0, result.output
+        assert "✅ Successfully processed" in result.output
+
+    def test_invalid_file_path_handling(self):
+        """Test that invalid file paths are handled gracefully."""
+        runner = CliRunner()
+        result = runner.invoke(cli, ["process", "parse", "nonexistent_file.html"])
+        assert result.exit_code != 0
+        assert "Error" in result.output or "No such file or directory" in result.output
+
+    def test_invalid_directory_path_handling(self):
+        """Test that invalid directory paths are handled gracefully."""
+        runner = CliRunner()
+        result = runner.invoke(
+            cli, ["process", "batch-process", "nonexistent_directory"]
+        )
+        assert result.exit_code != 0
+        assert "Error" in result.output or "No such directory" in result.output
 
     def test_simulate_command_with_sample_file(
         self, sample_history_file, temp_output_dir
@@ -288,23 +334,70 @@ class TestCLI:
             or "not yet implemented" in result_validate.output
         )
 
-    def test_config_get_command(self):
-        """Test config get command."""
+    def test_config_set_and_get_commands(self, tmp_path):
+        """Test config set and get commands."""
         runner = CliRunner()
-        result = runner.invoke(cli, ["config", "get", "test_key"])
 
-        # Config management is not implemented yet, so just test it doesn't crash
-        assert result.exit_code == 0
-        assert "not yet implemented" in result.output
+        # Change to temp directory to isolate config file
+        original_cwd = Path.cwd()
+        try:
+            os.chdir(tmp_path)
 
-    def test_config_list_command(self):
+            # Set a configuration value
+            result_set = runner.invoke(cli, ["config", "set", "test_key", "test_value"])
+            assert result_set.exit_code == 0
+            assert "Set test_key = test_value in local config" in result_set.output
+
+            # Get the configuration value
+            result_get = runner.invoke(cli, ["config", "get", "test_key"])
+            assert result_get.exit_code == 0
+            assert "test_key = test_value" in result_get.output
+
+        finally:
+            os.chdir(original_cwd)
+
+    def test_config_list_command(self, tmp_path):
         """Test config list command."""
         runner = CliRunner()
-        result = runner.invoke(cli, ["config", "list"])
 
-        # Config management is not implemented yet
-        assert result.exit_code == 0
-        assert "not yet implemented" in result.output
+        original_cwd = Path.cwd()
+        try:
+            os.chdir(tmp_path)
+
+            # Set multiple configuration values
+            runner.invoke(cli, ["config", "set", "key1", "value1"])
+            runner.invoke(cli, ["config", "set", "key2", "value2"])
+
+            # List configurations
+            result_list = runner.invoke(cli, ["config", "list"])
+            assert result_list.exit_code == 0
+            assert "key1" in result_list.output
+            assert "value1" in result_list.output
+            assert "key2" in result_list.output
+            assert "value2" in result_list.output
+
+            # Test JSON format
+            result_json = runner.invoke(cli, ["config", "list", "--format", "json"])
+            assert result_json.exit_code == 0
+            assert '"key1": "value1"' in result_json.output
+
+        finally:
+            os.chdir(original_cwd)
+
+    def test_config_get_nonexistent_key(self, tmp_path):
+        """Test getting a nonexistent configuration key."""
+        runner = CliRunner()
+
+        original_cwd = Path.cwd()
+        try:
+            os.chdir(tmp_path)
+
+            result = runner.invoke(cli, ["config", "get", "nonexistent_key"])
+            assert result.exit_code == 0
+            assert "Key 'nonexistent_key' not found" in result.output
+
+        finally:
+            os.chdir(original_cwd)
 
     def test_completion_command(self):
         """Test shell completion command."""
@@ -321,3 +414,56 @@ class TestCLI:
         result = runner.invoke(cli, ["report", "generate-report", "--help"])
         assert result.exit_code == 0
         assert "Generate a report using a template" in result.output
+
+    def test_export_dashboard_help(self):
+        """Test export-dashboard command help."""
+        runner = CliRunner()
+        result = runner.invoke(cli, ["report", "export-dashboard", "--help"])
+        assert result.exit_code == 0
+        assert "Export data as an interactive dashboard" in result.output
+
+    def test_export_dashboard_with_sample_data(
+        self, sample_history_file, temp_output_dir
+    ):
+        """Test export-dashboard command with sample data."""
+        runner = CliRunner()
+
+        # First parse the history file to create JSON data
+        json_file = temp_output_dir / "parsed_for_dashboard.json"
+        result_parse = runner.invoke(
+            cli,
+            [
+                "process",
+                "parse",
+                str(sample_history_file),
+                "--output",
+                str(json_file),
+                "--format",
+                "json",
+            ],
+        )
+        assert result_parse.exit_code == 0
+
+        # Then export dashboard
+        dashboard_dir = temp_output_dir / "test_dashboard"
+        result_dashboard = runner.invoke(
+            cli,
+            [
+                "report",
+                "export-dashboard",
+                str(json_file),
+                "--output",
+                str(dashboard_dir),
+                "--theme",
+                "light",
+                "--interactive",
+            ],
+        )
+
+        assert result_dashboard.exit_code == 0, result_dashboard.output
+        assert "Dashboard Generation Complete" in result_dashboard.output
+
+        # Check that dashboard files were created
+        assert (dashboard_dir / "history_dashboard.html").exists()
+        assert (dashboard_dir / "analytics_dashboard.html").exists()
+        assert (dashboard_dir / "index.html").exists()

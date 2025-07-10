@@ -1,0 +1,21 @@
+
+        :root {
+            --bg-color: #FFFFFF;
+            --paper-color: #F8F9FA;
+            --text-color: #333333;
+            --primary-color: #2980B9;
+            --secondary-color: #C0392B;
+            --accent-color: #D68910;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }

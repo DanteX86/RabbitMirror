@@ -1,0 +1,42 @@
+# Include the README and license files
+include README.md
+include LICENSE
+include requirements.txt
+
+# Include configuration files
+include pytest.ini
+include .gitignore
+include Makefile
+
+# Include any template files
+recursive-include rabbitmirror/templates *.html *.md *.css *.js
+
+# Include test data and fixtures
+recursive-include tests *.py *.json *.html *.yaml
+
+# Include data directories but not their contents
+graft data/.gitkeep
+graft exports/.gitkeep
+graft logs/.gitkeep
+graft reports/.gitkeep
+
+# Exclude development and cache files
+global-exclude __pycache__
+global-exclude *.py[cod]
+global-exclude *$py.class
+global-exclude .coverage
+global-exclude .pytest_cache
+global-exclude .mypy_cache
+global-exclude .DS_Store
+
+# Exclude virtual environment and IDE files
+prune venv
+prune .venv
+prune .idea
+prune .vscode
+prune .git
+
+# Exclude build artifacts
+prune build
+prune dist
+prune *.egg-info

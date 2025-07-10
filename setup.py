@@ -26,7 +26,7 @@ setup(
     description="Advanced YouTube Watch History Analysis Tool",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/rabbitmirror",
+    url="https://github.com/romulusaugustus/RabbitMirror",
     packages=find_packages(),
     classifiers=[
         "Development Status :: 5 - Production/Stable",
@@ -74,8 +74,8 @@ setup(
     },
     keywords="youtube, data-analysis, privacy, watch-history, clustering, profiling",
     project_urls={
-        "Bug Reports": "https://github.com/yourusername/rabbitmirror/issues",
-        "Source": "https://github.com/yourusername/rabbitmirror",
-        "Documentation": "https://rabbitmirror.readthedocs.io/",
+        "Bug Reports": "https://github.com/romulusaugustus/RabbitMirror/issues",
+        "Source": "https://github.com/romulusaugustus/RabbitMirror",
+        "Documentation": "https://romulusaugustus.github.io/RabbitMirror/",
     },
 )
