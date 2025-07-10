@@ -1,9 +1,11 @@
-import qrcode
-from typing import Optional
 from pathlib import Path
+from typing import Optional
+
+import qrcode
+
 
 class QRGenerator:
-    def __init__(self, output_dir: str = 'qr_codes'):
+    def __init__(self, output_dir: str = "qr_codes"):
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -19,11 +21,11 @@ class QRGenerator:
         qr.make(fit=True)
 
         image = qr.make_image(fill_color="black", back_color="white")
-        
+
         if filename is None:
-            filename = f'qr_{hash(data)}.png'
-        
+            filename = f"qr_{hash(data)}.png"
+
         output_path = self.output_dir / filename
         image.save(output_path)
-        
+
         return str(output_path)
