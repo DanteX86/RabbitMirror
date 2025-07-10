@@ -109,12 +109,18 @@ class ExportFormatter:
         """Export data as Excel file."""
         output_path = self.output_dir / f"{filename}.xlsx"
         
-        # Similar conversion as CSV
-        if isinstance(data, dict) and all(isinstance(v, list) for v in data.values()):
+        # Convert the data to a format suitable for Excel (same logic as CSV)
+        if isinstance(data, dict) and 'entries' in data and isinstance(data['entries'], list):
+            # If data has an 'entries' list, use that directly
+            df = pd.DataFrame(data['entries'])
+        elif isinstance(data, dict) and all(isinstance(v, list) for v in data.values()):
+            # If data is a dict of lists, convert to DataFrame directly
             df = pd.DataFrame(data)
         elif isinstance(data, list):
+            # If data is a list of dicts, convert to DataFrame
             df = pd.DataFrame(data)
         else:
+            # For other structures, flatten the data first
             flat_data = self._flatten_dict(data)
             df = pd.DataFrame([flat_data])
 
