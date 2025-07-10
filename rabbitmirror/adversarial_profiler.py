@@ -638,7 +638,7 @@ class AdversarialProfiler:
     ) -> List[Dict[str, Any]]:
         """Detect repeated viewing patterns of similar content."""
         loops = []
-        for i in range(len(similarity_matrix)):
+        for i, _ in enumerate(similarity_matrix):
             similar_indices = np.where(
                 similarity_matrix[i] > self.similarity_threshold
             )[0]
@@ -2064,7 +2064,7 @@ class AdversarialProfiler:
         current_language = None
         switch_count = 0
 
-        for i in range(len(entries)):
+        for i, _ in enumerate(entries):
             detected_language = self._detect_language(entries[i]["title"])
 
             if current_language and detected_language != current_language:
@@ -2142,9 +2142,9 @@ class AdversarialProfiler:
 
         if self._has_numeric_progression(titles):
             return "sequential_consumption"
-        elif self._has_similar_structure(titles):
+        if self._has_similar_structure(titles):
             return "structural_pattern"
-        elif self._has_temporal_regularity(chain):
+        if self._has_temporal_regularity(chain):
             return "temporal_pattern"
         return "content_similarity"
 
@@ -2199,7 +2199,7 @@ class AdversarialProfiler:
         text = text.lower()
         if any(word in text for word in ["the", "and", "or", "in"]):
             return "en"
-        elif any(word in text for word in ["el", "la", "los", "las"]):
+        if any(word in text for word in ["el", "la", "los", "las"]):
             return "es"
         return "unknown"
 
