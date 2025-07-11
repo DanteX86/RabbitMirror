@@ -12,22 +12,20 @@ import yaml
 
 from .adversarial_profiler import AdversarialProfiler
 from .cluster_engine import ClusterEngine
+from .config_manager import ConfigManager
+from .dashboard_generator import DashboardGenerator
 from .export_formatter import ExportFormatter
 from .parser import HistoryParser
 from .profile_simulator import ProfileSimulator
 from .qr_generator import QRGenerator
 from .report_generator import ReportGenerator
+from .schema_validator import SchemaValidator
 from .suppression_index import SuppressionIndex
 from .symbolic_logger import SymbolicLogger
+from .trend_analyzer import TrendAnalyzer
 
 # Enable shell completion
 click_completion.init()
-
-# from .profile_comparator import ProfileComparator
-# from .trend_analyzer import TrendAnalyzer
-from .config_manager import ConfigManager
-from .dashboard_generator import DashboardGenerator
-from .schema_validator import SchemaValidator
 
 # Initialize logger
 symbolic_logger = SymbolicLogger()
@@ -49,7 +47,6 @@ def cli():
 
     Analyze and understand your YouTube watch history patterns.
     """
-    pass
 
 
 # Data Processing Commands Group
@@ -88,11 +85,14 @@ def config_group():
 @click.option(
     "--format",
     "-f",
+    "output_format",
     type=click.Choice(["json", "csv", "yaml", "excel"]),
     default="json",
 )
 @click.option("--verbose", "-v", is_flag=True, help="Enable verbose output")
-def parse(history_file: str, output: Optional[str], format: str, verbose: bool = False):
+def parse(
+    history_file: str, output: Optional[str], output_format: str, verbose: bool = False
+):
     """Parse a YouTube watch history file."""
     try:
         parser = HistoryParser(history_file)
@@ -102,7 +102,7 @@ def parse(history_file: str, output: Optional[str], format: str, verbose: bool =
             output_path = Path(output)
             exporter = ExportFormatter(output_dir=output_path.parent)
             output_file = exporter.export_data(
-                {"entries": entries}, format, output_path.stem
+                {"entries": entries}, output_format, output_path.stem
             )
             click.echo(f"✅ Exported {len(entries)} entries to {output_file}")
         else:
@@ -121,6 +121,7 @@ def parse(history_file: str, output: Optional[str], format: str, verbose: bool =
 @click.option(
     "--format",
     "-f",
+    "output_format",
     type=click.Choice(["json", "csv", "yaml", "excel"]),
     default="json",
 )
@@ -132,7 +133,7 @@ def cluster(
     eps: float,
     min_samples: int,
     output: Optional[str],
-    format: str,
+    output_format: str,
     visualization: bool = False,
 ):
     """Cluster videos in watch history."""
@@ -146,7 +147,9 @@ def cluster(
         if output:
             output_path = Path(output)
             exporter = ExportFormatter(output_dir=output_path.parent)
-            output_file = exporter.export_data(clusters, format, output_path.stem)
+            output_file = exporter.export_data(
+                clusters, output_format, output_path.stem
+            )
             click.echo(f"✅ Exported cluster analysis to {output_file}")
         else:
             click.echo(clusters)
@@ -165,6 +168,7 @@ def cluster(
 @click.option(
     "--format",
     "-f",
+    "output_format",
     type=click.Choice(["json", "csv", "yaml", "excel"]),
     default="json",
 )
@@ -178,7 +182,7 @@ def analyze_suppression(
     history_file: str,
     period: int,
     output: Optional[str],
-    format: str,
+    output_format: str,
     threshold: float = 0.5,
     category_filter: tuple = (),
 ):
@@ -193,7 +197,7 @@ def analyze_suppression(
         if output:
             output_path = Path(output)
             exporter = ExportFormatter(output_dir=output_path.parent)
-            output_file = exporter.export_data(results, format, output_path.stem)
+            output_file = exporter.export_data(results, output_format, output_path.stem)
             click.echo(f"✅ Exported suppression analysis to {output_file}")
         else:
             click.echo(results)
@@ -212,6 +216,7 @@ def analyze_suppression(
 @click.option(
     "--format",
     "-f",
+    "output_format",
     type=click.Choice(["json", "csv", "yaml", "excel"]),
     default="json",
 )
@@ -229,7 +234,7 @@ def detect_patterns(
     history_file: str,
     threshold: float,
     output: Optional[str],
-    format: str,
+    output_format: str,
     pattern_types: tuple = (),
     min_confidence: float = 0.5,
 ):
@@ -244,7 +249,9 @@ def detect_patterns(
         if output:
             output_path = Path(output)
             exporter = ExportFormatter(output_dir=output_path.parent)
-            output_file = exporter.export_data(patterns, format, output_path.stem)
+            output_file = exporter.export_data(
+                patterns, output_format, output_path.stem
+            )
             click.echo(f"✅ Exported pattern analysis to {output_file}")
         else:
             click.echo(patterns)
@@ -264,6 +271,7 @@ def detect_patterns(
 @click.option(
     "--format",
     "-f",
+    "output_format",
     type=click.Choice(["json", "csv", "yaml", "excel"]),
     default="json",
 )
@@ -281,7 +289,7 @@ def simulate(
     duration: int,
     seed: Optional[int],
     output: Optional[str],
-    format: str,
+    output_format: str,
     profile_type: str = "regular",
     intensity: float = 1.0,
 ):
@@ -297,7 +305,9 @@ def simulate(
             output_path = Path(output)
             exporter = ExportFormatter(output_dir=output_path.parent)
             output_file = exporter.export_data(
-                {"simulated_entries": simulated_profile}, format, output_path.stem
+                {"simulated_entries": simulated_profile},
+                output_format,
+                output_path.stem,
             )
             click.echo(f"✅ Exported simulated profile to {output_file}")
         else:
@@ -322,8 +332,7 @@ def generate_report(data_file: str, template_file: str, output_file: str):
     try:
         # Load data from file
         exporter = ExportFormatter()
-        with open(data_file, "r", encoding="utf-8"):
-            data = exporter._load_data(data_file)
+        data = exporter._load_data(data_file)
 
         # Generate report
         generator = ReportGenerator()
@@ -342,12 +351,13 @@ def generate_report(data_file: str, template_file: str, output_file: str):
 @click.option(
     "--format",
     "-f",
+    "output_format",
     type=click.Choice(["json", "csv", "yaml", "excel"]),
     default="json",
 )
 @click.option("--recursive", "-r", is_flag=True, help="Process directories recursively")
 def batch_process(
-    input_dir: str, output_dir: Optional[str], format: str, recursive: bool
+    input_dir: str, output_dir: Optional[str], output_format: str, recursive: bool
 ):
     """Process multiple history files in a directory."""
     try:
@@ -373,13 +383,17 @@ def batch_process(
 
                     # Generate output filename
                     relative_path = file_path.relative_to(input_path)
-                    output_file = output_path / relative_path.with_suffix(f".{format}")
+                    output_file = output_path / relative_path.with_suffix(
+                        f".{output_format}"
+                    )
                     output_file.parent.mkdir(parents=True, exist_ok=True)
 
                     # Export data
                     exporter = ExportFormatter()
                     exporter.export_data(
-                        {"entries": entries}, format, str(output_file.with_suffix(""))
+                        {"entries": entries},
+                        output_format,
+                        str(output_file.with_suffix("")),
                     )
                     total_processed += 1
 
@@ -402,10 +416,15 @@ def batch_process(
     # @analyze_group.command(name='compare-profiles', aliases=['cp', 'compare'])
     # @click.argument('profile1', type=click.Path(exists=True))
     # @click.argument('profile2', type=click.Path(exists=True))
-    # @click.option('--metrics', '-m', multiple=True, help='Specific metrics to compare')
-    # @click.option('--output', '-o', type=click.Path(), help='Output file for comparison')
-    # @click.option('--format', '-f', type=click.Choice(['json', 'csv', 'yaml', 'excel']), default='json')
-    # def compare_profiles(profile1: str, profile2: str, metrics: List[str], output: Optional[str], format: str):
+    # @click.option('--metrics', '-m', multiple=True,
+    #               help='Specific metrics to compare')
+    # @click.option('--output', '-o', type=click.Path(),
+    #               help='Output file for comparison')
+    # @click.option('--format', '-f',
+    #               type=click.Choice(['json', 'csv', 'yaml', 'excel']),
+    #               default='json')
+    # def compare_profiles(profile1: str, profile2: str, metrics: List[str],
+    #                      output: Optional[str], format: str):
     #     """Compare two watch history profiles."""
     #     try:
     #         comparator = ProfileComparator()
@@ -455,70 +474,112 @@ def batch_process(
         symbolic_logger.log_error("profile_comparison_error", e)
         click.echo(f"❌ Error comparing profiles: {str(e)}", err=True)
 
-        # @analyze_group.command(name='trend-analysis', aliases=['ta', 'trends'])
-        # @click.argument('history_file', type=click.Path(exists=True))
-        # @click.option('--period', type=click.Choice(['daily', 'weekly', 'monthly']), default='daily')
-        # @click.option('--metrics', '-m', multiple=True, help='Metrics to analyze')
-        # @click.option('--output', '-o', type=click.Path(), help='Output file for trends')
-        # @click.option('--format', '-f', type=click.Choice(['json', 'csv', 'yaml', 'excel']), default='json')
-        # @click.option('--normalize', '-n', is_flag=True, help='Normalize trend values')
-        # def trend_analysis(history_file: str, period: str, metrics: List[str], output: Optional[str], format: str, normalize: bool):
-        #     """Analyze trends in watch history."""
-        #     try:
-        #         # Parse history file
-        #         parser = HistoryParser(history_file)
-        #         entries = parser.parse()
-        #
-        #         # Calculate trends
-        #         analyzer = TrendAnalyzer(
-        #             period_type=period,
-        #             normalize=normalize
-        #         )
-        #         trends = analyzer.analyze_trends(entries, metrics if metrics else None)
 
-        # Review trends
+@analyze_group.command(name="trend-analysis")
+@click.argument("history_file", type=click.Path(exists=True))
+@click.option(
+    "--period", type=click.Choice(["daily", "weekly", "monthly"]), default="daily"
+)
+@click.option("--metrics", "-m", multiple=True, help="Metrics to analyze")
+@click.option("--output", "-o", type=click.Path(), help="Output file for trends")
+@click.option(
+    "--format",
+    "-f",
+    "output_format",
+    type=click.Choice(["json", "csv", "yaml", "excel"]),
+    default="json",
+)
+@click.option("--normalize", "-n", is_flag=True, help="Normalize trend values")
+def trend_analysis(
+    history_file: str,
+    period: str,
+    metrics: tuple,
+    output: Optional[str],
+    output_format: str,
+    normalize: bool,
+):
+    """Analyze trends in watch history."""
+    try:
+        # Parse history file
+        parser = HistoryParser(history_file)
+        entries = parser.parse()
+
+        # Calculate trends
+        analyzer = TrendAnalyzer(period_type=period, normalize=normalize)
+        trends = analyzer.analyze_trends(entries, list(metrics) if metrics else None)
+
         # Print summary
-        # click.echo(f"\nTrend Analysis Results:")
-        # click.echo(f"Period: {period}")
-        # click.echo(f"Total timeframes analyzed: {len(trends['timeframes'])}")
+        click.echo("\n📈 Trend Analysis Results:")
+        click.echo(f"Period: {period}")
+        click.echo(f"Total timeframes analyzed: {len(trends['timeframes'])}")
+        click.echo(
+            f"Date range: {trends['date_range']['start']} to "
+            f"{trends['date_range']['end']}"
+        )
 
         # Print metric trends
-        # click.echo("\nMetric Trends:")
-        # for metric, values in trends["metrics"].items():
-        # click.echo(f"\n{metric}:")
-        # Print the most recent N values
-        # recent_values = list(zip(trends["timeframes"][-5:], values[-5:]))
-        # for timeframe, value in recent_values:
-        # click.echo(f"  {timeframe}: {value:.2f}")
+        click.echo("\n📊 Metric Trends:")
+        for metric, data in trends["metrics"].items():
+            direction_emoji = {
+                "increasing": "↗️",
+                "decreasing": "↘️",
+                "stable": "➡️",
+            }.get(data["trend_direction"], "➡️")
+
+            click.echo(f"\n{direction_emoji} {metric}:")
+            click.echo(f"  Direction: {data['trend_direction']}")
+            click.echo(f"  Strength: {data['trend_strength']:.2f}")
+
+            # Show recent values
+            if len(data["values"]) > 0:
+                recent_count = min(5, len(data["values"]))
+                recent_values = data["values"][-recent_count:]
+                recent_timeframes = trends["timeframes"][-recent_count:]
+
+                click.echo("  Recent values:")
+                for timeframe, value in zip(recent_timeframes, recent_values):
+                    click.echo(f"    {timeframe}: {value:.2f}")
 
         # Print significant changes
-        # if trends.get("significant_changes"):
-        # click.echo("\nSignificant Changes:")
-        # for change in trends["significant_changes"]:
-        # click.echo(f"- {change['metric']}: {change['description']}")
-        # click.echo(
-        # f"  From {change['from_value']:.2f} to {change['to_value']:.2f}"
-        # )
-        # click.echo(f"  Period: {change['timeframe']}")
+        if trends.get("significant_changes"):
+            click.echo("\n⚠️  Significant Changes:")
+            for change in trends["significant_changes"]:
+                click.echo(f"- {change['metric']}: {change['description']}")
+                click.echo(
+                    f"  From {change['from_value']:.2f} to {change['to_value']:.2f}"
+                )
+                click.echo(f"  Period: {change['timeframe']}")
+        else:
+            click.echo("\n✅ No significant changes detected")
 
-        # Export data if output specified (commented out due to missing implementation)
-        # if output:
-        #     exporter = ExportFormatter()
-        #     output_file = exporter.export_data(
-        #         {
-        #             "trends": trends,
-        #             "metadata": {
-        #                 "period": period,
-        #                 "metrics": list(trends["metrics"].keys()),
-        #                 "normalized": normalize,
-        #                 "timestamp": datetime.now().isoformat(),
-        #             },
-        #         },
-        #         format,
-        #         Path(output).stem if output else "trend_analysis",
-        #     )
-        #     click.echo(f"\n✅ Exported trend analysis to {output_file}")
-        click.echo("Trend analysis not yet implemented")
+        # Print summary statistics
+        summary = trends["summary"]
+        if summary["trending_up"]:
+            click.echo(f"\n↗️ Trending Up: {', '.join(summary['trending_up'])}")
+        if summary["trending_down"]:
+            click.echo(f"↘️ Trending Down: {', '.join(summary['trending_down'])}")
+        if summary["stable_metrics"]:
+            click.echo(f"➡️ Stable: {', '.join(summary['stable_metrics'])}")
+
+        # Export data if output specified
+        if output:
+            from datetime import datetime
+
+            exporter = ExportFormatter()
+            output_file = exporter.export_data(
+                {
+                    "trends": trends,
+                    "metadata": {
+                        "period": period,
+                        "metrics": list(trends["metrics"].keys()),
+                        "normalized": normalize,
+                        "timestamp": datetime.now().isoformat(),
+                    },
+                },
+                output_format,
+                Path(output).stem if output else "trend_analysis",
+            )
+            click.echo(f"\n✅ Exported trend analysis to {output_file}")
 
     except Exception as e:
         symbolic_logger.log_error("trend_analysis_error", e)
@@ -551,8 +612,7 @@ def export_dashboard(
     try:
         # Load data
         exporter = ExportFormatter()
-        with open(data_file, "r", encoding="utf-8") as f:
-            data = exporter._load_data(data_file)
+        data = exporter._load_data(data_file)
 
         # Determine output path
         output_path = Path(output) if output else Path("dashboard_output")
@@ -570,7 +630,7 @@ def export_dashboard(
         dashboard_files = dashboard.generate_dashboard(data, output_path)
 
         # Print summary (commented out due to missing implementation)
-        click.echo(f"\nDashboard Generation Complete:")
+        click.echo("\nDashboard Generation Complete:")
         click.echo(f"Template: {template}")
         click.echo(f"Interactive: {'Yes' if interactive else 'No'}")
         click.echo(f"Theme: {theme}")
@@ -584,8 +644,8 @@ def export_dashboard(
         if interactive:
             click.echo("\nTo view the dashboard:")
             click.echo(f"1. Navigate to: {output_path}")
-            click.echo(f"2. Start a local server: python -m http.server")
-            click.echo(f"3. Open in browser: http://localhost:8000")
+            click.echo("2. Start a local server: python -m http.server")
+            click.echo("3. Open in browser: http://localhost:8000")
         else:
             click.echo(f"\nDashboard exported to: {output_path}")
 
@@ -640,13 +700,17 @@ def get_config(key: str, is_global: bool):
     "--global/--local", "is_global", default=False, help="List global or local config"
 )
 @click.option(
-    "--format", "-f", type=click.Choice(["text", "json", "yaml"]), default="text"
+    "--format",
+    "-f",
+    "output_format",
+    type=click.Choice(["text", "json", "yaml"]),
+    default="text",
 )
-def list_config(is_global: bool, format: str):
+def list_config(is_global: bool, output_format: str):
     """List all configuration values."""
     try:
         config = ConfigManager(use_global=is_global)
-        config_list = config.list(as_json=(format == "json"))
+        config_list = config.list(as_json=output_format == "json")
         click.echo(config_list)
     except Exception as e:
         symbolic_logger.log_error("config_list_error", e)
@@ -658,13 +722,19 @@ def list_config(is_global: bool, format: str):
 @click.option(
     "--schema", "-s", type=click.Path(exists=True), help="Schema file for validation"
 )
-@click.option("--format", "-f", type=click.Choice(["json", "yaml"]), default="json")
-def validate_file(file: str, schema: Optional[str], format: str):
+@click.option(
+    "--format",
+    "-f",
+    "output_format",
+    type=click.Choice(["json", "yaml"]),
+    default="json",
+)
+def validate_file(file: str, schema: Optional[str], output_format: str):
     """Validate a data file against a schema."""
     try:
         # Load data file
         with open(file, "r", encoding="utf-8") as f:
-            if format == "json":
+            if output_format == "json":
                 data = json.load(f)
             else:
                 data = yaml.safe_load(f)
@@ -672,7 +742,9 @@ def validate_file(file: str, schema: Optional[str], format: str):
         # Load custom schema if provided
         if schema:
             with open(schema, "r", encoding="utf-8") as f:
-                custom_schema = json.load(f) if format == "json" else yaml.safe_load(f)
+                custom_schema = (
+                    json.load(f) if output_format == "json" else yaml.safe_load(f)
+                )
 
             # Validate against custom schema
             try:
@@ -680,9 +752,12 @@ def validate_file(file: str, schema: Optional[str], format: str):
                 click.echo(f"✅ {file} is valid against custom schema.")
             except jsonschema.exceptions.ValidationError as ve:
                 click.echo(f"❌ Validation failed: {ve.message}")
-                click.echo(
-                    f"   Path: {' -> '.join(str(p) for p in ve.absolute_path) if ve.absolute_path else 'root'}"
+                path_str = (
+                    " -> ".join(str(p) for p in ve.absolute_path)
+                    if ve.absolute_path
+                    else "root"
                 )
+                click.echo(f"   Path: {path_str}")
                 return
         else:
             # Validate against default schemas with auto-detection
@@ -699,7 +774,8 @@ def validate_file(file: str, schema: Optional[str], format: str):
 
                 if validation_result["valid"]:
                     click.echo(
-                        f"✅ {file} is valid against {detected_schema} schema (auto-detected)."
+                        f"✅ {file} is valid against {detected_schema} schema "
+                        f"(auto-detected)."
                     )
                 else:
                     click.echo(
@@ -707,16 +783,17 @@ def validate_file(file: str, schema: Optional[str], format: str):
                     )
                     click.echo(f"   Error: {validation_result['error']}")
                     if validation_result.get("path"):
-                        click.echo(
-                            f"   Path: {' -> '.join(str(p) for p in validation_result['path'])}"
+                        path_str = " -> ".join(
+                            str(p) for p in validation_result["path"]
                         )
+                        click.echo(f"   Path: {path_str}")
             else:
                 # Manual schema checking if auto-detection fails
                 available_schemas = schema_validator.get_available_schemas()
                 validation_success = False
 
                 click.echo(
-                    f"⚠️  Could not auto-detect schema. Trying all available schemas..."
+                    "⚠️  Could not auto-detect schema. Trying all available schemas..."
                 )
 
                 for schema_type in available_schemas:

@@ -30,7 +30,8 @@ class SchemaValidator:
                             "properties": {
                                 "timestamp": {
                                     "type": "string",
-                                    "description": "ISO timestamp when video was watched",
+                                    "description": "ISO timestamp when video "
+                                    "was watched",
                                 },
                                 "title": {
                                     "type": "string",
@@ -89,7 +90,8 @@ class SchemaValidator:
                             "cluster_labels": {
                                 "type": "array",
                                 "items": {"type": "integer", "minimum": -1},
-                                "description": "Cluster labels for each data point (-1 for noise)",
+                                "description": "Cluster labels for each data "
+                                "point (-1 for noise)",
                             },
                             "features": {
                                 "type": "array",
@@ -137,7 +139,8 @@ class SchemaValidator:
                             "suppression_scores": {
                                 "type": "array",
                                 "items": {"type": "number", "minimum": 0, "maximum": 1},
-                                "description": "Suppression scores for content categories",
+                                "description": "Suppression scores for content "
+                                "categories",
                             },
                             "baseline_period_days": {
                                 "type": "integer",
@@ -301,7 +304,7 @@ class SchemaValidator:
         """Attempt to automatically detect the most appropriate schema for the data."""
         schema_scores = {}
 
-        for schema_type in self.schemas.keys():
+        for schema_type in self.schemas:
             try:
                 self.validate(data, schema_type)
                 schema_scores[schema_type] = 100  # Perfect match
@@ -355,16 +358,16 @@ class SchemaValidator:
         """Check if a value matches the expected JSON schema type."""
         if expected_type == "string":
             return isinstance(value, str)
-        elif expected_type == "number":
+        if expected_type == "number":
             return isinstance(value, (int, float))
-        elif expected_type == "integer":
+        if expected_type == "integer":
             return isinstance(value, int)
-        elif expected_type == "boolean":
+        if expected_type == "boolean":
             return isinstance(value, bool)
-        elif expected_type == "array":
+        if expected_type == "array":
             return isinstance(value, list)
-        elif expected_type == "object":
+        if expected_type == "object":
             return isinstance(value, dict)
-        elif expected_type == "null":
+        if expected_type == "null":
             return value is None
         return False

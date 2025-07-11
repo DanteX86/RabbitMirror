@@ -63,7 +63,7 @@ demo: ## Run a demo of the CLI tool
 	@echo "====================="
 	python -m rabbitmirror.cli --help
 
-all-checks: format-check lint test security ## Run all quality checks
+all-checks: format-check lint type-check test security ## Run all quality checks
 
 ci: all-checks ## Run CI pipeline locally
 

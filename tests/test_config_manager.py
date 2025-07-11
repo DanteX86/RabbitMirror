@@ -1,5 +1,3 @@
-import pytest
-
 from rabbitmirror.config_manager import ConfigManager
 
 

@@ -1,6 +1,3 @@
-import os
-from pathlib import Path
-
 import pytest
 
 from rabbitmirror.dashboard_generator import DashboardGenerator

@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 
-import json
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
-import plotly.express as px
 import plotly.graph_objects as go
 from jinja2 import Template
 from plotly.subplots import make_subplots

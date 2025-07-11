@@ -408,8 +408,8 @@ class TestCLI:
         # Should output some kind of completion script
         assert len(result.output) > 0
 
-    def test_generate_report_help(self):
-        """Test generate-report command help."""
+    def test_generate_report_help_duplicate(self):
+        """Test generate-report command help (duplicate - renamed)."""
         runner = CliRunner()
         result = runner.invoke(cli, ["report", "generate-report", "--help"])
         assert result.exit_code == 0

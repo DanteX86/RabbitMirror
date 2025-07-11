@@ -828,6 +828,16 @@ class AdversarialProfiler:
     ) -> Dict[str, float]:
         """Calculate various metrics for a viewing session."""
         intervals = self._calculate_intervals(session)
+
+        # Handle case where session has only one entry (no intervals)
+        if len(intervals) == 0:
+            return {
+                "duration": 0.0,
+                "mean_interval": 0.0,
+                "std_interval": 0.0,
+                "video_count": len(session),
+            }
+
         return {
             "duration": float(sum(intervals)),
             "mean_interval": float(np.mean(intervals)),
@@ -948,12 +958,12 @@ class AdversarialProfiler:
 
         return {
             "mean_duration": float(np.mean(watch_durations)) if watch_durations else 0,
-            "completion_consistency": float(np.std(completion_rates))
-            if completion_rates
-            else 1,
-            "engagement_variability": float(np.std(engagement_scores))
-            if engagement_scores
-            else 1,
+            "completion_consistency": (
+                float(np.std(completion_rates)) if completion_rates else 1
+            ),
+            "engagement_variability": (
+                float(np.std(engagement_scores)) if engagement_scores else 1
+            ),
         }
 
     def _analyze_interaction_patterns(
@@ -985,15 +995,15 @@ class AdversarialProfiler:
                 hover_durations.append(current["hover_duration"])
 
         return {
-            "click_regularity": float(np.std(click_intervals))
-            if click_intervals
-            else float("inf"),
-            "scroll_variability": float(np.std(scroll_patterns))
-            if scroll_patterns
-            else float("inf"),
-            "hover_consistency": float(np.std(hover_durations))
-            if hover_durations
-            else float("inf"),
+            "click_regularity": (
+                float(np.std(click_intervals)) if click_intervals else float("inf")
+            ),
+            "scroll_variability": (
+                float(np.std(scroll_patterns)) if scroll_patterns else float("inf")
+            ),
+            "hover_consistency": (
+                float(np.std(hover_durations)) if hover_durations else float("inf")
+            ),
         }
 
     def _analyze_navigation_patterns(
@@ -1016,27 +1026,23 @@ class AdversarialProfiler:
 
             # Analyze topic progression
             if "topic" in current and "topic" in previous:
-                topic_sequences.append(
-                    self._calculate_topic_similarity(
-                        current["topic"], previous["topic"]
-                    )
-                )
+                # For simple similarity between topics as strings
+                topic_sim = 1.0 if current["topic"] == previous["topic"] else 0.0
+                topic_sequences.append(topic_sim)
 
             # Analyze exploration depth
             if "depth" in current:
                 depth_scores.append(current["depth"])
 
         return {
-            "category_switch_rate": float(np.mean(category_transitions))
-            if category_transitions
-            else 0,
-            "topic_coherence": float(np.mean(topic_sequences))
-            if topic_sequences
-            else 0,
-            "exploration_depth": float(np.mean(depth_scores)) if depth_scores else 0,
-            "pattern_type": self._identify_navigation_pattern(
-                category_transitions, topic_sequences
+            "category_switch_rate": (
+                float(np.mean(category_transitions)) if category_transitions else 0
             ),
+            "topic_coherence": (
+                float(np.mean(topic_sequences)) if topic_sequences else 0
+            ),
+            "exploration_depth": float(np.mean(depth_scores)) if depth_scores else 0,
+            "pattern_type": self._identify_navigation_pattern(entries)["pattern_type"],
         }
 
     def _analyze_consumption_patterns(
@@ -1072,15 +1078,13 @@ class AdversarialProfiler:
 
         return {
             "hourly_distribution": dict(hourly_counts),
-            "mean_session_length": float(np.mean(session_durations))
-            if session_durations
-            else 0,
-            "interval_consistency": float(np.std(intervals))
-            if intervals
-            else float("inf"),
-            "pattern_type": self._identify_consumption_pattern(
-                hourly_counts, intervals
+            "mean_session_length": (
+                float(np.mean(session_durations)) if session_durations else 0
             ),
+            "interval_consistency": (
+                float(np.std(intervals)) if intervals else float("inf")
+            ),
+            "pattern_type": self._identify_consumption_pattern(entries)["pattern_type"],
         }
 
     def _analyze_response_patterns(
@@ -1089,6 +1093,20 @@ class AdversarialProfiler:
         """Analyze user response patterns to different content types."""
         response_times = defaultdict(list)
         action_sequences = []
+
+        # Analyze response delays from test data
+        all_response_times = []
+
+        for entry in entries:
+            # Check for various delay fields from test data
+            for delay_field in [
+                "click_delay",
+                "engagement_delay",
+                "comment_delay",
+                "share_delay",
+            ]:
+                if delay_field in entry and entry[delay_field] is not None:
+                    all_response_times.append(entry[delay_field])
 
         for i in range(1, len(entries)):
             current = entries[i]
@@ -1105,14 +1123,29 @@ class AdversarialProfiler:
                         - datetime.fromisoformat(previous[f"{action}_timestamp"])
                     ).total_seconds()
                     response_times[action].append(response_time)
+                    all_response_times.append(response_time)
 
             # Analyze action sequences
             if "actions" in current:
                 action_sequences.append(current["actions"])
 
+        # Calculate overall response consistency
+        if all_response_times:
+            avg_response_time = float(np.mean(all_response_times))
+            response_consistency = (
+                float(np.std(all_response_times)) / avg_response_time
+                if avg_response_time > 0
+                else 0.0
+            )
+        else:
+            avg_response_time = 0.0
+            response_consistency = 0.0
+
         return {
+            "avg_response_time": avg_response_time,
             "response_times": {k: float(np.mean(v)) for k, v in response_times.items()},
-            "response_consistency": {
+            "response_consistency": response_consistency,
+            "response_details": {
                 k: float(np.std(v)) for k, v in response_times.items()
             },
             "action_patterns": self._analyze_action_sequences(action_sequences),
@@ -1295,7 +1328,7 @@ class AdversarialProfiler:
         # Initialize aggregators
         time_distributions = self._init_time_distributions()
         sessions = self._split_into_sessions(entries)
-        device_usage = self._init_device_tracking()
+        device_usage = self._init_device_tracking(entries)
         content_timing = defaultdict(list)
         location_data = defaultdict(list)
 
@@ -1478,12 +1511,12 @@ class AdversarialProfiler:
 
         return {
             "avg_duration": float(np.mean(durations)) if durations else 0.0,
-            "avg_videos": float(np.mean(videos_per_session))
-            if videos_per_session
-            else 0.0,
-            "consistency": float(np.mean(consistency_scores))
-            if consistency_scores
-            else 0.0,
+            "avg_videos": (
+                float(np.mean(videos_per_session)) if videos_per_session else 0.0
+            ),
+            "consistency": (
+                float(np.mean(consistency_scores)) if consistency_scores else 0.0
+            ),
         }
 
     def _analyze_binge_patterns(
@@ -1544,11 +1577,11 @@ class AdversarialProfiler:
 
         return {
             "avg_duration": float(np.mean(break_durations)) if break_durations else 0.0,
-            "consistency": float(
-                1.0 - np.std(break_durations) / np.mean(break_durations)
-            )
-            if break_durations and np.mean(break_durations) > 0
-            else 0.0,
+            "consistency": (
+                float(1.0 - np.std(break_durations) / np.mean(break_durations))
+                if break_durations and np.mean(break_durations) > 0
+                else 0.0
+            ),
             "triggers": dict(break_triggers),
             "returns": dict(return_patterns),
         }
@@ -1744,9 +1777,11 @@ class AdversarialProfiler:
                     "popular_content": Counter(
                         holiday_behavior["content_types"]
                     ).most_common(3),
-                    "avg_duration": float(np.mean(holiday_behavior["durations"]))
-                    if holiday_behavior["durations"]
-                    else 0.0,
+                    "avg_duration": (
+                        float(np.mean(holiday_behavior["durations"]))
+                        if holiday_behavior["durations"]
+                        else 0.0
+                    ),
                 },
             }
         )
@@ -1819,11 +1854,14 @@ class AdversarialProfiler:
 
         total = len(points)
         return {
-            "distribution": {
-                range_name: count / total for range_name, count in distribution.items()
-            }
-            if total > 0
-            else {},
+            "distribution": (
+                {
+                    range_name: count / total
+                    for range_name, count in distribution.items()
+                }
+                if total > 0
+                else {}
+            ),
             "avg_point": float(np.mean(points)),
             "std_point": float(np.std(points)),
         }
@@ -1948,12 +1986,12 @@ class AdversarialProfiler:
                     activity_durations[activity].append(duration)
 
         return {
-            "avg_concurrent_activities": float(np.mean(concurrent_activities))
-            if concurrent_activities
-            else 0,
-            "task_switch_frequency": float(np.mean(task_switches))
-            if task_switches
-            else 0,
+            "avg_concurrent_activities": (
+                float(np.mean(concurrent_activities)) if concurrent_activities else 0
+            ),
+            "task_switch_frequency": (
+                float(np.mean(task_switches)) if task_switches else 0
+            ),
             "activity_balance": self._calculate_activity_balance(activity_durations),
             "multitask_intensity": self._calculate_multitask_intensity(
                 concurrent_activities, task_switches
@@ -2325,7 +2363,8 @@ class AdversarialProfiler:
         return float(max(0.1, decay))  # Maintain minimum confidence of 0.1
 
     def _calculate_contextual_weight(self, context_type: str, value: Any) -> float:
-        """Calculate weight for a specific context type with enhanced context analysis."""
+        """Calculate weight for a specific context type with enhanced context
+        analysis."""
         base_weight = self.context_factors.get(context_type, 0.1)
 
         # Temporal context factors
@@ -2985,3 +3024,636 @@ class AdversarialProfiler:
         start = datetime.fromisoformat(min(entry["timestamp"] for entry in entries))
         end = datetime.fromisoformat(max(entry["timestamp"] for entry in entries))
         return float((end - start).total_seconds() / 3600)  # Convert to hours
+
+    def _identify_engagement_anomaly(self, metrics: Dict[str, float]) -> str:
+        """Identify the type of engagement anomaly based on metrics."""
+        duration_cv = (
+            metrics["std_duration"] / metrics["mean_duration"]
+            if metrics["mean_duration"] > 0
+            else 0
+        )
+        interaction_cv = (
+            metrics["std_interactions"] / metrics["mean_interactions"]
+            if metrics["mean_interactions"] > 0
+            else 0
+        )
+
+        if duration_cv < 0.1 and interaction_cv < 0.1:
+            return "highly_regular_engagement"
+        if duration_cv < 0.2:
+            return "regular_duration_pattern"
+        if interaction_cv < 0.2:
+            return "regular_interaction_pattern"
+        if metrics["mean_interactions"] == 0:
+            return "no_interaction_pattern"
+        return "unknown_anomaly"
+
+    def _init_device_tracking(self, entries: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Initialize device tracking for behavioral analysis.
+
+        Args:
+            entries: List of viewing history entries
+
+        Returns:
+            Dictionary with device tracking information
+        """
+        device_info = {}
+        for entry in entries:
+            device_id = entry.get("device_id", "unknown")
+            if device_id not in device_info:
+                device_info[device_id] = {
+                    "first_seen": entry.get("timestamp"),
+                    "last_seen": entry.get("timestamp"),
+                    "view_count": 0,
+                    "channels": set(),
+                    "categories": set(),
+                }
+
+            device_info[device_id]["view_count"] += 1
+            device_info[device_id]["last_seen"] = entry.get("timestamp")
+            if "channel" in entry:
+                device_info[device_id]["channels"].add(entry["channel"])
+            if "category" in entry:
+                device_info[device_id]["categories"].add(entry["category"])
+
+        # Convert sets to lists for JSON serialization
+        for device_id, device_data in device_info.items():
+            device_data["channels"] = list(device_data["channels"])
+            device_data["categories"] = list(device_data["categories"])
+
+        return device_info
+
+    def _identify_trigger_sequences(
+        self, entries: List[Dict[str, Any]]
+    ) -> List[Dict[str, Any]]:
+        """Identify sequences that may trigger specific behavioral responses.
+
+        Args:
+            entries: List of viewing history entries
+
+        Returns:
+            List of identified trigger sequences
+        """
+        trigger_sequences = []
+        trigger_keywords = [
+            "viral",
+            "trending",
+            "breaking",
+            "exclusive",
+            "shocking",
+            "must see",
+        ]
+
+        for i in range(len(entries) - 2):
+            sequence = entries[i : i + 3]
+            titles = [entry.get("title", "").lower() for entry in sequence]
+
+            # Check if sequence contains trigger keywords
+            trigger_count = sum(
+                1
+                for title in titles
+                for keyword in trigger_keywords
+                if keyword in title
+            )
+
+            if trigger_count >= 2:
+                # Calculate time intervals
+                timestamps = [
+                    datetime.fromisoformat(entry["timestamp"]) for entry in sequence
+                ]
+                intervals = [
+                    (timestamps[j + 1] - timestamps[j]).total_seconds()
+                    for j in range(len(timestamps) - 1)
+                ]
+
+                trigger_sequences.append(
+                    {
+                        "start_index": i,
+                        "sequence": sequence,
+                        "trigger_count": trigger_count,
+                        "intervals": intervals,
+                        "confidence": min(1.0, trigger_count / 3.0),
+                    }
+                )
+
+        return trigger_sequences
+
+    def _is_pattern_change(
+        self, before: List[Dict[str, Any]], after: List[Dict[str, Any]]
+    ) -> bool:
+        """Determine if there's a significant pattern change between two periods.
+
+        Args:
+            before: Entries from the earlier period
+            after: Entries from the later period
+
+        Returns:
+            True if significant pattern change detected
+        """
+        if not before or not after:
+            return False
+
+        # Compare channel preferences
+        before_channels = [entry.get("channel", "") for entry in before]
+        after_channels = [entry.get("channel", "") for entry in after]
+
+        before_channel_dist = {}
+        after_channel_dist = {}
+
+        for channel in before_channels:
+            before_channel_dist[channel] = before_channel_dist.get(channel, 0) + 1
+        for channel in after_channels:
+            after_channel_dist[channel] = after_channel_dist.get(channel, 0) + 1
+
+        # Normalize distributions
+        before_total = len(before_channels)
+        after_total = len(after_channels)
+
+        if before_total == 0 or after_total == 0:
+            return False
+
+        for channel in before_channel_dist:
+            before_channel_dist[channel] /= before_total
+        for channel in after_channel_dist:
+            after_channel_dist[channel] /= after_total
+
+        # Calculate KL divergence or similar metric
+        all_channels = set(before_channel_dist.keys()) | set(after_channel_dist.keys())
+        divergence = 0
+
+        for channel in all_channels:
+            p = before_channel_dist.get(channel, 0.001)  # Small epsilon to avoid log(0)
+            q = after_channel_dist.get(channel, 0.001)
+            if p > 0 and q > 0:
+                divergence += p * np.log(p / q)
+
+        return divergence > 0.5  # Threshold for significant change
+
+    def _calculate_topic_similarity(
+        self, entries1: List[Dict[str, Any]], entries2: List[Dict[str, Any]]
+    ) -> float:
+        """Calculate similarity between topics in two sets of entries.
+
+        Args:
+            entries1: First set of entries
+            entries2: Second set of entries
+
+        Returns:
+            Similarity score between 0 and 1
+        """
+        if not entries1 or not entries2:
+            return 0.0
+
+        titles1 = [entry.get("title", "") for entry in entries1]
+        titles2 = [entry.get("title", "") for entry in entries2]
+
+        all_titles = titles1 + titles2
+
+        if not all_titles or all(not title.strip() for title in all_titles):
+            return 0.0
+
+        try:
+            tfidf_matrix = self.vectorizer.fit_transform(all_titles)
+
+            # Split matrices
+            matrix1 = tfidf_matrix[: len(titles1)]
+            matrix2 = tfidf_matrix[len(titles1) :]
+
+            # Calculate average vectors
+            avg_vector1 = np.mean(matrix1.toarray(), axis=0)
+            avg_vector2 = np.mean(matrix2.toarray(), axis=0)
+
+            # Calculate cosine similarity
+            similarity = np.dot(avg_vector1, avg_vector2) / (
+                np.linalg.norm(avg_vector1) * np.linalg.norm(avg_vector2)
+            )
+
+            return float(similarity) if not np.isnan(similarity) else 0.0
+        except (ValueError, ZeroDivisionError):
+            return 0.0
+
+    def _identify_navigation_pattern(
+        self, entries: List[Dict[str, Any]]
+    ) -> Dict[str, Any]:
+        """Identify navigation patterns in viewing behavior.
+
+        Args:
+            entries: List of viewing history entries
+
+        Returns:
+            Dictionary with navigation pattern information
+        """
+        if not entries:
+            return {"pattern_type": "none", "confidence": 0.0}
+
+        # Analyze channel switching patterns
+        channels = [entry.get("channel", "") for entry in entries]
+        channel_switches = sum(
+            1 for i in range(1, len(channels)) if channels[i] != channels[i - 1]
+        )
+
+        switch_rate = channel_switches / len(entries) if entries else 0
+
+        # Analyze viewing duration patterns
+        durations = [
+            entry.get("duration", 0) for entry in entries if "duration" in entry
+        ]
+
+        if durations:
+            avg_duration = np.mean(durations)
+            duration_std = np.std(durations)
+            duration_cv = duration_std / avg_duration if avg_duration > 0 else 0
+        else:
+            duration_cv = 0
+
+        # Determine pattern type
+        if switch_rate > 0.7:
+            pattern_type = "channel_hopping"
+            confidence = min(1.0, switch_rate)
+        elif switch_rate < 0.1 and duration_cv < 0.3:
+            pattern_type = "focused_viewing"
+            confidence = min(1.0, 1.0 - switch_rate)
+        elif duration_cv > 0.8:
+            pattern_type = "erratic_engagement"
+            confidence = min(1.0, duration_cv)
+        else:
+            pattern_type = "mixed_pattern"
+            confidence = 0.5
+
+        return {
+            "pattern_type": pattern_type,
+            "confidence": confidence,
+            "switch_rate": switch_rate,
+            "duration_cv": duration_cv,
+        }
+
+    def _identify_consumption_pattern(
+        self, entries: List[Dict[str, Any]]
+    ) -> Dict[str, Any]:
+        """Identify content consumption patterns.
+
+        Args:
+            entries: List of viewing history entries
+
+        Returns:
+            Dictionary with consumption pattern information
+        """
+        if not entries:
+            return {"pattern_type": "none", "confidence": 0.0}
+
+        # Analyze temporal patterns
+        timestamps = [datetime.fromisoformat(entry["timestamp"]) for entry in entries]
+        hours = [ts.hour for ts in timestamps]
+
+        # Calculate viewing time distribution
+        hour_counts = np.bincount(hours, minlength=24)
+        peak_hours = np.where(hour_counts == np.max(hour_counts))[0]
+
+        # Analyze session lengths
+        session_lengths = []
+        current_session = [timestamps[0]]
+
+        for i in range(1, len(timestamps)):
+            time_diff = (
+                timestamps[i] - timestamps[i - 1]
+            ).total_seconds() / 60  # minutes
+            if time_diff <= 60:  # Same session if within 1 hour
+                current_session.append(timestamps[i])
+            else:
+                if len(current_session) > 1:
+                    session_length = (
+                        current_session[-1] - current_session[0]
+                    ).total_seconds() / 60
+                    session_lengths.append(session_length)
+                current_session = [timestamps[i]]
+
+        if len(current_session) > 1:
+            session_length = (
+                current_session[-1] - current_session[0]
+            ).total_seconds() / 60
+            session_lengths.append(session_length)
+
+        # Determine pattern type
+        if len(session_lengths) == 0:
+            pattern_type = "single_views"
+            confidence = 0.3
+        elif np.mean(session_lengths) > 120:  # 2+ hours
+            pattern_type = "binge_consumption"
+            confidence = min(1.0, np.mean(session_lengths) / 180)
+        elif len(peak_hours) <= 2:
+            pattern_type = "scheduled_viewing"
+            confidence = 0.8
+        else:
+            pattern_type = "distributed_consumption"
+            confidence = 0.6
+
+        return {
+            "pattern_type": pattern_type,
+            "confidence": confidence,
+            "avg_session_length": np.mean(session_lengths) if session_lengths else 0,
+            "peak_hours": peak_hours.tolist(),
+            "session_count": len(session_lengths),
+        }
+
+    def _analyze_action_sequences(
+        self, entries: List[Dict[str, Any]]
+    ) -> List[Dict[str, Any]]:
+        """Analyze sequences of actions for behavioral patterns.
+
+        Args:
+            entries: List of viewing history entries
+
+        Returns:
+            List of identified action sequences
+        """
+        sequences = []
+        if len(entries) < 3:
+            return sequences
+
+        # Define action types based on viewing patterns
+        for i in range(len(entries) - 2):
+            sequence = entries[i : i + 3]
+
+            # Calculate intervals between actions
+            timestamps = [
+                datetime.fromisoformat(entry["timestamp"]) for entry in sequence
+            ]
+            intervals = [
+                (timestamps[j + 1] - timestamps[j]).total_seconds() for j in range(2)
+            ]
+
+            # Analyze action types
+            channels = [entry.get("channel", "") for entry in sequence]
+
+            # Check for rapid sequential actions
+            if all(interval < 30 for interval in intervals):  # Less than 30 seconds
+                action_type = "rapid_sequence"
+                confidence = 0.9
+            elif all(interval < 300 for interval in intervals):  # Less than 5 minutes
+                action_type = "quick_sequence"
+                confidence = 0.7
+            elif len(set(channels)) == 1:  # Same channel
+                action_type = "channel_focused"
+                confidence = 0.6
+            else:
+                action_type = "mixed_sequence"
+                confidence = 0.4
+
+            sequences.append(
+                {
+                    "start_index": i,
+                    "sequence": sequence,
+                    "action_type": action_type,
+                    "confidence": confidence,
+                    "intervals": intervals,
+                    "channels": channels,
+                }
+            )
+
+        return sequences
+
+    def _get_dominant_pattern(self, patterns: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Get the dominant pattern from a list of patterns.
+
+        Args:
+            patterns: List of pattern dictionaries
+
+        Returns:
+            The dominant pattern or empty dict if no patterns
+        """
+        if not patterns:
+            return {}
+
+        # Sort by confidence and frequency
+        pattern_scores = {}
+        for pattern in patterns:
+            pattern_type = pattern.get(
+                "pattern_type", pattern.get("action_type", "unknown")
+            )
+            confidence = pattern.get("confidence", 0.0)
+
+            if pattern_type not in pattern_scores:
+                pattern_scores[pattern_type] = {"count": 0, "total_confidence": 0.0}
+
+            pattern_scores[pattern_type]["count"] += 1
+            pattern_scores[pattern_type]["total_confidence"] += confidence
+
+        # Calculate weighted scores
+        best_pattern = None
+        best_score = 0
+
+        for pattern_type, stats in pattern_scores.items():
+            # Weight by both frequency and confidence
+            score = stats["count"] * (stats["total_confidence"] / stats["count"])
+            if score > best_score:
+                best_score = score
+                best_pattern = pattern_type
+
+        if best_pattern:
+            return {
+                "pattern_type": best_pattern,
+                "confidence": pattern_scores[best_pattern]["total_confidence"]
+                / pattern_scores[best_pattern]["count"],
+                "frequency": pattern_scores[best_pattern]["count"],
+                "score": best_score,
+            }
+
+        return {}
+
+    def _calculate_pattern_consistency(self, patterns: List[Dict[str, Any]]) -> float:
+        """Calculate consistency score for a set of patterns.
+
+        Args:
+            patterns: List of pattern dictionaries
+
+        Returns:
+            Consistency score between 0 and 1
+        """
+        if not patterns:
+            return 0.0
+
+        # Group patterns by type
+        pattern_types = []
+        for pattern in patterns:
+            pattern_type = pattern.get(
+                "pattern_type", pattern.get("action_type", "unknown")
+            )
+            pattern_types.append(pattern_type)
+
+        if not pattern_types:
+            return 0.0
+
+        # Calculate consistency as inverse of entropy
+        type_counts = {}
+        for ptype in pattern_types:
+            type_counts[ptype] = type_counts.get(ptype, 0) + 1
+
+        total_patterns = len(pattern_types)
+        entropy = 0
+
+        for count in type_counts.values():
+            probability = count / total_patterns
+            if probability > 0:
+                entropy -= probability * np.log2(probability)
+
+        # Normalize entropy (max entropy is log2(n) where n is number of unique types)
+        max_entropy = np.log2(len(type_counts)) if len(type_counts) > 1 else 1
+        normalized_entropy = entropy / max_entropy if max_entropy > 0 else 0
+
+        # Consistency is inverse of normalized entropy
+        consistency = 1.0 - normalized_entropy
+
+        return float(consistency)
+
+    def _identify_peak_hours(self, entries: List[Dict[str, Any]]) -> List[int]:
+        """Identify peak viewing hours from entries.
+
+        Args:
+            entries: List of viewing history entries
+
+        Returns:
+            List of peak hours (0-23)
+        """
+        if not entries:
+            return []
+
+        # Extract hours from timestamps
+        hours = []
+        for entry in entries:
+            try:
+                timestamp = datetime.fromisoformat(entry["timestamp"])
+                hours.append(timestamp.hour)
+            except (ValueError, KeyError):
+                continue
+
+        if not hours:
+            return []
+
+        # Count views per hour
+        hour_counts = np.bincount(hours, minlength=24)
+
+        # Find peak hours (above 75th percentile)
+        threshold = np.percentile(hour_counts, 75)
+        peak_hours = [
+            hour
+            for hour, count in enumerate(hour_counts)
+            if count >= threshold and count > 0
+        ]
+
+        return peak_hours
+
+    def _calculate_temporal_consistency(self, entries: List[Dict[str, Any]]) -> float:
+        """Calculate temporal consistency of viewing patterns.
+
+        Args:
+            entries: List of viewing history entries
+
+        Returns:
+            Consistency score between 0 and 1
+        """
+        if len(entries) < 2:
+            return 0.0
+
+        # Extract timestamps and calculate intervals
+        timestamps = []
+        for entry in entries:
+            try:
+                timestamp = datetime.fromisoformat(entry["timestamp"])
+                timestamps.append(timestamp)
+            except (ValueError, KeyError):
+                continue
+
+        if len(timestamps) < 2:
+            return 0.0
+
+        # Sort timestamps
+        timestamps.sort()
+
+        # Calculate intervals between consecutive views
+        intervals = []
+        for i in range(1, len(timestamps)):
+            interval = (
+                timestamps[i] - timestamps[i - 1]
+            ).total_seconds() / 3600  # hours
+            intervals.append(interval)
+
+        if not intervals:
+            return 0.0
+
+        # Calculate coefficient of variation (inverse of consistency)
+        mean_interval = np.mean(intervals)
+        std_interval = np.std(intervals)
+
+        if mean_interval == 0:
+            return 0.0
+
+        cv = std_interval / mean_interval
+
+        # Convert to consistency score (higher CV = lower consistency)
+        consistency = 1.0 / (1.0 + cv)
+
+        return float(consistency)
+
+    def _calculate_preference_stability(self, entries: List[Dict[str, Any]]) -> float:
+        """Calculate stability of content preferences over time.
+
+        Args:
+            entries: List of viewing history entries
+
+        Returns:
+            Stability score between 0 and 1
+        """
+        if len(entries) < 4:
+            return 0.0
+
+        # Split entries into early and late periods
+        mid_point = len(entries) // 2
+        early_entries = entries[:mid_point]
+        late_entries = entries[mid_point:]
+
+        # Calculate preference distributions for each period
+        early_channels = [entry.get("channel", "") for entry in early_entries]
+        late_channels = [entry.get("channel", "") for entry in late_entries]
+
+        # Count channel preferences
+        early_prefs = {}
+        late_prefs = {}
+
+        for channel in early_channels:
+            early_prefs[channel] = early_prefs.get(channel, 0) + 1
+        for channel in late_channels:
+            late_prefs[channel] = late_prefs.get(channel, 0) + 1
+
+        # Normalize to probabilities
+        early_total = len(early_channels)
+        late_total = len(late_channels)
+
+        if early_total == 0 or late_total == 0:
+            return 0.0
+
+        for channel in early_prefs:
+            early_prefs[channel] /= early_total
+        for channel in late_prefs:
+            late_prefs[channel] /= late_total
+
+        # Calculate similarity between preference distributions
+        all_channels = set(early_prefs.keys()) | set(late_prefs.keys())
+
+        if not all_channels:
+            return 0.0
+
+        # Use cosine similarity
+        early_vector = [early_prefs.get(channel, 0) for channel in all_channels]
+        late_vector = [late_prefs.get(channel, 0) for channel in all_channels]
+
+        # Calculate cosine similarity
+        dot_product = np.dot(early_vector, late_vector)
+        early_norm = np.linalg.norm(early_vector)
+        late_norm = np.linalg.norm(late_vector)
+
+        if early_norm == 0 or late_norm == 0:
+            return 0.0
+
+        similarity = dot_product / (early_norm * late_norm)
+
+        return float(similarity) if not np.isnan(similarity) else 0.0

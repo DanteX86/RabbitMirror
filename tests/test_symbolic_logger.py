@@ -25,7 +25,8 @@ def test_log_error():
         #     "context": context,
         # }
         mock_error.assert_called_once_with(
-            'Error: {"error_type": "test_error", "error_message": "something went wrong", "context": {"context_key": "context_value"}}'
+            'Error: {"error_type": "test_error", "error_message": "something went '
+            'wrong", "context": {"context_key": "context_value"}}'
         )
 
 
@@ -41,5 +42,6 @@ def test_log_error_without_context():
         #     "context": {},
         # }
         mock_error.assert_called_once_with(
-            'Error: {"error_type": "test_error_without_context", "error_message": "Error without context", "context": {}}'
+            'Error: {"error_type": "test_error_without_context", "error_message": '
+            '"Error without context", "context": {}}'
         )

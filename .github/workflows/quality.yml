@@ -10,7 +10,7 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
-    
+
     steps:
     - uses: actions/checkout@v4
 
@@ -68,7 +68,7 @@ jobs:
 
   docs-check:
     runs-on: ubuntu-latest
-    
+
     steps:
     - uses: actions/checkout@v4
 
@@ -94,7 +94,7 @@ jobs:
 
   package-check:
     runs-on: ubuntu-latest
-    
+
     steps:
     - uses: actions/checkout@v4
 

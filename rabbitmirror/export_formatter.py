@@ -55,7 +55,7 @@ class ExportFormatter:
                 )
 
         except Exception as e:
-            raise ValueError(f"Error loading {file_path}: {str(e)}")
+            raise ValueError(f"Error loading {file_path}: {str(e)}") from e
 
     def export_data(
         self, data: Dict[str, Any], export_format: str, filename: str

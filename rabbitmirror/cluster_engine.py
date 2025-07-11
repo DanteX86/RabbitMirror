@@ -78,9 +78,11 @@ class ClusterEngine:
                 "metadata": {
                     "eps": self.eps,
                     "min_samples": self.min_samples,
-                    "vectorizer_vocabulary_size": len(self.vectorizer.vocabulary_)
-                    if hasattr(self.vectorizer, "vocabulary_")
-                    else 0,
+                    "vectorizer_vocabulary_size": (
+                        len(self.vectorizer.vocabulary_)
+                        if hasattr(self.vectorizer, "vocabulary_")
+                        else 0
+                    ),
                 },
             }
 
