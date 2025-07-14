@@ -16,6 +16,8 @@ jinja2
 jsonschema
 flask
 flask-wtf
+textual
+rich
 
 # Testing dependencies
 pytest>=7.0.0

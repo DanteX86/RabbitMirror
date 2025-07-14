@@ -77,6 +77,32 @@ def config_group():
     pass
 
 
+# TUI Command
+@cli.command(name="tui")
+@click.option("--theme", type=click.Choice(["dark", "light"]), default="dark", help="TUI theme")
+def tui_command(theme: str):
+    """Launch the Terminal User Interface (TUI)."""
+    try:
+        from .tui import main as tui_main
+        
+        # Set theme (if needed)
+        if theme == "light":
+            # Light theme configuration could be added here
+            pass
+        
+        click.echo("🐰 Launching RabbitMirror TUI...")
+        tui_main()
+        
+    except ImportError as e:
+        click.echo(f"❌ TUI dependencies not available: {str(e)}", err=True)
+        click.echo("Install TUI dependencies with: pip install textual rich", err=True)
+        raise SystemExit(1) from e
+    except Exception as e:
+        symbolic_logger.log_error("tui_error", str(e))
+        click.echo(f"❌ Failed to launch TUI: {str(e)}", err=True)
+        raise SystemExit(1) from e
+
+
 @process_group.command(name="parse")
 @click.argument("history_file", type=click.Path(exists=True))
 @click.option("--output", "-o", type=click.Path(), help="Output file for parsed data")

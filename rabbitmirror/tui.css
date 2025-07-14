@@ -1,0 +1,364 @@
+/* RabbitMirror TUI Styles */
+
+/* Global styles */
+Screen {
+    background: $surface;
+    color: $text;
+}
+
+/* Header and Footer */
+Header {
+    background: $primary;
+    color: $text-muted;
+    dock: top;
+    height: 3;
+}
+
+Footer {
+    background: $surface-darken-1;
+    color: $text-muted;
+    dock: bottom;
+    height: 1;
+}
+
+/* Main layout */
+TabbedContent {
+    background: $surface;
+    height: 100%;
+}
+
+TabPane {
+    padding: 1;
+}
+
+/* Welcome section */
+#welcome {
+    text-align: center;
+    background: $surface-lighten-1;
+    padding: 1;
+    margin: 1;
+    border: solid $primary;
+    color: $text;
+}
+
+/* File selection section */
+#file-section {
+    height: 3;
+    margin: 1;
+    padding: 1;
+    background: $surface-lighten-1;
+    border: solid $accent;
+}
+
+#file-status {
+    content-align: center middle;
+    padding: 0 1;
+    background: $surface-lighten-2;
+}
+
+/* Quick actions */
+#quick-actions {
+    height: 3;
+    margin: 1;
+    padding: 1;
+    background: $surface-lighten-1;
+}
+
+/* Analysis tools */
+#analysis-title {
+    text-align: center;
+    background: $surface-lighten-1;
+    padding: 1;
+    margin: 1;
+    border: solid $secondary;
+}
+
+#options-title {
+    margin: 1 0;
+    padding: 1;
+    background: $surface-lighten-1;
+}
+
+/* Results section */
+#results-title {
+    text-align: center;
+    background: $surface-lighten-1;
+    padding: 1;
+    margin: 1;
+    border: solid $success;
+}
+
+#results-table {
+    height: 50%;
+    margin: 1;
+    border: solid $accent;
+}
+
+#results-log {
+    height: 50%;
+    margin: 1;
+    border: solid $warning;
+}
+
+/* Settings section */
+#settings-title {
+    text-align: center;
+    background: $surface-lighten-1;
+    padding: 1;
+    margin: 1;
+    border: solid $secondary;
+}
+
+/* Buttons */
+Button {
+    margin: 0 1;
+    min-width: 16;
+    height: 3;
+}
+
+Button:hover {
+    background: $accent;
+}
+
+Button.-primary {
+    background: $primary;
+    color: $text;
+}
+
+Button.-primary:hover {
+    background: $primary-lighten-1;
+}
+
+Button.-success {
+    background: $success;
+    color: $text;
+}
+
+Button.-success:hover {
+    background: $success-lighten-1;
+}
+
+Button.-error {
+    background: $error;
+    color: $text;
+}
+
+Button.-error:hover {
+    background: $error-lighten-1;
+}
+
+Button.-warning {
+    background: $warning;
+    color: $text;
+}
+
+Button.-warning:hover {
+    background: $warning-lighten-1;
+}
+
+/* Input fields */
+Input {
+    margin: 0 1;
+    background: $surface-lighten-2;
+    border: solid $accent;
+}
+
+Input:focus {
+    border: solid $primary;
+}
+
+/* Labels */
+Label {
+    content-align: center middle;
+    padding: 0 1;
+    color: $text;
+}
+
+/* Modal screens */
+#file-selector {
+    background: $surface;
+    border: solid $primary;
+    width: 60;
+    height: 15;
+    margin: 5;
+    padding: 2;
+}
+
+#file-title {
+    text-align: center;
+    background: $primary;
+    color: $text;
+    padding: 1;
+    margin: 0 0 2 0;
+}
+
+#results-viewer {
+    background: $surface;
+    border: solid $success;
+    width: 80;
+    height: 30;
+    margin: 2;
+    padding: 2;
+}
+
+#results-title {
+    text-align: center;
+    background: $success;
+    color: $text;
+    padding: 1;
+    margin: 0 0 2 0;
+}
+
+#results-content {
+    height: 80%;
+    border: solid $accent;
+    padding: 1;
+    margin: 1 0;
+}
+
+/* Container styling */
+Container {
+    background: $surface;
+}
+
+Horizontal {
+    height: auto;
+    margin: 1;
+}
+
+Vertical {
+    width: 100%;
+    height: 100%;
+}
+
+ScrollableContainer {
+    background: $surface-lighten-1;
+    border: solid $accent;
+    padding: 1;
+}
+
+/* Data table styling */
+DataTable {
+    background: $surface-lighten-1;
+    color: $text;
+}
+
+DataTable .datatable--header {
+    background: $primary;
+    color: $text;
+}
+
+DataTable .datatable--row-hover {
+    background: $surface-lighten-2;
+}
+
+DataTable .datatable--row-selected {
+    background: $accent;
+}
+
+/* Log widget */
+Log {
+    background: $surface-lighten-1;
+    color: $text;
+    border: solid $accent;
+}
+
+/* Progress bars */
+ProgressBar {
+    background: $surface-lighten-1;
+    color: $success;
+    border: solid $accent;
+}
+
+/* Markdown content */
+Markdown {
+    background: $surface-lighten-1;
+    color: $text;
+    padding: 1;
+}
+
+/* Tree widget */
+Tree {
+    background: $surface-lighten-1;
+    color: $text;
+    border: solid $accent;
+}
+
+/* Static text */
+Static {
+    background: $surface-lighten-1;
+    color: $text;
+    padding: 1;
+}
+
+/* Selection list */
+SelectionList {
+    background: $surface-lighten-1;
+    color: $text;
+    border: solid $accent;
+}
+
+/* Switch */
+Switch {
+    background: $surface-lighten-1;
+    color: $text;
+}
+
+/* Responsive adjustments */
+@media (max-width: 80) {
+    #file-selector {
+        width: 50;
+        height: 12;
+    }
+    
+    #results-viewer {
+        width: 70;
+        height: 25;
+    }
+    
+    Button {
+        min-width: 12;
+    }
+}
+
+@media (max-width: 60) {
+    #file-selector {
+        width: 40;
+        height: 10;
+    }
+    
+    #results-viewer {
+        width: 55;
+        height: 20;
+    }
+    
+    Button {
+        min-width: 10;
+    }
+}
+
+/* Dark theme specific adjustments */
+.dark {
+    --primary: #3b82f6;
+    --secondary: #6b7280;
+    --accent: #8b5cf6;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --error: #ef4444;
+    --surface: #1f2937;
+    --text: #f3f4f6;
+    --text-muted: #9ca3af;
+}
+
+/* Light theme specific adjustments */
+.light {
+    --primary: #2563eb;
+    --secondary: #4b5563;
+    --accent: #7c3aed;
+    --success: #059669;
+    --warning: #d97706;
+    --error: #dc2626;
+    --surface: #f9fafb;
+    --text: #111827;
+    --text-muted: #6b7280;
+}
