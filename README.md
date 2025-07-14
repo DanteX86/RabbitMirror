@@ -48,26 +48,46 @@ RabbitMirror is a powerful Python-based command-line tool designed to analyze an
 
 ### Installation
 
-1. **Clone the repository:**
+RabbitMirror can be installed directly from GitHub.
+
+#### Quick Installation
 ```bash
-git clone https://github.com/romulusaugustus/RabbitMirror.git
+# Install latest version from GitHub
+pip install git+https://github.com/DanteX86/RabbitMirror.git
+
+# Or install a specific version
+pip install git+https://github.com/DanteX86/RabbitMirror.git@v1.0.0
+```
+
+#### Download and Install
+1. Go to [Releases](https://github.com/DanteX86/RabbitMirror/releases)
+2. Download either:
+   - `rabbitmirror-1.0.0-py3-none-any.whl` (recommended)
+   - `rabbitmirror-1.0.0.tar.gz` (source)
+
+3. Install the downloaded file:
+```bash
+# Install wheel file
+pip install rabbitmirror-1.0.0-py3-none-any.whl
+
+# Or install source distribution
+pip install rabbitmirror-1.0.0.tar.gz
+```
+
+#### Development Installation
+
+For development or to get the latest changes:
+
+```bash
+# Clone the repository
+git clone https://github.com/DanteX86/RabbitMirror.git
 cd RabbitMirror
-```
 
-2. **Create a virtual environment:**
-```bash
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
+# Install in development mode
+pip install -e .
 
-3. **Install dependencies:**
-```bash
-pip install -r requirements.txt
-```
-
-4. **Run the tool:**
-```bash
-python run.py --help
+# Or install with development dependencies
+pip install -e .[dev]
 ```
 
 ### Getting Your YouTube Watch History
@@ -83,27 +103,27 @@ python run.py --help
 
 #### Parse Watch History
 ```bash
-python run.py process parse your-watch-history.html --output parsed_data.json
+rabbitmirror process parse your-watch-history.html --output parsed_data.json
 ```
 
 #### Analyze Content Clusters
 ```bash
-python run.py analyze cluster your-watch-history.html --output clusters.json --visualization
+rabbitmirror analyze cluster your-watch-history.html --output clusters.json --visualization
 ```
 
 #### Detect Adversarial Patterns
 ```bash
-python run.py analyze detect-patterns your-watch-history.html --threshold 0.7 --output patterns.json
+rabbitmirror analyze detect-patterns your-watch-history.html --threshold 0.7 --output patterns.json
 ```
 
 #### Analyze Content Suppression
 ```bash
-python run.py analyze analyze-suppression your-watch-history.html --period 30 --output suppression.json
+rabbitmirror analyze analyze-suppression your-watch-history.html --period 30 --output suppression.json
 ```
 
 #### Generate Profile Simulation
 ```bash
-python run.py analyze simulate your-watch-history.html --duration 30 --output simulated_profile.json
+rabbitmirror analyze simulate your-watch-history.html --duration 30 --output simulated_profile.json
 ```
 
 ### Advanced Usage
