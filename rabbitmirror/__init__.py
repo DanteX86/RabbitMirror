@@ -17,11 +17,7 @@ from .adversarial_profiler import AdversarialProfiler
 from .cluster_engine import ClusterEngine
 from .config_manager import ConfigManager
 from .dashboard_generator import DashboardGenerator
-from .exceptions import (
-    AnalysisError,
-    ClusteringError,
-    ConfigurationError,
-)
+from .exceptions import AnalysisError, ClusteringError, ConfigurationError
 from .exceptions import CustomTimeoutError as RabbitMirrorTimeoutError
 from .exceptions import (
     DataProcessingError,

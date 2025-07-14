@@ -160,6 +160,6 @@ License
 This project is licensed under the MIT License - see the :doc:`license` page for details.
 
 .. note::
-   RabbitMirror is designed to help you analyze your own YouTube watch history data. 
-   Please ensure you comply with YouTube's Terms of Service and applicable privacy laws 
+   RabbitMirror is designed to help you analyze your own YouTube watch history data.
+   Please ensure you comply with YouTube's Terms of Service and applicable privacy laws
    when using this tool.

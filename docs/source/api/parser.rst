@@ -193,12 +193,12 @@ For custom parsing logic, you can extend the HistoryParser class:
        def _parse_entry(self, entry) -> Dict[str, Any]:
            # Custom parsing logic
            result = super()._parse_entry(entry)
-           
+
            # Add custom fields
            result["custom_field"] = self._extract_custom_field(entry)
-           
+
            return result
-       
+
        def _extract_custom_field(self, entry) -> str:
            # Custom extraction logic
            return "custom_value"

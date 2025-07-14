@@ -391,7 +391,7 @@ class CustomAnalyzer(BaseAnalyzer):
     def analyze(self, data):
         # Custom analysis logic
         return analysis_results
-    
+
     def visualize(self, results):
         # Custom visualization logic
         return visualization
@@ -410,7 +410,7 @@ class CustomExporter(BaseExporter):
     def export(self, data, output_path):
         # Custom export logic
         pass
-    
+
     def validate(self, data):
         # Validation logic
         return True
@@ -477,10 +477,10 @@ from rabbitmirror.testing import create_test_data, validate_results
 def test_clustering_analysis():
     # Create test data
     test_data = create_test_data(num_entries=100)
-    
+
     # Perform clustering
     results = perform_clustering(test_data)
-    
+
     # Validate results
     assert validate_results(results)
     assert len(results.clusters) > 0

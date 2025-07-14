@@ -5,21 +5,14 @@ import traceback
 from datetime import datetime
 from pathlib import Path
 
-from flask import (
-    Flask,
-    flash,
-    redirect,
-    render_template,
-    request,
-    send_file,
-    url_for,
-)
+from flask import Flask, flash, redirect, render_template, request, send_file, url_for
 from werkzeug.utils import secure_filename
 
 # Add the parent directory to the Python path to import rabbitmirror modules
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Import rabbitmirror modules
+from rabbitmirror.adversarial_profiler import AdversarialProfiler  # noqa: E402
 from rabbitmirror.cluster_engine import ClusterEngine  # noqa: E402
 from rabbitmirror.export_formatter import ExportFormatter  # noqa: E402
 from rabbitmirror.parser import HistoryParser  # noqa: E402
@@ -29,9 +22,11 @@ from rabbitmirror.trend_analyzer import TrendAnalyzer  # noqa: E402
 app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = "static/uploads"
 app.config["MAX_CONTENT_LENGTH"] = 100 * 1024 * 1024  # 100MB max file size
-app.secret_key = "your-secret-key-here"  # Change this in production
+app.secret_key = os.environ.get(
+    "SECRET_KEY", "your-secret-key-here"
+)  # Change this in production
 
-ALLOWED_EXTENSIONS = {"json"}
+ALLOWED_EXTENSIONS = {"json", "html"}
 
 
 def allowed_file(filename):
@@ -57,7 +52,7 @@ def upload_file():
             file.save(filepath)
             return redirect(url_for("analyze_file", filename=filename))
         else:
-            flash("Invalid file type. Please upload a JSON file.")
+            flash("Invalid file type. Please upload a JSON or HTML file.")
     return render_template("index.html")
 
 
@@ -82,6 +77,10 @@ def analyze_file(filename):
         suppression_calc = SuppressionIndex()
         suppression_results = suppression_calc.calculate_suppression(watch_history)
 
+        # Perform adversarial pattern detection
+        adversarial_profiler = AdversarialProfiler()
+        pattern_results = adversarial_profiler.identify_patterns(watch_history)
+
         # Prepare data for visualization
         analysis_data = {
             "filename": filename,
@@ -93,6 +92,7 @@ def analyze_file(filename):
             "trend_analysis": trend_results,
             "clusters": clusters,
             "suppression_results": suppression_results,
+            "pattern_results": pattern_results,
             "raw_data": watch_history[:100],  # Show first 100 entries
         }
 
@@ -178,4 +178,6 @@ def internal_error(e):
 if __name__ == "__main__":
     # Ensure upload directory exists
     os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
-    app.run(debug=True, host="0.0.0.0", port=5001)
+    app.run(
+        debug=os.getenv("FLASK_DEBUG", "False") == "True", host="127.0.0.1", port=5001
+    )

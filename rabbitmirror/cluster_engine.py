@@ -3,11 +3,7 @@ from typing import Any, Dict, List
 from sklearn.cluster import DBSCAN
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-from .error_recovery import (
-    RetryConfig,
-    monitor_errors,
-    robust_operation,
-)
+from .error_recovery import RetryConfig, monitor_errors, robust_operation
 from .exceptions import ClusteringError, DataValidationError
 
 

@@ -1,76 +1,76 @@
 rabbitmirror:
   # General configuration
   version: "1.0.0"
-  
+
   # Parser settings
   parser:
     encoding: "utf-8"
     fallback_encodings: ["utf-8-sig", "latin-1", "cp1252"]
     max_retries: 3
     timeout: 30
-    
+
   # Export settings
   export:
     default_format: "json"
     output_directory: "exports"
     supported_formats: ["json", "csv", "yaml", "excel", "html"]
-    
+
   # Clustering settings
   clustering:
     algorithm: "DBSCAN"
     eps: 0.3
     min_samples: 5
     max_features: 1000
-    
+
   # Analysis settings
   analysis:
     trend_analysis:
       enabled: true
       window_size: 7
       metrics: ["daily_count", "hourly_distribution", "category_trends"]
-    
+
     adversarial_profiling:
       enabled: true
       max_depth: 10
       behavioral_patterns: ["viewing_time", "category_preference", "temporal_patterns"]
-    
+
   # Visualization settings
   visualization:
     dashboard:
       enabled: true
       refresh_interval: 300
       charts: ["timeline", "category_distribution", "clustering_results"]
-    
+
     reports:
       format: "html"
       include_charts: true
       template: "default"
-      
+
   # Security settings
   security:
     data_anonymization:
       enabled: false
       hash_urls: false
       remove_personal_info: true
-    
+
     access_control:
       require_authentication: false
       allowed_ips: []
-      
+
   # Logging settings
   logging:
     level: "INFO"
     file: "logs/rabbitmirror.log"
     max_size: "10MB"
     backup_count: 5
-    
+
   # Performance settings
   performance:
     max_memory_usage: "1GB"
     parallel_processing: true
     max_workers: 4
     cache_size: "100MB"
-    
+
   # Error handling
   error_handling:
     retry_attempts: 3
@@ -79,12 +79,12 @@ rabbitmirror:
       enabled: true
       failure_threshold: 5
       recovery_timeout: 30
-    
+
     timeout_settings:
       parse_timeout: 30
       export_timeout: 60
       analysis_timeout: 120
-      
+
   # File paths
   paths:
     data_directory: "data"

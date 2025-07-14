@@ -1,0 +1,83 @@
+version: "0.0.57"
+shell: bash
+commands:
+  # Development commands
+  install:
+    description: Install project dependencies
+    cmd: |
+      source venv/bin/activate && pip install -r requirements.txt
+
+  test:
+    description: Run the test suite
+    cmd: source venv/bin/activate && make test
+
+  web:
+    description: Start the web interface
+    cmd: |
+      source venv/bin/activate
+      cd rabbitmirror/web
+      python app.py
+
+  cli:
+    description: Run RabbitMirror CLI
+    options: |
+      Usage: lets cli [<args>...]
+      Examples:
+        lets cli --help
+        lets cli process parse sample.html
+    cmd: source venv/bin/activate && rabbitmirror "$@"
+
+  clean:
+    description: Clean up temporary files
+    cmd: |
+      find . -name "*.pyc" -delete
+      find . -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
+      rm -rf .pytest_cache
+      rm -rf htmlcov
+      rm -rf exports/*.tmp
+
+  format:
+    description: Format code with black and isort
+    cmd: |
+      source venv/bin/activate
+      black rabbitmirror/ tests/
+      isort rabbitmirror/ tests/
+
+  lint:
+    description: Run linting with pylint
+    cmd: source venv/bin/activate && pylint rabbitmirror/
+
+  build:
+    description: Build the project
+    depends:
+      - clean
+      - format
+      - lint
+      - test
+    cmd: echo "✅ Build completed successfully!"
+
+  dev:
+    description: Start development environment
+    cmd: |
+      echo "🚀 Starting RabbitMirror development environment..."
+      source venv/bin/activate
+      cd rabbitmirror/web
+      python app.py
+
+  demo:
+    description: Run demo with sample data
+    cmd: |
+      source venv/bin/activate
+      echo "📊 Running RabbitMirror demo..."
+      rabbitmirror process parse watch-history.html --output demo_results.json
+      echo "✅ Demo completed! Check demo_results.json"
+
+  docs:
+    description: Generate documentation
+    cmd: |
+      echo "📚 Generating documentation..."
+      echo "Documentation available in README.md and TESTING_RESULTS.md"
+
+  hello:
+    description: Say hello
+    cmd: echo "🐰 Hello from RabbitMirror! ${LETSOPT_NAME:-User}"

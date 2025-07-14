@@ -10,29 +10,29 @@ import os
 import sys
 
 # Add the project root to Python path
-sys.path.insert(0, os.path.abspath('../../'))
+sys.path.insert(0, os.path.abspath("../../"))
 
-project = 'RabbitMirror'
-copyright = '2023, RabbitMirror Team'
-author = 'RabbitMirror Team'
-release = '1.0.0'
+project = "RabbitMirror"
+copyright = "2023, RabbitMirror Team"
+author = "RabbitMirror Team"
+release = "1.0.0"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.autosummary',
-    'sphinx.ext.viewcode',
-    'sphinx.ext.napoleon',
-    'sphinx.ext.intersphinx',
-    'sphinx.ext.todo',
-    'sphinx.ext.coverage',
-    'sphinx.ext.mathjax',
-    'sphinx.ext.ifconfig',
-    'sphinx.ext.githubpages',
-    'sphinx_autodoc_typehints',
-    'myst_parser',
+    "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
+    "sphinx.ext.viewcode",
+    "sphinx.ext.napoleon",
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.todo",
+    "sphinx.ext.coverage",
+    "sphinx.ext.mathjax",
+    "sphinx.ext.ifconfig",
+    "sphinx.ext.githubpages",
+    "sphinx_autodoc_typehints",
+    "myst_parser",
 ]
 
 # MyST Parser configuration
@@ -48,45 +48,45 @@ myst_enable_extensions = [
     "table",
 ]
 
-templates_path = ['_templates']
+templates_path = ["_templates"]
 exclude_patterns = []
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'sphinx_rtd_theme'
-html_static_path = ['_static']
+html_theme = "sphinx_rtd_theme"
+html_static_path = ["_static"]
 
 # RTD Theme options
 html_theme_options = {
-    'canonical_url': '',
-    'analytics_id': '',
-    'logo_only': False,
-    'display_version': True,
-    'prev_next_buttons_location': 'bottom',
-    'style_external_links': False,
-    'vcs_pageview_mode': '',
-    'style_nav_header_background': '#2980B9',
+    "canonical_url": "",
+    "analytics_id": "",
+    "logo_only": False,
+    "display_version": True,
+    "prev_next_buttons_location": "bottom",
+    "style_external_links": False,
+    "vcs_pageview_mode": "",
+    "style_nav_header_background": "#2980B9",
     # Toc options
-    'collapse_navigation': True,
-    'sticky_navigation': True,
-    'navigation_depth': 4,
-    'includehidden': True,
-    'titles_only': False
+    "collapse_navigation": True,
+    "sticky_navigation": True,
+    "navigation_depth": 4,
+    "includehidden": True,
+    "titles_only": False,
 }
 
 # Custom CSS
 html_css_files = [
-    'custom.css',
+    "custom.css",
 ]
 
 # -- Options for autodoc ----------------------------------------------------
 autodoc_default_options = {
-    'members': True,
-    'member-order': 'bysource',
-    'special-members': '__init__',
-    'undoc-members': True,
-    'exclude-members': '__weakref__'
+    "members": True,
+    "member-order": "bysource",
+    "special-members": "__init__",
+    "undoc-members": True,
+    "exclude-members": "__weakref__",
 }
 
 # -- Options for autosummary ------------------------------------------------
@@ -110,12 +110,12 @@ napoleon_attr_annotations = True
 
 # -- Options for intersphinx extension --------------------------------------
 intersphinx_mapping = {
-    'python': ('https://docs.python.org/3/', None),
-    'numpy': ('https://numpy.org/doc/stable/', None),
-    'pandas': ('https://pandas.pydata.org/pandas-docs/stable/', None),
-    'sklearn': ('https://scikit-learn.org/stable/', None),
-    'matplotlib': ('https://matplotlib.org/stable/', None),
-    'click': ('https://click.palletsprojects.com/en/8.1.x/', None),
+    "python": ("https://docs.python.org/3/", None),
+    "numpy": ("https://numpy.org/doc/stable/", None),
+    "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
+    "sklearn": ("https://scikit-learn.org/stable/", None),
+    "matplotlib": ("https://matplotlib.org/stable/", None),
+    "click": ("https://click.palletsprojects.com/en/8.1.x/", None),
 }
 
 # -- Options for todo extension ----------------------------------------------
@@ -134,25 +134,25 @@ typehints_use_signature_return = True
 # -- Custom configuration ---------------------------------------------------
 # Source file suffixes
 source_suffix = {
-    '.rst': None,
-    '.md': None,
+    ".rst": None,
+    ".md": None,
 }
 
 # Master document
-master_doc = 'index'
+master_doc = "index"
 
 # Version info
 version = release
-today_fmt = '%B %d, %Y'
+today_fmt = "%B %d, %Y"
 
 # Language
-language = 'en'
+language = "en"
 
 # Pygments style
-pygments_style = 'sphinx'
+pygments_style = "sphinx"
 
 # HTML title
-html_title = f'{project} v{release}'
+html_title = f"{project} v{release}"
 
 # HTML short title
 html_short_title = project
@@ -165,9 +165,9 @@ html_short_title = project
 
 # HTML sidebar
 html_sidebars = {
-    '**': [
-        'relations.html',  # needs 'show_related': True theme option to display
-        'searchbox.html',
+    "**": [
+        "relations.html",  # needs 'show_related': True theme option to display
+        "searchbox.html",
     ]
 }
 
@@ -202,47 +202,52 @@ html_link_suffix = None
 html_translator_class = None
 
 # HTML search language
-html_search_language = 'en'
+html_search_language = "en"
 
 # HTML search options
-html_search_options = {'type': 'default'}
+html_search_options = {"type": "default"}
 
 # HTML search scorer
-html_search_scorer = 'scorer.js'
+html_search_scorer = "scorer.js"
 
 # HTML output encoding
-html_output_encoding = 'utf-8'
+html_output_encoding = "utf-8"
 
 # HTML compact lists
 html_compact_lists = True
 
 # HTML secnumber suffix
-html_secnumber_suffix = '. '
+html_secnumber_suffix = ". "
 
 # HTML add permalinks
-html_add_permalinks = '¶'
+html_add_permalinks = "¶"
 
 # HTML use smart quotes
 html_use_smartypants = True
 
 # HTML use opensearch
-html_use_opensearch = ''
+html_use_opensearch = ""
 
 # HTML file suffix
-htmlhelp_basename = 'RabbitMirrordoc'
+htmlhelp_basename = "RabbitMirrordoc"
 
 # Latex elements
 latex_elements = {
-    'papersize': 'letterpaper',
-    'pointsize': '10pt',
-    'preamble': '',
-    'figure_align': 'htbp',
+    "papersize": "letterpaper",
+    "pointsize": "10pt",
+    "preamble": "",
+    "figure_align": "htbp",
 }
 
 # Latex documents
 latex_documents = [
-    (master_doc, 'RabbitMirror.tex', 'RabbitMirror Documentation',
-     'RabbitMirror Team', 'manual'),
+    (
+        master_doc,
+        "RabbitMirror.tex",
+        "RabbitMirror Documentation",
+        "RabbitMirror Team",
+        "manual",
+    ),
 ]
 
 # Latex logo
@@ -264,16 +269,19 @@ latex_appendices = []
 latex_domain_indices = True
 
 # Manual pages
-man_pages = [
-    (master_doc, 'rabbitmirror', 'RabbitMirror Documentation',
-     [author], 1)
-]
+man_pages = [(master_doc, "rabbitmirror", "RabbitMirror Documentation", [author], 1)]
 
 # Texinfo documents
 texinfo_documents = [
-    (master_doc, 'RabbitMirror', 'RabbitMirror Documentation',
-     author, 'RabbitMirror', 'YouTube Watch History Analysis Tool.',
-     'Miscellaneous'),
+    (
+        master_doc,
+        "RabbitMirror",
+        "RabbitMirror Documentation",
+        author,
+        "RabbitMirror",
+        "YouTube Watch History Analysis Tool.",
+        "Miscellaneous",
+    ),
 ]
 
 # Epub title
@@ -289,13 +297,13 @@ epub_publisher = author
 epub_copyright = copyright
 
 # Epub identifier
-epub_identifier = ''
+epub_identifier = ""
 
 # Epub scheme
-epub_scheme = ''
+epub_scheme = ""
 
 # Epub uid
-epub_uid = ''
+epub_uid = ""
 
 # Epub cover
 epub_cover = ()
@@ -307,7 +315,7 @@ epub_pre_files = []
 epub_post_files = []
 
 # Epub exclude files
-epub_exclude_files = ['search.html']
+epub_exclude_files = ["search.html"]
 
 # Epub tocdepth
 epub_tocdepth = 3
@@ -316,7 +324,7 @@ epub_tocdepth = 3
 epub_tocdup = True
 
 # Epub tocscope
-epub_tocscope = 'default'
+epub_tocscope = "default"
 
 # Epub fix images
 epub_fix_images = False
@@ -325,7 +333,7 @@ epub_fix_images = False
 epub_max_image_width = 0
 
 # Epub show urls
-epub_show_urls = 'inline'
+epub_show_urls = "inline"
 
 # Epub use index
 epub_use_index = True

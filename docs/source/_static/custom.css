@@ -133,7 +133,7 @@
     .wy-table-responsive table {
         font-size: 0.875rem;
     }
-    
+
     .wy-table-responsive table td, .wy-table-responsive table th {
         padding: 0.5rem;
     }
@@ -144,11 +144,11 @@
     .wy-nav-side, .wy-nav-top {
         display: none !important;
     }
-    
+
     .wy-nav-content-wrap {
         margin-left: 0 !important;
     }
-    
+
     .rst-content {
         margin: 0 !important;
     }
@@ -161,12 +161,12 @@
         border-color: #4a5568;
         color: #e2e8f0;
     }
-    
+
     .admonition {
         background-color: #2d3748;
         color: #e2e8f0;
     }
-    
+
     .py.class, .py.function, .py.method {
         background-color: #2d3748;
         border-color: #4a5568;

@@ -150,7 +150,7 @@ Configuration
 
    # Load configuration
    config = ConfigManager("config.yaml")
-   
+
    # Use configuration
    parser = HistoryParser(
        file_path="history.html",

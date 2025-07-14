@@ -33,7 +33,7 @@ Configuration class for retry behavior.
 
    # Basic configuration
    config = RetryConfig(max_attempts=5, base_delay=2.0)
-   
+
    # Advanced configuration
    config = RetryConfig(
        max_attempts=3,
@@ -71,7 +71,7 @@ Circuit breaker implementation for error handling.
 
    # Create circuit breaker
    breaker = CircuitBreaker(failure_threshold=3, recovery_timeout=30)
-   
+
    # Use circuit breaker
    try:
        result = breaker.call(risky_function, arg1, arg2)
@@ -100,14 +100,14 @@ Manages error recovery strategies and circuit breakers.
 
    # Create recovery manager
    manager = ErrorRecoveryManager()
-   
+
    # Register recovery strategy
    def network_recovery(error):
        time.sleep(5)  # Wait before retry
        return "recovered"
-   
+
    manager.register_recovery_strategy(NetworkError, network_recovery)
-   
+
    # Get circuit breaker
    breaker = manager.get_circuit_breaker("api_service")
 
@@ -138,10 +138,10 @@ Monitors error patterns and system health.
 
    # Create monitor
    monitor = ErrorHealthMonitor(window_size=50)
-   
+
    # Record errors
    monitor.record_error(ValueError("Test error"), {"context": "test"})
-   
+
    # Get health information
    error_rate = monitor.get_error_rate(time_window_minutes=5)
    is_healthy = monitor.is_system_healthy()
