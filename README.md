@@ -50,6 +50,27 @@ RabbitMirror is a powerful Python-based command-line tool designed to analyze an
 
 RabbitMirror can be installed directly from GitHub.
 
+### 🎯 Choose Your Interface
+
+RabbitMirror offers two ways to interact with the tool:
+
+#### 🖥️ Terminal User Interface (TUI) - **Recommended for beginners**
+```bash
+# Launch the modern, interactive TUI
+rabbitmirror tui
+
+# Or with light theme
+rabbitmirror tui --theme light
+```
+
+#### 💻 Command Line Interface (CLI) - **For advanced users and automation**
+```bash
+# Traditional CLI commands
+rabbitmirror analyze detect-patterns your-history.html --output results.json
+```
+
+📖 **See [TUI Guide](TUI_GUIDE.md) for detailed TUI documentation**
+
 #### Quick Installation
 ```bash
 # Install latest version from GitHub
