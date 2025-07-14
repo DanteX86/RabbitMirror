@@ -7,7 +7,6 @@ from typing import Optional
 
 import click
 import click_aliases
-import click_completion
 import jsonschema
 import yaml
 
@@ -25,9 +24,6 @@ from .schema_validator import SchemaValidator
 from .suppression_index import SuppressionIndex
 from .symbolic_logger import SymbolicLogger
 from .trend_analyzer import TrendAnalyzer
-
-# Enable shell completion
-click_completion.init()
 
 # Initialize logger
 symbolic_logger = SymbolicLogger()
@@ -839,7 +835,7 @@ def validate_file(file: str, schema: Optional[str], output_format: str):
                     # Show similarity scores for debugging
                     click.echo("\n   Similarity analysis:")
                     for schema_type in available_schemas[:3]:  # Show top 3
-                        score = schema_validator.calculate_structure_similarity(
+                        score = schema_validator._calculate_structure_similarity(
                             data, schema_type
                         )
                         click.echo(f"   - {schema_type}: {score}% similarity")
@@ -883,7 +879,20 @@ def convert_file(input_file: str, output_format: str, output: Optional[str]):
 @click.argument("shell", type=click.Choice(["bash", "zsh", "fish"]))
 def completion(shell: str):
     """Generate shell completion script."""
-    click.echo(click_completion.get_code(shell))
+    # Modern Click 8.0+ uses built-in completion
+    try:
+        from click.shell_completion import get_completion_class
+
+        completion_class = get_completion_class(shell)
+        complete_var = "_RABBITMIRROR_COMPLETE"
+        completion_instance = completion_class(cli, {}, "rabbitmirror", complete_var)
+
+        # Generate completion script
+        script = completion_instance.source()
+        click.echo(script)
+    except (ImportError, AttributeError) as e:
+        click.echo(f"❌ Shell completion not available for {shell}: {e}", err=True)
+        raise SystemExit(1)
 
 
 @utils_group.command(name="generate-qr")
@@ -913,8 +922,7 @@ def generate_qr(
 
 
 def main():
-    # Register shell completion
-    click_completion.init()
+    # Modern Click 8.0+ has built-in completion support
     cli()
 
 

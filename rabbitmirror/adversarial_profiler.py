@@ -550,11 +550,15 @@ class AdversarialProfiler:
 
         # Sort entries by timestamp
         sorted_entries = sorted(entries, key=lambda x: x["timestamp"])
-        titles = [entry["title"] for entry in sorted_entries]
+        titles = [entry.get("title", "") or "" for entry in sorted_entries]
 
         # Create TF-IDF matrix and similarity analysis
-        tfidf_matrix = self.vectorizer.fit_transform(titles)
-        similarity_matrix = cosine_similarity(tfidf_matrix)
+        try:
+            tfidf_matrix = self.vectorizer.fit_transform(titles)
+            similarity_matrix = cosine_similarity(tfidf_matrix)
+        except ValueError:
+            # Handle empty vocabulary case (all titles are empty/None or only stop words)
+            similarity_matrix = np.zeros((len(titles), len(titles)))
 
         # Detect various patterns
         rapid_views = self._detect_rapid_views(sorted_entries)
@@ -1802,12 +1806,15 @@ class AdversarialProfiler:
     ) -> float:
         """Calculate viewing intensity score."""
         total_views = sum(sum(dist.values()) for dist in distributions.values())
-        peak_intensity = max(
-            max(dist.values()) for dist in distributions.values() if dist
-        )
 
         if total_views == 0:
             return 0.0
+
+        non_empty_dists = [dist for dist in distributions.values() if dist]
+        if not non_empty_dists:
+            return 0.0
+
+        peak_intensity = max(max(dist.values()) for dist in non_empty_dists)
 
         return float(peak_intensity / total_views)
 
@@ -2778,11 +2785,19 @@ class AdversarialProfiler:
                     - datetime.fromisoformat(trigger_sequences[-1]["timestamp"])
                 ).total_seconds()
                 trigger_sequences.append(
-                    {"triggers": trigger_data["triggers"], "interval": time_diff}
+                    {
+                        "triggers": trigger_data["triggers"],
+                        "interval": time_diff,
+                        "timestamp": trigger_data["timestamp"],
+                    }
                 )
             else:
                 trigger_sequences.append(
-                    {"triggers": trigger_data["triggers"], "interval": 0}
+                    {
+                        "triggers": trigger_data["triggers"],
+                        "interval": 0,
+                        "timestamp": trigger_data["timestamp"],
+                    }
                 )
 
         return {
@@ -2983,13 +2998,30 @@ class AdversarialProfiler:
         """Calculate confidence score for binge pattern detection."""
         if len(intervals) < 2:
             return 0.0
-        regularity = 1.0 - min(1.0, np.std(intervals) / np.mean(intervals))
-        intensity = 1.0 - min(1.0, np.mean(intervals) / 60)  # Scale to hour
+
+        mean_interval = np.mean(intervals)
+        std_interval = np.std(intervals)
+
+        # Avoid division by zero when mean is zero
+        if mean_interval == 0:
+            regularity = 1.0
+        else:
+            regularity = 1.0 - min(1.0, std_interval / mean_interval)
+
+        intensity = 1.0 - min(1.0, mean_interval / 60)  # Scale to hour
         return float((regularity + intensity) / 2)
 
     def _calculate_anomaly_confidence(self, metrics: Dict[str, float]) -> float:
         """Calculate confidence score for anomalous session detection."""
-        regularity = 1.0 - min(1.0, metrics["std_interval"] / metrics["mean_interval"])
+        mean_interval = metrics["mean_interval"]
+        std_interval = metrics["std_interval"]
+
+        # Avoid division by zero when mean_interval is zero
+        if mean_interval == 0:
+            regularity = 1.0
+        else:
+            regularity = 1.0 - min(1.0, std_interval / mean_interval)
+
         intensity = min(1.0, metrics["video_count"] / 50)  # Scale to 50 videos
         return float((regularity + intensity) / 2)
 

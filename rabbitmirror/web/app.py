@@ -79,7 +79,9 @@ def analyze_file(filename):
 
         # Perform adversarial pattern detection
         adversarial_profiler = AdversarialProfiler()
-        pattern_results = adversarial_profiler.identify_patterns(watch_history)
+        pattern_results = adversarial_profiler.identify_adversarial_patterns(
+            watch_history
+        )
 
         # Prepare data for visualization
         analysis_data = {

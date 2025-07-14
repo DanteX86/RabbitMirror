@@ -1,0 +1,42 @@
+{
+  "short_titles": {
+    "avg_time": 0.0751660664876302,
+    "std_time": 0.0049705548268935045,
+    "avg_memory": 786284544.0,
+    "peak_memory": "786284544",
+    "avg_clusters": 0.0,
+    "std_clusters": 0.0
+  },
+  "long_titles": {
+    "avg_time": 0.07735681533813477,
+    "std_time": 0.002171970416862151,
+    "avg_memory": 786317312.0,
+    "peak_memory": "786317312",
+    "avg_clusters": 1.0,
+    "std_clusters": 0.0
+  },
+  "diverse_titles": {
+    "avg_time": 0.08757599194844563,
+    "std_time": 0.018461880295982554,
+    "avg_memory": 786399232.0,
+    "peak_memory": "786415616",
+    "avg_clusters": 0.0,
+    "std_clusters": 0.0
+  },
+  "similar_titles": {
+    "avg_time": 0.08026266098022461,
+    "std_time": 0.0059802817144998755,
+    "avg_memory": 786492074.6666666,
+    "peak_memory": "786497536",
+    "avg_clusters": 0.0,
+    "std_clusters": 0.0
+  },
+  "multilingual_titles": {
+    "avg_time": 0.0814226468404134,
+    "std_time": 0.0036815370612745825,
+    "avg_memory": 786497536.0,
+    "peak_memory": "786497536",
+    "avg_clusters": 0.0,
+    "std_clusters": 0.0
+  }
+}

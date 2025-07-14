@@ -254,9 +254,7 @@ class TestParserPerformance:
                     "avg_cpu": sequential_metrics["avg_cpu"],
                     "files_processed": len(test_files),
                     "total_entries": sum(
-                        len(r.get("entries", []))
-                        if isinstance(r, dict)
-                        else len(r)
+                        len(r.get("entries", [])) if isinstance(r, dict) else len(r)
                         for r in sequential_results
                     ),
                 },
@@ -266,9 +264,7 @@ class TestParserPerformance:
                     "avg_cpu": concurrent_metrics["avg_cpu"],
                     "files_processed": len(test_files),
                     "total_entries": sum(
-                        len(r.get("entries", []))
-                        if isinstance(r, dict)
-                        else len(r)
+                        len(r.get("entries", [])) if isinstance(r, dict) else len(r)
                         for r in concurrent_results
                     ),
                     "speedup": sequential_metrics["total_time"]
@@ -333,7 +329,7 @@ class TestParserPerformance:
                     f.write(
                         f'<div class="content-cell"><a href="url">Title {i}</a>'
                         f'<div class="mdl-typography--caption">Jan 1, 2023</div>'
-                        '</div>\n'
+                        "</div>\n"
                     )
 
             f.write("</body></html>")

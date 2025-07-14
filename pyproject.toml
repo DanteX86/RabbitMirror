@@ -1,0 +1,183 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rabbitmirror"
+version = "1.0.0"
+description = "Advanced YouTube Watch History Analysis Tool"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "RabbitMirror Development Team", email = "dev@rabbitmirror.com"}
+]
+maintainers = [
+    {name = "RabbitMirror Development Team", email = "dev@rabbitmirror.com"}
+]
+keywords = ["youtube", "data-analysis", "privacy", "watch-history", "clustering", "profiling"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Multimedia :: Video",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Topic :: System :: Archiving :: Mirroring",
+]
+requires-python = ">=3.9"
+dependencies = [
+    "pandas",
+    "beautifulsoup4",
+    "lxml",
+    "qrcode[pil]",
+    "markdown",
+    "click>=8.0.0",
+    "click-aliases>=1.0.4",
+    "loguru",
+    "scikit-learn",
+    "numpy",
+    "scipy",
+    "pyyaml",
+    "openpyxl",
+    "plotly",
+    "jinja2",
+    "jsonschema",
+    "flask",
+    "flask-wtf",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-mock>=3.10.0",
+    "pytest-benchmark>=4.0.0",
+    "pre-commit>=3.0.0",
+    "black>=23.0.0",
+    "isort>=5.12.0",
+    "flake8>=6.0.0",
+    "mypy>=1.5.0",
+    "bandit>=1.7.0",
+    "safety>=2.0.0",
+]
+docs = [
+    "sphinx>=5.0.0",
+    "sphinx-rtd-theme>=1.2.0",
+    "sphinx-autodoc-typehints>=1.19.0",
+    "myst-parser>=1.0.0",
+]
+web = [
+    "gunicorn>=21.0.0",
+    "redis>=4.0.0",
+    "celery>=5.0.0",
+]
+all = [
+    "rabbitmirror[dev,docs,web]"
+]
+
+[project.urls]
+Homepage = "https://github.com/romulusaugustus/RabbitMirror"
+Documentation = "https://romulusaugustus.github.io/RabbitMirror/"
+Repository = "https://github.com/romulusaugustus/RabbitMirror"
+"Bug Tracker" = "https://github.com/romulusaugustus/RabbitMirror/issues"
+Changelog = "https://github.com/romulusaugustus/RabbitMirror/blob/main/CHANGELOG.md"
+Funding = "https://github.com/sponsors/romulusaugustus"
+
+[project.scripts]
+rabbitmirror = "rabbitmirror.cli:main"
+
+[tool.setuptools]
+packages = ["rabbitmirror", "rabbitmirror.web"]
+include-package-data = true
+
+[tool.setuptools.package-data]
+rabbitmirror = ["templates/*.html", "templates/*.md", "static/css/*.css", "static/js/*.js"]
+
+[tool.black]
+line-length = 88
+target-version = ['py39']
+include = '\.pyi?$'
+extend-ignore = ['E203', 'W503']
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+known_first_party = ["rabbitmirror"]
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q --strict-markers --strict-config"
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+    "benchmark: marks tests as benchmark tests",
+]
+
+[tool.coverage.run]
+source = ["rabbitmirror"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "setup.py",
+    "venv/*",
+    ".venv/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]
+show_missing = true
+fail_under = 80
+
+[tool.bandit]
+exclude_dirs = ["tests", "venv", ".venv"]
+skips = ["B101", "B601"]
+
+[tool.flake8]
+max-line-length = 88
+extend-ignore = ["E203", "W503", "E501"]
+exclude = [
+    ".git",
+    "__pycache__",
+    "venv",
+    ".venv",
+    "build",
+    "dist",
+    "*.egg-info",
+]

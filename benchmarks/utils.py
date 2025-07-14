@@ -75,9 +75,7 @@ class BenchmarkDataGenerator:
     """Generate test data for benchmarking."""
 
     @staticmethod
-    def generate_html_file(
-        num_entries: int, file_path: Optional[str] = None
-    ) -> str:
+    def generate_html_file(num_entries: int, file_path: Optional[str] = None) -> str:
         """Generate HTML file with specified number of entries."""
         if file_path is None:
             fd, file_path = tempfile.mkstemp(suffix=".html")

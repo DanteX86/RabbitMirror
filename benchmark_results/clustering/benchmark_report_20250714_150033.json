@@ -1,0 +1,247 @@
+{
+  "size_500": {
+    "data_size": 500,
+    "total_time": 0.12344717979431152,
+    "peak_memory": 1097859072,
+    "avg_cpu": 536.575,
+    "total_clusters": 0,
+    "noise_points": 500,
+    "memory_per_entry": 2195718.144,
+    "time_per_entry": 0.00024689435958862304,
+    "clustering_efficiency": 0.0,
+    "detailed_metrics": [
+      {
+        "timestamp": 1752519615.996147,
+        "elapsed": 0.05619692802429199,
+        "label": "engine_created",
+        "memory_rss": 1097859072,
+        "memory_vms": 422661472256,
+        "cpu_percent": 0.0,
+        "num_threads": 14
+      },
+      {
+        "timestamp": 1752519616.009761,
+        "elapsed": 0.06981110572814941,
+        "label": "clustering_complete",
+        "memory_rss": 1097859072,
+        "memory_vms": 422661472256,
+        "cpu_percent": 700.7,
+        "num_threads": 14
+      },
+      {
+        "timestamp": 1752519616.063264,
+        "elapsed": 0.12331390380859375,
+        "label": "gc_complete",
+        "memory_rss": 1097859072,
+        "memory_vms": 422661472256,
+        "cpu_percent": 793.9,
+        "num_threads": 14
+      },
+      {
+        "timestamp": 1752519616.063364,
+        "elapsed": 0.1234140396118164,
+        "label": "final",
+        "memory_rss": 1097859072,
+        "memory_vms": 422661472256,
+        "cpu_percent": 651.7,
+        "num_threads": 14
+      }
+    ]
+  },
+  "size_1000": {
+    "data_size": 1000,
+    "total_time": 0.12264823913574219,
+    "peak_memory": 1097859072,
+    "avg_cpu": 548.125,
+    "total_clusters": 0,
+    "noise_points": 1000,
+    "memory_per_entry": 1097859.072,
+    "time_per_entry": 0.00012264823913574218,
+    "clustering_efficiency": 0.0,
+    "detailed_metrics": [
+      {
+        "timestamp": 1752519616.126562,
+        "elapsed": 0.048162221908569336,
+        "label": "engine_created",
+        "memory_rss": 1097859072,
+        "memory_vms": 422661472256,
+        "cpu_percent": 0.0,
+        "num_threads": 14
+      },
+      {
+        "timestamp": 1752519616.152871,
+        "elapsed": 0.07447099685668945,
+        "label": "clustering_complete",
+        "memory_rss": 1097859072,
+        "memory_vms": 422661472256,
+        "cpu_percent": 707.4,
+        "num_threads": 14
+      },
+      {
+        "timestamp": 1752519616.200966,
+        "elapsed": 0.12256598472595215,
+        "label": "gc_complete",
+        "memory_rss": 1097859072,
+        "memory_vms": 422661472256,
+        "cpu_percent": 802.8,
+        "num_threads": 14
+      },
+      {
+        "timestamp": 1752519616.201029,
+        "elapsed": 0.12262916564941406,
+        "label": "final",
+        "memory_rss": 1097859072,
+        "memory_vms": 422661472256,
+        "cpu_percent": 682.3,
+        "num_threads": 14
+      }
+    ]
+  },
+  "size_2000": {
+    "data_size": 2000,
+    "total_time": 0.25548601150512695,
+    "peak_memory": 1097908224,
+    "avg_cpu": 644.7,
+    "total_clusters": 0,
+    "noise_points": 2000,
+    "memory_per_entry": 548954.112,
+    "time_per_entry": 0.00012774300575256348,
+    "clustering_efficiency": 0.0,
+    "detailed_metrics": [
+      {
+        "timestamp": 1752519616.276982,
+        "elapsed": 0.04995107650756836,
+        "label": "engine_created",
+        "memory_rss": 1097859072,
+        "memory_vms": 422661472256,
+        "cpu_percent": 0.0,
+        "num_threads": 14
+      },
+      {
+        "timestamp": 1752519616.431967,
+        "elapsed": 0.20493602752685547,
+        "label": "clustering_complete",
+        "memory_rss": 1097908224,
+        "memory_vms": 422663192576,
+        "cpu_percent": 790.5,
+        "num_threads": 17
+      },
+      {
+        "timestamp": 1752519616.482425,
+        "elapsed": 0.25539398193359375,
+        "label": "gc_complete",
+        "memory_rss": 1097908224,
+        "memory_vms": 422663192576,
+        "cpu_percent": 830.1,
+        "num_threads": 17
+      },
+      {
+        "timestamp": 1752519616.482495,
+        "elapsed": 0.2554640769958496,
+        "label": "final",
+        "memory_rss": 1097908224,
+        "memory_vms": 422663192576,
+        "cpu_percent": 958.2,
+        "num_threads": 17
+      }
+    ]
+  },
+  "size_5000": {
+    "data_size": 5000,
+    "total_time": 1.9711477756500244,
+    "peak_memory": 1105313792,
+    "avg_cpu": 559.9,
+    "total_clusters": 0,
+    "noise_points": 5000,
+    "memory_per_entry": 221062.7584,
+    "time_per_entry": 0.0003942295551300049,
+    "clustering_efficiency": 0.0,
+    "detailed_metrics": [
+      {
+        "timestamp": 1752519616.598123,
+        "elapsed": 0.05001187324523926,
+        "label": "engine_created",
+        "memory_rss": 1097908224,
+        "memory_vms": 422663192576,
+        "cpu_percent": 0.0,
+        "num_threads": 17
+      },
+      {
+        "timestamp": 1752519618.460816,
+        "elapsed": 1.9127047061920166,
+        "label": "clustering_complete",
+        "memory_rss": 1105313792,
+        "memory_vms": 422665961472,
+        "cpu_percent": 807.1,
+        "num_threads": 20
+      },
+      {
+        "timestamp": 1752519618.51915,
+        "elapsed": 1.971038818359375,
+        "label": "gc_complete",
+        "memory_rss": 1105313792,
+        "memory_vms": 422665961472,
+        "cpu_percent": 658.9,
+        "num_threads": 20
+      },
+      {
+        "timestamp": 1752519618.519232,
+        "elapsed": 1.971120834350586,
+        "label": "final",
+        "memory_rss": 1105313792,
+        "memory_vms": 422665961472,
+        "cpu_percent": 773.6,
+        "num_threads": 20
+      }
+    ]
+  },
+  "size_10000": {
+    "data_size": 10000,
+    "total_time": 14.403847932815552,
+    "peak_memory": 1107410944,
+    "avg_cpu": 475.42500000000007,
+    "total_clusters": 0,
+    "noise_points": 10000,
+    "memory_per_entry": 110741.0944,
+    "time_per_entry": 0.001440384793281555,
+    "clustering_efficiency": 0.0,
+    "detailed_metrics": [
+      {
+        "timestamp": 1752519618.715796,
+        "elapsed": 0.049407005310058594,
+        "label": "engine_created",
+        "memory_rss": 1107410944,
+        "memory_vms": 422668058624,
+        "cpu_percent": 0.0,
+        "num_threads": 20
+      },
+      {
+        "timestamp": 1752519633.001369,
+        "elapsed": 14.334980010986328,
+        "label": "clustering_complete",
+        "memory_rss": 487440384,
+        "memory_vms": 422672252928,
+        "cpu_percent": 805.2,
+        "num_threads": 20
+      },
+      {
+        "timestamp": 1752519633.070102,
+        "elapsed": 14.40371298789978,
+        "label": "gc_complete",
+        "memory_rss": 515391488,
+        "memory_vms": 422671204352,
+        "cpu_percent": 675.6,
+        "num_threads": 20
+      },
+      {
+        "timestamp": 1752519633.070206,
+        "elapsed": 14.403816938400269,
+        "label": "final",
+        "memory_rss": 515391488,
+        "memory_vms": 422671204352,
+        "cpu_percent": 420.9,
+        "num_threads": 20
+      }
+    ]
+  }
+}

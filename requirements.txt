@@ -3,9 +3,8 @@ beautifulsoup4
 lxml
 qrcode[pil]
 markdown
-click
-click-completion
-click-aliases
+click>=8.0.0
+click-aliases>=1.0.4
 loguru
 scikit-learn
 numpy

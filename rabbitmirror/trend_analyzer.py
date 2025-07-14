@@ -247,7 +247,11 @@ class TrendAnalyzer:
         # Simple linear regression
         if len(values) > 1:
             slope, _ = np.polyfit(x, y, 1)
-            correlation = np.corrcoef(x, y)[0, 1] if len(values) > 2 else 0.0
+            # Check if arrays have zero variance before correlation calculation
+            if len(values) > 2 and np.std(x) > 0 and np.std(y) > 0:
+                correlation = np.corrcoef(x, y)[0, 1]
+            else:
+                correlation = 0.0
         else:
             slope, correlation = 0.0, 0.0
 
