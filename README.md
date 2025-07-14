@@ -186,6 +186,55 @@ RabbitMirror supports multiple output formats:
 - `--period`: Baseline period in days (default: 30)
 - `--threshold`: Suppression detection threshold (default: 0.5)
 
+## 🛠️ Troubleshooting
+
+### Common Issues
+
+#### ModuleNotFoundError: No module named 'sklearn'
+
+If you encounter this error when running tests or the application:
+
+1. **Ensure you're in the virtual environment:**
+   ```bash
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+2. **Install or reinstall dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Run tests with virtual environment:**
+   ```bash
+   source venv/bin/activate && make test
+   ```
+
+#### Python Version Compatibility
+
+RabbitMirror requires Python 3.8 or higher. Check your Python version:
+```bash
+python --version
+```
+
+If you're using an older version, please upgrade Python or use a virtual environment with the correct version.
+
+#### Virtual Environment Issues
+
+If you're having issues with the virtual environment:
+
+1. **Recreate the virtual environment:**
+   ```bash
+   rm -rf venv
+   python3 -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
+   ```
+
+2. **Verify the virtual environment is active:**
+   ```bash
+   which python  # Should show path to venv/bin/python
+   ```
+
 ## 📁 Project Structure
 
 ```
