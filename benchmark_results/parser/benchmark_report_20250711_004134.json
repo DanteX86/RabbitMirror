@@ -1,0 +1,34 @@
+{
+  "valid_file": {
+    "avg_time": 0.10895299911499023,
+    "std_time": 0.003891690763413668,
+    "avg_memory": 237027328.0,
+    "peak_memory": "237027328",
+    "error_count": 0,
+    "success_rate": 1.0
+  },
+  "malformed_html": {
+    "avg_time": 0.09580202102661133,
+    "std_time": 0.0026210883154190157,
+    "avg_memory": 237027328.0,
+    "peak_memory": "237027328",
+    "error_count": 0,
+    "success_rate": 1.0
+  },
+  "invalid_timestamps": {
+    "avg_time": 0.09351587295532227,
+    "std_time": 0.0019625613047402992,
+    "avg_memory": 237158400.0,
+    "peak_memory": "237158400",
+    "error_count": 0,
+    "success_rate": 1.0
+  },
+  "missing_fields": {
+    "avg_time": 0.0865560531616211,
+    "std_time": 0.0014480022570888397,
+    "avg_memory": 237037158.4,
+    "peak_memory": "237158400",
+    "error_count": 0,
+    "success_rate": 1.0
+  }
+}
