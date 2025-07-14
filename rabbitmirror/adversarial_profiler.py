@@ -3000,6 +3000,447 @@ class AdversarialProfiler:
         similarity_matrix = cosine_similarity(tfidf_matrix)
         return float(np.mean(similarity_matrix))
 
+    # Missing method implementations
+    def _analyze_navigation_sequence(
+        self, sequence: List[Dict[str, Any]]
+    ) -> Dict[str, Any]:
+        """Analyze navigation sequence patterns."""
+        if len(sequence) < 2:
+            return {"pattern": "single", "complexity": 0.0, "coherence": 0.0}
+
+        # Calculate transition patterns
+        transitions = []
+        for i in range(1, len(sequence)):
+            current = sequence[i]
+            previous = sequence[i - 1]
+
+            # Calculate similarity between consecutive videos
+            similarity = self._calculate_content_similarity(
+                previous["title"], current["title"]
+            )
+            transitions.append(similarity)
+
+        coherence = float(np.mean(transitions)) if transitions else 0.0
+        complexity = float(
+            len(set(entry.get("category", "unknown") for entry in sequence))
+        )
+
+        return {
+            "pattern": "coherent" if coherence > 0.7 else "scattered",
+            "complexity": complexity,
+            "coherence": coherence,
+            "transitions": transitions,
+        }
+
+    def _analyze_session_pattern(self, session: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Analyze patterns within a viewing session."""
+        if not session:
+            return {"type": "empty", "intensity": 0.0, "focus": 0.0}
+
+        # Calculate session metrics
+        durations = [entry.get("duration", 0) for entry in session]
+        categories = [entry.get("category", "unknown") for entry in session]
+
+        avg_duration = float(np.mean(durations)) if durations else 0.0
+        category_diversity = len(set(categories))
+        focus_score = 1.0 - min(1.0, category_diversity / len(session))
+
+        # Determine session type
+        if avg_duration > 1800:  # 30 minutes
+            session_type = "deep"
+        elif len(session) > 10:
+            session_type = "binge"
+        else:
+            session_type = "casual"
+
+        return {
+            "type": session_type,
+            "intensity": min(1.0, len(session) / 20),
+            "focus": focus_score,
+            "avg_duration": avg_duration,
+            "video_count": len(session),
+        }
+
+    def _calculate_activity_balance(
+        self, activity_durations: Dict[str, List[float]]
+    ) -> float:
+        """Calculate balance between different activities."""
+        if not activity_durations:
+            return 0.0
+
+        total_times = {
+            activity: sum(durations)
+            for activity, durations in activity_durations.items()
+        }
+        total_time = sum(total_times.values())
+
+        if total_time == 0:
+            return 0.0
+
+        # Calculate entropy of time distribution
+        probabilities = [time / total_time for time in total_times.values()]
+        entropy = -sum(p * np.log2(p) for p in probabilities if p > 0)
+        max_entropy = np.log2(len(total_times)) if len(total_times) > 0 else 1.0
+
+        return float(entropy / max_entropy) if max_entropy > 0 else 0.0
+
+    def _calculate_anomaly_score(self, anomalies: Dict[str, Any]) -> float:
+        """Calculate overall anomaly score from detected anomalies."""
+        weights = {"psychological": 0.4, "preference": 0.3, "interaction": 0.3}
+
+        total_score = 0.0
+        for anomaly_type, weight in weights.items():
+            if anomaly_type in anomalies:
+                anomaly_data = anomalies[anomaly_type]
+                if isinstance(anomaly_data, dict) and "score" in anomaly_data:
+                    total_score += anomaly_data["score"] * weight
+                elif isinstance(anomaly_data, (int, float)):
+                    total_score += float(anomaly_data) * weight
+
+        return min(1.0, total_score)
+
+    def _calculate_authenticity_risk(self, metrics: Dict[str, Any]) -> float:
+        """Calculate risk score for authenticity issues."""
+        risk_factors = []
+
+        # Check for overly consistent patterns
+        if "interactions" in metrics:
+            interaction_std = metrics["interactions"].get("response_consistency", 0.0)
+            if interaction_std < 0.1:  # Too consistent
+                risk_factors.append(0.3)
+
+        # Check for unnatural viewing patterns
+        if "temporal" in metrics:
+            regularity = metrics["temporal"].get("regularity_score", 0.0)
+            if regularity > 0.9:  # Too regular
+                risk_factors.append(0.4)
+
+        # Check for content coherence issues
+        if "preferences" in metrics:
+            coherence = metrics["preferences"].get("topic_coherence", 0.0)
+            if coherence < 0.2:  # Too incoherent
+                risk_factors.append(0.3)
+
+        return float(np.mean(risk_factors)) if risk_factors else 0.0
+
+    def _calculate_automation_risk(self, metrics: Dict[str, Any]) -> float:
+        """Calculate risk score for automation/bot behavior."""
+        risk_factors = []
+
+        # Check for mechanical timing patterns
+        if "interactions" in metrics:
+            avg_response = metrics["interactions"].get("avg_response_time", 0.0)
+            if 0.5 < avg_response < 2.0:  # Suspiciously consistent response time
+                risk_factors.append(0.4)
+
+        # Check for repetitive patterns
+        if "patterns" in metrics:
+            pattern_count = len(metrics["patterns"].get("behavior_chains", []))
+            if pattern_count > 5:  # Too many repetitive patterns
+                risk_factors.append(0.3)
+
+        # Check for unnatural session patterns
+        if "sessions" in metrics:
+            session_regularity = metrics["sessions"].get("regularity_score", 0.0)
+            if session_regularity > 0.8:  # Too regular
+                risk_factors.append(0.5)
+
+        return float(np.mean(risk_factors)) if risk_factors else 0.0
+
+    def _calculate_engagement_consistency(
+        self, engagement_levels: List[Dict[str, Any]]
+    ) -> float:
+        """Calculate consistency of engagement patterns."""
+        if not engagement_levels:
+            return 0.0
+
+        interaction_scores = [
+            level.get("interactions", 0) for level in engagement_levels
+        ]
+        duration_scores = [level.get("duration", 0) for level in engagement_levels]
+
+        # Calculate coefficient of variation for consistency
+        interaction_cv = (
+            np.std(interaction_scores) / np.mean(interaction_scores)
+            if np.mean(interaction_scores) > 0
+            else 0.0
+        )
+        duration_cv = (
+            np.std(duration_scores) / np.mean(duration_scores)
+            if np.mean(duration_scores) > 0
+            else 0.0
+        )
+
+        # Lower CV means higher consistency
+        consistency = 1.0 - min(1.0, (interaction_cv + duration_cv) / 2)
+        return float(consistency)
+
+    def _calculate_engagement_profile(
+        self, engagement_levels: List[Dict[str, Any]]
+    ) -> Dict[str, float]:
+        """Calculate engagement profile from engagement data."""
+        if not engagement_levels:
+            return {
+                "avg_interactions": 0.0,
+                "avg_duration": 0.0,
+                "engagement_score": 0.0,
+            }
+
+        interactions = [level.get("interactions", 0) for level in engagement_levels]
+        durations = [level.get("duration", 0) for level in engagement_levels]
+        comments = [level.get("comments", 0) for level in engagement_levels]
+
+        avg_interactions = float(np.mean(interactions))
+        avg_duration = float(np.mean(durations))
+        avg_comments = float(np.mean(comments))
+
+        # Calculate overall engagement score
+        engagement_score = (
+            avg_interactions * 0.4 + avg_duration * 0.4 + avg_comments * 0.2
+        ) / 100
+
+        return {
+            "avg_interactions": avg_interactions,
+            "avg_duration": avg_duration,
+            "avg_comments": avg_comments,
+            "engagement_score": min(1.0, engagement_score),
+        }
+
+    def _calculate_manipulation_risk(self, metrics: Dict[str, Any]) -> float:
+        """Calculate risk score for manipulation/influence."""
+        risk_factors = []
+
+        # Check for rapid topic shifts
+        if "psychological" in metrics:
+            topic_shifts = metrics["psychological"].get("topic_shifts", [])
+            if len(topic_shifts) > 10:  # Too many rapid shifts
+                risk_factors.append(0.4)
+
+        # Check for polarization patterns
+        if "preferences" in metrics:
+            polarization = metrics["preferences"].get("polarization_score", 0.0)
+            if polarization > 0.7:  # High polarization
+                risk_factors.append(0.3)
+
+        # Check for emotional manipulation indicators
+        if "emotional" in metrics:
+            trigger_frequency = metrics["emotional"].get("trigger_frequency", 0.0)
+            if trigger_frequency > 0.5:  # High emotional trigger frequency
+                risk_factors.append(0.5)
+
+        return float(np.mean(risk_factors)) if risk_factors else 0.0
+
+    def _calculate_multitask_intensity(
+        self, concurrent_activities: List[int], task_switches: List[int]
+    ) -> float:
+        """Calculate intensity of multitasking behavior."""
+        if not concurrent_activities and not task_switches:
+            return 0.0
+
+        avg_concurrent = (
+            float(np.mean(concurrent_activities)) if concurrent_activities else 0.0
+        )
+        avg_switches = float(np.mean(task_switches)) if task_switches else 0.0
+
+        # Normalize to 0-1 scale
+        concurrent_score = min(
+            1.0, avg_concurrent / 5.0
+        )  # Assuming max 5 concurrent activities
+        switch_score = min(
+            1.0, avg_switches / 20.0
+        )  # Assuming max 20 switches per session
+
+        return (concurrent_score + switch_score) / 2
+
+    def _calculate_navigation_complexity(
+        self, navigation_sequences: List[Dict[str, Any]]
+    ) -> float:
+        """Calculate complexity of navigation patterns."""
+        if not navigation_sequences:
+            return 0.0
+
+        complexity_scores = []
+        for sequence in navigation_sequences:
+            if isinstance(sequence, dict) and "complexity" in sequence:
+                complexity_scores.append(sequence["complexity"])
+
+        return float(np.mean(complexity_scores)) if complexity_scores else 0.0
+
+    def _calculate_overall_risk(self, risks: Dict[str, float]) -> float:
+        """Calculate overall risk score from individual risk factors."""
+        weights = {
+            "automation_risk": 0.4,
+            "manipulation_risk": 0.3,
+            "authenticity_risk": 0.3,
+        }
+
+        weighted_sum = sum(
+            risks.get(risk_type, 0.0) * weight for risk_type, weight in weights.items()
+        )
+
+        return min(1.0, weighted_sum)
+
+    def _detect_interaction_anomalies(
+        self, interaction_metrics: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Detect anomalies in interaction patterns."""
+        anomalies = []
+
+        # Check for response time anomalies
+        avg_response = interaction_metrics.get("avg_response_time", 0.0)
+        if avg_response < 0.1 or avg_response > 30.0:  # Too fast or too slow
+            anomalies.append("abnormal_response_time")
+
+        # Check for consistency anomalies
+        consistency = interaction_metrics.get("response_consistency", 0.0)
+        if consistency < 0.05:  # Too consistent (robotic)
+            anomalies.append("excessive_consistency")
+
+        # Check for pattern anomalies
+        if "action_patterns" in interaction_metrics:
+            pattern_count = len(interaction_metrics["action_patterns"])
+            if pattern_count > 20:  # Too many patterns
+                anomalies.append("excessive_patterns")
+
+        return {
+            "anomalies": anomalies,
+            "count": len(anomalies),
+            "score": min(1.0, len(anomalies) / 5.0),
+        }
+
+    def _detect_preference_anomalies(
+        self, preference_metrics: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Detect anomalies in preference patterns."""
+        anomalies = []
+
+        # Check for genre diversity anomalies
+        if "genre_metrics" in preference_metrics:
+            genre_dist = preference_metrics["genre_metrics"].get(
+                "genre_distribution", {}
+            )
+            if len(genre_dist) > 15:  # Too diverse
+                anomalies.append("excessive_genre_diversity")
+            elif len(genre_dist) < 2:  # Too narrow
+                anomalies.append("limited_genre_diversity")
+
+        # Check for temporal anomalies
+        if "temporal_profile" in preference_metrics:
+            consistency = preference_metrics["temporal_profile"].get("consistency", 0.0)
+            if consistency > 0.95:  # Too consistent
+                anomalies.append("excessive_temporal_consistency")
+
+        # Check for preference stability anomalies
+        stability = preference_metrics.get("preference_stability", 0.0)
+        if stability < 0.1:  # Too unstable
+            anomalies.append("preference_instability")
+
+        return {
+            "anomalies": anomalies,
+            "count": len(anomalies),
+            "score": min(1.0, len(anomalies) / 4.0),
+        }
+
+    def _detect_psychological_anomalies(
+        self, psychological_metrics: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Detect anomalies in psychological patterns."""
+        anomalies = []
+
+        # Check for mood transition anomalies
+        if "mood_pattern" in psychological_metrics:
+            transitions = psychological_metrics["mood_pattern"].get("transitions", [])
+            if len(transitions) > 50:  # Too many mood changes
+                anomalies.append("excessive_mood_transitions")
+
+        # Check for emotional engagement anomalies
+        if "emotional_engagement" in psychological_metrics:
+            trigger_freq = psychological_metrics["emotional_engagement"].get(
+                "trigger_frequency", 0.0
+            )
+            if trigger_freq > 0.8:  # Too high emotional trigger frequency
+                anomalies.append("excessive_emotional_triggers")
+
+        # Check for attention stability anomalies
+        attention_stability = psychological_metrics.get("attention_stability", 0.0)
+        if attention_stability < 0.2:  # Too unstable
+            anomalies.append("attention_instability")
+
+        return {
+            "anomalies": anomalies,
+            "count": len(anomalies),
+            "score": min(1.0, len(anomalies) / 3.0),
+        }
+
+    def _identify_navigation_style(
+        self, navigation_sequences: List[Dict[str, Any]]
+    ) -> str:
+        """Identify dominant navigation style from sequences."""
+        if not navigation_sequences:
+            return "unknown"
+
+        coherence_scores = []
+        complexity_scores = []
+
+        for sequence in navigation_sequences:
+            if isinstance(sequence, dict):
+                coherence_scores.append(sequence.get("coherence", 0.0))
+                complexity_scores.append(sequence.get("complexity", 0.0))
+
+        avg_coherence = np.mean(coherence_scores) if coherence_scores else 0.0
+        avg_complexity = np.mean(complexity_scores) if complexity_scores else 0.0
+
+        if avg_coherence > 0.7 and avg_complexity < 3:
+            return "focused"
+        if avg_coherence < 0.4 and avg_complexity > 5:
+            return "exploratory"
+        if avg_coherence > 0.5 and avg_complexity > 4:
+            return "structured"
+        return "casual"
+
+    def _identify_viewing_rhythm(self, viewing_patterns: List[Dict[str, Any]]) -> str:
+        """Identify dominant viewing rhythm from patterns."""
+        if not viewing_patterns:
+            return "unknown"
+
+        session_types = [pattern.get("type", "casual") for pattern in viewing_patterns]
+        intensities = [pattern.get("intensity", 0.0) for pattern in viewing_patterns]
+
+        avg_intensity = np.mean(intensities) if intensities else 0.0
+
+        # Count session types
+        type_counts = {}
+        for session_type in session_types:
+            type_counts[session_type] = type_counts.get(session_type, 0) + 1
+
+        dominant_type = max(type_counts, key=type_counts.get, default="casual")
+
+        if dominant_type == "binge" and avg_intensity > 0.7:
+            return "binge_heavy"
+        if dominant_type == "deep" and avg_intensity > 0.5:
+            return "deep_focused"
+        if avg_intensity < 0.3:
+            return "light_casual"
+        return "moderate_regular"
+
+    def _calculate_content_similarity(self, title1: str, title2: str) -> float:
+        """Calculate similarity between two content titles."""
+        if not title1 or not title2:
+            return 0.0
+
+        # Simple word-based similarity
+        words1 = set(title1.lower().split())
+        words2 = set(title2.lower().split())
+
+        if not words1 or not words2:
+            return 0.0
+
+        # Jaccard similarity
+        intersection = len(words1.intersection(words2))
+        union = len(words1.union(words2))
+
+        return float(intersection / union) if union > 0 else 0.0
+
     def _has_numeric_progression(self, titles: List[str]) -> bool:
         """Check if titles follow a numeric progression pattern."""
         numbers = []

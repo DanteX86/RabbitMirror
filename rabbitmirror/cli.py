@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import json
+from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
@@ -14,6 +15,11 @@ from .adversarial_profiler import AdversarialProfiler
 from .cluster_engine import ClusterEngine
 from .config_manager import ConfigManager
 from .dashboard_generator import DashboardGenerator
+from .exceptions import (
+    RabbitMirrorError,
+    create_error_context,
+    format_error_message,
+)
 from .export_formatter import ExportFormatter
 from .parser import HistoryParser
 from .profile_simulator import ProfileSimulator
@@ -108,9 +114,15 @@ def parse(
         else:
             click.echo(entries)
 
+    except RabbitMirrorError as e:
+        symbolic_logger.log_error("parse_error", e.to_dict())
+        click.echo(f"❌ {format_error_message(e)}", err=True)
+        raise SystemExit(1) from e
     except Exception as e:
-        symbolic_logger.log_error("parse_error", e)
-        click.echo(f"❌ Error parsing history: {str(e)}", err=True)
+        context = create_error_context("parse_history", file=history_file)
+        symbolic_logger.log_error("parse_error", e, context)
+        click.echo(f"❌ Unexpected error parsing history: {str(e)}", err=True)
+        raise SystemExit(1) from e
 
 
 @analyze_group.command(name="cluster")
@@ -154,9 +166,15 @@ def cluster(
         else:
             click.echo(clusters)
 
+    except RabbitMirrorError as e:
+        symbolic_logger.log_error("cluster_error", e.to_dict())
+        click.echo(f"❌ {format_error_message(e)}", err=True)
+        raise SystemExit(1) from e
     except Exception as e:
-        symbolic_logger.log_error("cluster_error", e)
-        click.echo(f"❌ Error clustering videos: {str(e)}", err=True)
+        context = create_error_context("cluster_videos", file=history_file)
+        symbolic_logger.log_error("cluster_error", e, context)
+        click.echo(f"❌ Unexpected error clustering videos: {str(e)}", err=True)
+        raise SystemExit(1) from e
 
 
 @analyze_group.command(name="analyze-suppression")
@@ -202,9 +220,15 @@ def analyze_suppression(
         else:
             click.echo(results)
 
+    except RabbitMirrorError as e:
+        symbolic_logger.log_error("suppression_error", e.to_dict())
+        click.echo(f"❌ {format_error_message(e)}", err=True)
+        raise SystemExit(1) from e
     except Exception as e:
-        symbolic_logger.log_error("suppression_error", e)
-        click.echo(f"❌ Error analyzing suppression: {str(e)}", err=True)
+        context = create_error_context("analyze_suppression", file=history_file)
+        symbolic_logger.log_error("suppression_error", e, context)
+        click.echo(f"❌ Unexpected error analyzing suppression: {str(e)}", err=True)
+        raise SystemExit(1) from e
 
 
 @analyze_group.command(name="detect-patterns")
@@ -256,9 +280,15 @@ def detect_patterns(
         else:
             click.echo(patterns)
 
+    except RabbitMirrorError as e:
+        symbolic_logger.log_error("pattern_detection_error", e.to_dict())
+        click.echo(f"❌ {format_error_message(e)}", err=True)
+        raise SystemExit(1) from e
     except Exception as e:
-        symbolic_logger.log_error("pattern_detection_error", e)
-        click.echo(f"❌ Error detecting patterns: {str(e)}", err=True)
+        context = create_error_context("detect_patterns", file=history_file)
+        symbolic_logger.log_error("pattern_detection_error", e, context)
+        click.echo(f"❌ Unexpected error detecting patterns: {str(e)}", err=True)
+        raise SystemExit(1) from e
 
 
 @analyze_group.command(name="simulate")
@@ -313,7 +343,7 @@ def simulate(
         else:
             click.echo(simulated_profile)
 
-    except Exception as e:
+    except (FileNotFoundError, ValueError, json.JSONDecodeError) as e:
         symbolic_logger.log_error("simulation_error", e)
         click.echo(f"❌ Error simulating profile: {str(e)}", err=True)
 
@@ -332,14 +362,14 @@ def generate_report(data_file: str, template_file: str, output_file: str):
     try:
         # Load data from file
         exporter = ExportFormatter()
-        data = exporter._load_data(data_file)
+        data = exporter.load_data(data_file)
 
         # Generate report
         generator = ReportGenerator()
         generator.generate_report(data, template_file, output_file)
         click.echo(f"✅ Generated report at {output_file}")
 
-    except Exception as e:
+    except (FileNotFoundError, ValueError, json.JSONDecodeError) as e:
         symbolic_logger.log_error("report_generation_error", e)
         click.echo(f"❌ Error generating report: {str(e)}", err=True)
 
@@ -397,7 +427,7 @@ def batch_process(
                     )
                     total_processed += 1
 
-                except Exception as e:
+                except (FileNotFoundError, ValueError, json.JSONDecodeError) as e:
                     symbolic_logger.log_error(
                         "batch_process_error", e, {"file": str(file_path)}
                     )
@@ -409,7 +439,7 @@ def batch_process(
                 f"⚠️  Failed to process {len(history_files) - total_processed} files"
             )
 
-    except Exception as e:
+    except (FileNotFoundError, ValueError, json.JSONDecodeError, OSError) as e:
         symbolic_logger.log_error("batch_process_error", e)
         click.echo(f"❌ Error during batch processing: {str(e)}", err=True)
 
@@ -469,10 +499,10 @@ def batch_process(
     #                Path(output).stem if output else 'profile_comparison'
     #            )
     #            click.echo(f"\n✅ Exported comparison results to {output_file}")
-
-    except Exception as e:
-        symbolic_logger.log_error("profile_comparison_error", e)
-        click.echo(f"❌ Error comparing profiles: {str(e)}", err=True)
+    #
+    #    except (FileNotFoundError, ValueError, json.JSONDecodeError) as e:
+    #        symbolic_logger.log_error("profile_comparison_error", e)
+    #        click.echo(f"❌ Error comparing profiles: {str(e)}", err=True)
 
 
 @analyze_group.command(name="trend-analysis")
@@ -563,8 +593,6 @@ def trend_analysis(
 
         # Export data if output specified
         if output:
-            from datetime import datetime
-
             exporter = ExportFormatter()
             output_file = exporter.export_data(
                 {
@@ -581,7 +609,7 @@ def trend_analysis(
             )
             click.echo(f"\n✅ Exported trend analysis to {output_file}")
 
-    except Exception as e:
+    except (FileNotFoundError, ValueError, json.JSONDecodeError) as e:
         symbolic_logger.log_error("trend_analysis_error", e)
         click.echo(f"❌ Error analyzing trends: {str(e)}", err=True)
 
@@ -612,7 +640,7 @@ def export_dashboard(
     try:
         # Load data
         exporter = ExportFormatter()
-        data = exporter._load_data(data_file)
+        data = exporter.load_data(data_file)
 
         # Determine output path
         output_path = Path(output) if output else Path("dashboard_output")
@@ -649,7 +677,7 @@ def export_dashboard(
         else:
             click.echo(f"\nDashboard exported to: {output_path}")
 
-    except Exception as e:
+    except (FileNotFoundError, ValueError, json.JSONDecodeError) as e:
         symbolic_logger.log_error("dashboard_export_error", e)
         click.echo(f"❌ Error exporting dashboard: {str(e)}", err=True)
 
@@ -668,7 +696,7 @@ def set_config(key: str, value: str, global_: bool):
         click.echo(
             f"✅ Set {key} = {value} in {'global' if global_ else 'local'} config"
         )
-    except Exception as e:
+    except (FileNotFoundError, ValueError, OSError) as e:
         symbolic_logger.log_error("config_set_error", e)
         click.echo(f"❌ Error setting config: {str(e)}", err=True)
 
@@ -690,7 +718,7 @@ def get_config(key: str, is_global: bool):
             click.echo(f"{key} = {value}")
         else:
             click.echo(f"❌ Key '{key}' not found.", err=True)
-    except Exception as e:
+    except (FileNotFoundError, ValueError, KeyError) as e:
         symbolic_logger.log_error("config_get_error", e)
         click.echo(f"❌ Error getting config: {str(e)}", err=True)
 
@@ -712,7 +740,7 @@ def list_config(is_global: bool, output_format: str):
         config = ConfigManager(use_global=is_global)
         config_list = config.list(as_json=output_format == "json")
         click.echo(config_list)
-    except Exception as e:
+    except (FileNotFoundError, ValueError, OSError) as e:
         symbolic_logger.log_error("config_list_error", e)
         click.echo(f"❌ Error listing config: {str(e)}", err=True)
 
@@ -815,12 +843,17 @@ def validate_file(file: str, schema: Optional[str], output_format: str):
                     # Show similarity scores for debugging
                     click.echo("\n   Similarity analysis:")
                     for schema_type in available_schemas[:3]:  # Show top 3
-                        score = schema_validator._calculate_structure_similarity(
+                        score = schema_validator.calculate_structure_similarity(
                             data, schema_type
                         )
                         click.echo(f"   - {schema_type}: {score}% similarity")
 
-    except Exception as e:
+    except (
+        FileNotFoundError,
+        ValueError,
+        json.JSONDecodeError,
+        jsonschema.exceptions.SchemaError,
+    ) as e:
         symbolic_logger.log_error("validation_error", e)
         click.echo(f"❌ Error validating file: {str(e)}", err=True)
 
@@ -834,7 +867,7 @@ def convert_file(input_file: str, output_format: str, output: Optional[str]):
     try:
         # Load input file using ExportFormatter
         exporter = ExportFormatter()
-        data = exporter._load_data(input_file)
+        data = exporter.load_data(input_file)
 
         # Generate output filename if not provided
         if not output:
@@ -845,7 +878,7 @@ def convert_file(input_file: str, output_format: str, output: Optional[str]):
 
         click.echo(f"✅ Converted {input_file} to {output_file}")
 
-    except Exception as e:
+    except (FileNotFoundError, ValueError, json.JSONDecodeError) as e:
         symbolic_logger.log_error("conversion_error", e)
         click.echo(f"❌ Error converting file: {str(e)}", err=True)
 
@@ -878,7 +911,7 @@ def generate_qr(
         )
         click.echo(f"✅ Generated QR code at {qr_file}")
 
-    except Exception as e:
+    except (ValueError, OSError) as e:
         symbolic_logger.log_error("qr_generation_error", e)
         click.echo(f"❌ Error generating QR code: {str(e)}", err=True)
 

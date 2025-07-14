@@ -1,4 +1,4 @@
-.PHONY: help install test lint format clean docs build suggestions
+.PHONY: help install test lint format clean docs build suggestions cl
 
 help: ## Show this help message
 	@echo "RabbitMirror Development Commands:"
@@ -47,6 +47,8 @@ clean: ## Clean up build artifacts and cache
 	rm -rf .pytest_cache/
 	find . -type d -name __pycache__ -delete
 	find . -type f -name "*.pyc" -delete
+
+cl: clean ## Shorthand for clean
 
 build: ## Build the package
 	python -m build

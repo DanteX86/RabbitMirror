@@ -5,6 +5,7 @@ import pandas as pd
 import pytest
 import yaml
 
+from rabbitmirror.exceptions import ExportError, FileOperationError, InvalidFormatError
 from rabbitmirror.export_formatter import ExportFormatter
 
 
@@ -99,7 +100,7 @@ class TestExportFormatter:
         formatter = ExportFormatter(output_dir=temp_export_dir)
         filename = "test_output"
 
-        with pytest.raises(ValueError, match="Unsupported export format"):
+        with pytest.raises(ExportError, match="Unsupported export format"):
             formatter.export_data(sample_data, "unsupported_format", filename)
 
     def test_load_json_data(self, sample_data, temp_export_dir):
@@ -109,7 +110,7 @@ class TestExportFormatter:
             json.dump(sample_data, f)
 
         formatter = ExportFormatter()
-        loaded_data = formatter._load_data(filename)
+        loaded_data = formatter.load_data(filename)
 
         assert loaded_data == sample_data
 
@@ -120,7 +121,7 @@ class TestExportFormatter:
             yaml.dump(sample_data, f)
 
         formatter = ExportFormatter()
-        loaded_data = formatter._load_data(filename)
+        loaded_data = formatter.load_data(filename)
 
         assert loaded_data == sample_data
 
@@ -131,7 +132,7 @@ class TestExportFormatter:
         df.to_csv(filename, index=False)
 
         formatter = ExportFormatter()
-        loaded_data = formatter._load_data(filename)
+        loaded_data = formatter.load_data(filename)
 
         assert len(loaded_data["title"]) == len(sample_data["entries"])
         assert set(loaded_data.keys()) == set(sample_data["entries"][0].keys())
@@ -143,14 +144,14 @@ class TestExportFormatter:
             f.write("INVALID DATA")
 
         formatter = ExportFormatter()
-        with pytest.raises(ValueError, match="Unsupported file format"):
-            formatter._load_data(filename)
+        with pytest.raises(InvalidFormatError, match="Unsupported file format"):
+            formatter.load_data(filename)
 
     def test_file_not_found(self):
         """Test loading data from a non-existent file."""
         formatter = ExportFormatter()
-        with pytest.raises(FileNotFoundError, match="File not found"):
-            formatter._load_data("nonexistent_file.json")
+        with pytest.raises(FileOperationError, match="File not found"):
+            formatter.load_data("nonexistent_file.json")
 
     def test_flatten_dict_method(self, temp_export_dir):
         """Test the _flatten_dict method with various nested structures."""
@@ -237,7 +238,7 @@ class TestExportFormatter:
         df.to_excel(filename, index=False)
 
         formatter = ExportFormatter()
-        loaded_data = formatter._load_data(filename)
+        loaded_data = formatter.load_data(filename)
 
         assert len(loaded_data["title"]) == len(sample_data["entries"])
         assert set(loaded_data.keys()) == set(sample_data["entries"][0].keys())
@@ -249,8 +250,8 @@ class TestExportFormatter:
             f.write("{ invalid json }")
 
         formatter = ExportFormatter()
-        with pytest.raises(ValueError, match="Error loading"):
-            formatter._load_data(filename)
+        with pytest.raises(InvalidFormatError, match="Invalid file format"):
+            formatter.load_data(filename)
 
     def test_empty_data_export(self, temp_export_dir):
         """Test exporting empty data structures."""

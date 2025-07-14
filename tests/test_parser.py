@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from rabbitmirror.exceptions import InvalidFormatError
 from rabbitmirror.parser import HistoryParser
 
 # Sample test for HistoryParser
@@ -59,11 +60,12 @@ def test_convert_timestamp_valid():
 
 def test_convert_timestamp_invalid():
     """Test timestamp conversion with invalid format."""
+    import pytest
+
     parser = HistoryParser("dummy_path")
-    result = parser._convert_timestamp("Invalid timestamp format")
-    # Should return current time in ISO format when parsing fails
-    assert isinstance(result, str)
-    assert "T" in result  # ISO format contains 'T'
+    # Should raise InvalidFormatError with invalid format
+    with pytest.raises(InvalidFormatError):
+        parser._convert_timestamp("Invalid timestamp format")
 
 
 def test_parse_entry_with_missing_timestamp(tmp_path):

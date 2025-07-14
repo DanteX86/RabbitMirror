@@ -2,7 +2,22 @@
 
 **Advanced YouTube Watch History Analysis Tool**
 
+[![Tests](https://github.com/romulusaugustus/RabbitMirror/workflows/tests/badge.svg)](https://github.com/romulusaugustus/RabbitMirror/actions)
+[![Coverage](https://codecov.io/gh/romulusaugustus/RabbitMirror/branch/main/graph/badge.svg)](https://codecov.io/gh/romulusaugustus/RabbitMirror)
+[![Python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![PyPI](https://img.shields.io/pypi/v/rabbitmirror.svg)](https://pypi.org/project/rabbitmirror/)
+
 RabbitMirror is a powerful Python-based command-line tool designed to analyze and understand YouTube watch history patterns. It provides deep insights into viewing behavior, detects potential algorithmic manipulation, and offers comprehensive analysis capabilities for researchers, content creators, and curious users.
+
+## 🎯 Why RabbitMirror?
+
+- **🔍 Transparency**: Understand how algorithms shape your viewing experience
+- **🛡️ Privacy-First**: All processing happens locally on your device
+- **📊 Comprehensive**: Multiple analysis types from basic clustering to advanced pattern detection
+- **🚀 Easy to Use**: Simple CLI interface with powerful features
+- **🧪 Research-Ready**: Perfect for academic research and algorithmic auditing
+- **📈 Actionable Insights**: Get clear, actionable information about your viewing patterns
 
 ## ✨ Features
 

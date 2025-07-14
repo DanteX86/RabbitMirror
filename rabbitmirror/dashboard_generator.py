@@ -50,15 +50,14 @@ class DashboardGenerator:
                 "secondary": "#E74C3C",
                 "accent": "#F39C12",
             }
-        else:
-            return {
-                "background": "#FFFFFF",
-                "paper": "#F8F9FA",
-                "text": "#333333",
-                "primary": "#2980B9",
-                "secondary": "#C0392B",
-                "accent": "#D68910",
-            }
+        return {
+            "background": "#FFFFFF",
+            "paper": "#F8F9FA",
+            "text": "#333333",
+            "primary": "#2980B9",
+            "secondary": "#C0392B",
+            "accent": "#D68910",
+        }
 
     def generate_dashboard(
         self, data: Dict[str, Any], output_path: Path
@@ -375,7 +374,7 @@ class DashboardGenerator:
                 y=popularity_data,
                 mode="markers+lines",
                 name="Popularity Index",
-                marker=dict(size=8, color="red"),
+                marker={"size": 8, "color": "red"},
             ),
             row=3,
             col=2,
@@ -416,9 +415,10 @@ class DashboardGenerator:
                         x=x_coords,
                         y=y_coords,
                         mode="markers",
-                        marker=dict(
-                            color=clusters["cluster_labels"], colorscale="viridis"
-                        ),
+                        marker={
+                            "color": clusters["cluster_labels"],
+                            "colorscale": "viridis",
+                        },
                         name="Video Clusters",
                     )
                 )
@@ -723,7 +723,6 @@ class DashboardGenerator:
 
     def _analyze_weekly_pattern(self, timestamps: List[str]) -> Dict[str, int]:
         """Analyze weekly viewing patterns."""
-        from datetime import datetime
 
         weekly_counts = {
             "Monday": 0,

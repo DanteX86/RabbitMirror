@@ -4,40 +4,40 @@
 # Usage: run <command>
 
 help:
-	@echo "RabbitMirror Development Commands:"
-	@echo "=================================="
-	@echo "  📋 Development Tasks:"
-	@echo "    install        Install development dependencies"
-	@echo "    test           Run all tests with coverage"
-	@echo "    test-quick     Run tests without coverage"
-	@echo "    format         Format code with black and isort"
-	@echo "    format-check   Check if code is formatted correctly"
-	@echo "    lint           Run all linting tools"
-	@echo "    security       Run security checks"
-	@echo "    type-check     Run type checking"
-	@echo ""
-	@echo "  🔧 Development Workflow:"
-	@echo "    dev-setup      Complete development setup"
-	@echo "    pre-commit     Run pre-commit hooks on all files"
-	@echo "    clean          Clean up build artifacts and cache"
-	@echo "    demo           Run a demo of the CLI tool"
-	@echo ""
-	@echo "  📦 Build & Release:"
-	@echo "    build          Build the package"
-	@echo "    install-package Install the built package"
-	@echo "    release-check  Prepare for release"
-	@echo ""
-	@echo "  📊 Quality Assurance:"
-	@echo "    all-checks     Run all quality checks"
-	@echo "    ci             Run CI pipeline locally"
-	@echo "    benchmark      Run performance benchmarks"
-	@echo ""
-	@echo "  📚 Documentation & Utilities:"
-	@echo "    docs           Generate documentation"
-	@echo "    upgrade-deps   Upgrade all dependencies"
-	@echo "    suggestions    Show development suggestions"
-	@echo ""
-	@echo "  💡 Tip: Run 'run help' to see all available commands"
+	echo "RabbitMirror Development Commands:"
+	echo "=================================="
+	echo "  Development Tasks:"
+	echo "    install        Install development dependencies"
+	echo "    test           Run all tests with coverage"
+	echo "    test-quick     Run tests without coverage"
+	echo "    format         Format code with black and isort"
+	echo "    format-check   Check if code is formatted correctly"
+	echo "    lint           Run all linting tools"
+	echo "    security       Run security checks"
+	echo "    type-check     Run type checking"
+	echo ""
+	echo "  Development Workflow:"
+	echo "    dev-setup      Complete development setup"
+	echo "    pre-commit     Run pre-commit hooks on all files"
+	echo "    clean          Clean up build artifacts and cache"
+	echo "    demo           Run a demo of the CLI tool"
+	echo ""
+	echo "  Build and Release:"
+	echo "    build          Build the package"
+	echo "    install-package Install the built package"
+	echo "    release-check  Prepare for release"
+	echo ""
+	echo "  Quality Assurance:"
+	echo "    all-checks     Run all quality checks"
+	echo "    ci             Run CI pipeline locally"
+	echo "    benchmark      Run performance benchmarks"
+	echo ""
+	echo "  Documentation and Utilities:"
+	echo "    docs           Generate documentation"
+	echo "    upgrade-deps   Upgrade all dependencies"
+	echo "    suggestions    Show development suggestions"
+	echo ""
+	echo "  Tip: Run 'run help' to see all available commands"
 
 install:
 	pip install -r requirements.txt
@@ -47,7 +47,8 @@ install:
 test:
 	pytest tests/ -v --cov=rabbitmirror --cov-report=html --cov-report=term
 
-tests: test
+tests:
+	pytest tests/ -v --cov=rabbitmirror --cov-report=html --cov-report=term
 
 test-quick:
 	pytest tests/ -v
@@ -87,68 +88,83 @@ clean:
 build:
 	python -m build
 
-install-package: build
+install-package:
+	run build
 	pip install dist/*.whl
 
 docs:
-	@echo "Documentation generation not yet set up"
-	@echo "Install with: pip install -e '.[docs]'"
+	echo "Building documentation..."
+	cd docs && make html
+	echo "Documentation built in docs/build/html/"
 
 demo:
-	@echo "RabbitMirror CLI Demo:"
-	@echo "====================="
+	echo "RabbitMirror CLI Demo:"
+	echo "====================="
 	python -m rabbitmirror.cli --help
 
-all-checks: format-check lint test security
+benchmark:
+	echo "Running RabbitMirror Performance Benchmarks..."
+	python benchmarks/test_parser_performance.py
+	python benchmarks/test_clustering_performance.py
+	echo "Benchmarks completed! Check benchmark_results/ for reports"
 
-ci: all-checks
+all-checks:
+	run format-check
+	run lint
+	run test
+	run security
 
-dev-setup: install pre-commit
+ci:
+	run all-checks
+
+dev-setup:
+	run install
+	run pre-commit
 
 upgrade-deps:
 	pip install --upgrade pip
 	pip install --upgrade -r requirements.txt
 
-benchmark:
-	@echo "Benchmarks not yet implemented"
-
-release-check: clean all-checks build
-	@echo "✅ Release checks passed!"
-	@echo "Package built in dist/"
+release-check:
+	run clean
+	run all-checks
+	run build
+	echo "Release checks passed!"
+	echo "Package built in dist/"
 
 suggestions:
-	@echo "🚀 RabbitMirror Development Suggestions"
-	@echo "======================================="
-	@echo ""
-	@echo "📋 Immediate Tasks:"
-	@echo "  • Run tests: run test"
-	@echo "  • Check code quality: run all-checks"
-	@echo "  • Format code: run format"
-	@echo "  • Build package: run build"
-	@echo ""
-	@echo "🔧 Development Workflow:"
-	@echo "  • Setup environment: run dev-setup"
-	@echo "  • Run pre-commit hooks: run pre-commit"
-	@echo "  • Clean workspace: run clean"
-	@echo "  • Demo CLI: run demo"
-	@echo ""
-	@echo "📊 Quality Assurance:"
-	@echo "  • Type checking: run type-check"
-	@echo "  • Security scan: run security"
-	@echo "  • Lint code: run lint"
-	@echo "  • CI simulation: run ci"
-	@echo ""
-	@echo "🎯 Next Development Steps:"
-	@echo "  1. Implement TrendAnalyzer class (missing feature)"
-	@echo "  2. Add more comprehensive error handling"
-	@echo "  3. Create example datasets and tutorials"
-	@echo "  4. Set up documentation with Sphinx"
-	@echo "  5. Add performance benchmarks"
-	@echo "  6. Implement web interface (optional)"
-	@echo ""
-	@echo "📦 Publishing:"
-	@echo "  • Release preparation: run release-check"
-	@echo "  • Build for PyPI: run build"
-	@echo "  • Upload to PyPI: twine upload dist/*"
-	@echo ""
-	@echo "💡 Tip: Run 'run help' to see all available commands"
+	echo "RabbitMirror Development Suggestions"
+	echo "======================================="
+	echo ""
+	echo "Immediate Tasks:"
+	echo "  Run tests: run test"
+	echo "  Check code quality: run all-checks"
+	echo "  Format code: run format"
+	echo "  Build package: run build"
+	echo ""
+	echo "Development Workflow:"
+	echo "  Setup environment: run dev-setup"
+	echo "  Run pre-commit hooks: run pre-commit"
+	echo "  Clean workspace: run clean"
+	echo "  Demo CLI: run demo"
+	echo ""
+	echo "Quality Assurance:"
+	echo "  Type checking: run type-check"
+	echo "  Security scan: run security"
+	echo "  Lint code: run lint"
+	echo "  CI simulation: run ci"
+	echo ""
+	echo "Next Development Steps:"
+	echo "  1. Implement TrendAnalyzer class (missing feature)"
+	echo "  2. Add more comprehensive error handling"
+	echo "  3. Create example datasets and tutorials"
+	echo "  4. Set up documentation with Sphinx"
+	echo "  5. Add performance benchmarks"
+	echo "  6. Implement web interface (optional)"
+	echo ""
+	echo "Publishing:"
+	echo "  Release preparation: run release-check"
+	echo "  Build for PyPI: run build"
+	echo "  Upload to PyPI: twine upload dist/*"
+	echo ""
+	echo "Tip: Run 'run help' to see all available commands"
