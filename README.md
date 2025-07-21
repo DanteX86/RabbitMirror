@@ -8,7 +8,7 @@
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![PyPI](https://img.shields.io/pypi/v/rabbitmirror.svg)](https://pypi.org/project/rabbitmirror/)
 
-RabbitMirror is a powerful Python-based command-line tool designed to analyze and understand YouTube watch history patterns. It provides deep insights into viewing behavior, detects potential algorithmic manipulation, and offers comprehensive analysis capabilities for researchers, content creators, and curious users.
+RabbitMirror is a comprehensive Python-based analysis tool designed to analyze and understand YouTube watch history patterns. It provides deep insights into viewing behavior, detects potential algorithmic manipulation, and offers both command-line and web-based interfaces for comprehensive analysis capabilities for researchers, content creators, and curious users.
 
 ## 🎯 Why RabbitMirror?
 

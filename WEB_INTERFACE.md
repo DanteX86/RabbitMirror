@@ -1,3 +1,44 @@
+# Frequently Asked Questions (FAQ) & Support
+
+## General Questions
+
+**What is RabbitMirror?**
+RabbitMirror is a comprehensive analysis tool for YouTube watch history, offering both command-line and web interfaces to help users understand their viewing patterns and detect algorithmic behaviors.
+
+**What formats does RabbitMirror support?**
+- **HTML**: Google Takeout format
+- **JSON**: Pre-processed data
+
+## Installation & Setup
+
+**How do I install RabbitMirror?**
+- Clone the repository.
+- Create a virtual environment: `python -m venv venv`
+- Activate and install dependencies: `source venv/bin/activate; pip install -r requirements.txt`
+
+## Usage
+
+**How do I parse my YouTube history?**
+Run the following command:
+```bash
+python run.py process parse your-watch-history.html --output parsed_data.json
+```
+
+**Can I export data to different formats?**
+Yes, RabbitMirror supports JSON, CSV, YAML, and Excel.
+
+## Troubleshooting
+
+**What if RabbitMirror crashes during processing?**
+- Check log files for errors.
+- Restart the application after fixing any identified issues.
+
+## Getting Help
+
+- **GitHub Issues**: Report bugs or request features.
+- **Discussions**: Join the community discussions.
+- **Wiki**: Access the [Wiki](https://github.com/romulusaugustus/RabbitMirror/wiki) for more detailed documentation.
+
 # 🌐 RabbitMirror Web Interface
 
 ## Overview
