@@ -3,20 +3,18 @@
 Test file to address the timeout decorator issue and provide alternative tests
 """
 import os
-import signal
-
-# Import the modules we're testing
 import sys
 import time
-from datetime import datetime, timedelta
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import patch
 
 import pytest
 
+# Add the project root to the path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-from rabbitmirror.error_recovery import with_timeout
-from rabbitmirror.exceptions import CustomTimeoutError
+# Now import our project modules
+from rabbitmirror.error_recovery import with_timeout  # noqa: E402
+from rabbitmirror.exceptions import CustomTimeoutError  # noqa: E402
 
 
 class TestTimeoutDecoratorFix:
@@ -25,10 +23,10 @@ class TestTimeoutDecoratorFix:
     def test_timeout_decorator_mock_success(self):
         """Test timeout decorator with mocked signal functionality"""
         # Mock the signal handling to avoid platform-specific issues
-        with patch("signal.signal") as mock_signal, patch(
-            "signal.alarm"
-        ) as mock_alarm, patch(
-            "signal.SIGALRM", 14
+        with (
+            patch("signal.signal") as mock_signal,
+            patch("signal.alarm") as mock_alarm,
+            patch("signal.SIGALRM", 14),
         ):  # Standard SIGALRM value
 
             @with_timeout(timeout_seconds=1.0)
@@ -46,9 +44,11 @@ class TestTimeoutDecoratorFix:
     def test_timeout_decorator_mock_timeout(self):
         """Test timeout decorator with mocked timeout scenario"""
         # Mock the signal handling and simulate timeout
-        with patch("signal.signal") as mock_signal, patch(
-            "signal.alarm"
-        ) as mock_alarm, patch("signal.SIGALRM", 14):
+        with (
+            patch("signal.signal") as mock_signal,
+            patch("signal.alarm"),
+            patch("signal.SIGALRM", 14),
+        ):
             # Create a mock that raises timeout
             def timeout_handler(signum, frame):
                 raise CustomTimeoutError("Function timed out after 1.0 seconds")

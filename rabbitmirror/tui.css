@@ -178,9 +178,9 @@ Label {
 #file-selector {
     background: $surface;
     border: solid $primary;
-    width: 60;
-    height: 15;
-    margin: 5;
+    width: 80;
+    height: 25;
+    margin: 3;
     padding: 2;
 }
 
@@ -304,61 +304,23 @@ Switch {
     color: $text;
 }
 
-/* Responsive adjustments */
-@media (max-width: 80) {
-    #file-selector {
-        width: 50;
-        height: 12;
-    }
-    
-    #results-viewer {
-        width: 70;
-        height: 25;
-    }
-    
-    Button {
-        min-width: 12;
-    }
+/* Utility classes */
+.hidden {
+    display: none;
 }
 
-@media (max-width: 60) {
-    #file-selector {
-        width: 40;
-        height: 10;
-    }
-    
-    #results-viewer {
-        width: 55;
-        height: 20;
-    }
-    
-    Button {
-        min-width: 10;
-    }
+/* File browser specific */
+#file-browser {
+    height: 12;
+    margin: 1 0;
+    border: solid $accent;
 }
 
-/* Dark theme specific adjustments */
-.dark {
-    --primary: #3b82f6;
-    --secondary: #6b7280;
-    --accent: #8b5cf6;
-    --success: #10b981;
-    --warning: #f59e0b;
-    --error: #ef4444;
-    --surface: #1f2937;
-    --text: #f3f4f6;
-    --text-muted: #9ca3af;
+#current-dir {
+    background: $surface-lighten-2;
+    color: $text-muted;
+    padding: 0 1;
+    margin: 1 0;
 }
 
-/* Light theme specific adjustments */
-.light {
-    --primary: #2563eb;
-    --secondary: #4b5563;
-    --accent: #7c3aed;
-    --success: #059669;
-    --warning: #d97706;
-    --error: #dc2626;
-    --surface: #f9fafb;
-    --text: #111827;
-    --text-muted: #6b7280;
-}
+/* End of styles */

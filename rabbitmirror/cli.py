@@ -79,20 +79,22 @@ def config_group():
 
 # TUI Command
 @cli.command(name="tui")
-@click.option("--theme", type=click.Choice(["dark", "light"]), default="dark", help="TUI theme")
+@click.option(
+    "--theme", type=click.Choice(["dark", "light"]), default="dark", help="TUI theme"
+)
 def tui_command(theme: str):
     """Launch the Terminal User Interface (TUI)."""
     try:
         from .tui import main as tui_main
-        
+
         # Set theme (if needed)
         if theme == "light":
             # Light theme configuration could be added here
             pass
-        
+
         click.echo("🐰 Launching RabbitMirror TUI...")
         tui_main()
-        
+
     except ImportError as e:
         click.echo(f"❌ TUI dependencies not available: {str(e)}", err=True)
         click.echo("Install TUI dependencies with: pip install textual rich", err=True)

@@ -1,0 +1,67 @@
+/* Simple RabbitMirror TUI Styles */
+
+Screen {
+    background: #1a1a1a;
+    color: #ffffff;
+}
+
+Header {
+    background: #2d2d2d;
+    color: #ffffff;
+    dock: top;
+    height: 3;
+}
+
+Footer {
+    background: #2d2d2d;
+    color: #ffffff;
+    dock: bottom;
+    height: 1;
+}
+
+Static {
+    background: #2d2d2d;
+    color: #ffffff;
+    padding: 1;
+}
+
+Button {
+    margin: 0 1;
+    min-width: 16;
+    height: 3;
+    background: #4a4a4a;
+    color: #ffffff;
+}
+
+Button:hover {
+    background: #5a5a5a;
+}
+
+Input {
+    background: #3a3a3a;
+    color: #ffffff;
+    margin: 0 1;
+}
+
+Label {
+    color: #ffffff;
+    padding: 0 1;
+}
+
+TabbedContent {
+    background: #1a1a1a;
+}
+
+TabPane {
+    padding: 1;
+}
+
+DataTable {
+    background: #2d2d2d;
+    color: #ffffff;
+}
+
+Log {
+    background: #2d2d2d;
+    color: #ffffff;
+}
