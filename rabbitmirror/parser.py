@@ -7,41 +7,25 @@ from bs4 import BeautifulSoup
 
 from .error_recovery import RetryConfig, monitor_errors, with_retry
 from .exceptions import InvalidFormatError, ParsingError
+from .parsers import ParserConfig, ParserFactory, ParserResult
 
 
 class HistoryParser:
-    def __init__(self, file_path: str):
+    def __init__(self, file_path: str, platform: str):
         self.file_path = file_path
-        self.retry_config = RetryConfig(
-            max_attempts=3,
-            base_delay=0.5,
-            retryable_exceptions=[OSError, IOError],
-        )
+        self.platform = platform
 
-    @with_retry(RetryConfig(max_attempts=3, base_delay=0.5))
-    @monitor_errors
-    def parse(self) -> List[Dict[str, Any]]:
-        """Parse the YouTube watch history file and return structured data."""
-        try:
-            return self._parse_with_fallback()
-        except FileNotFoundError as e:
-            raise ParsingError(
-                f"File not found: {self.file_path}",
-                file_path=self.file_path,
-                error_code="FILE_NOT_FOUND",
-            ) from e
-        except UnicodeDecodeError as e:
-            raise ParsingError(
-                f"File encoding error: {str(e)}",
-                file_path=self.file_path,
-                error_code="ENCODING_ERROR",
-            ) from e
-        except Exception as e:
-            raise ParsingError(
-                f"Error parsing file: {str(e)}",
-                file_path=self.file_path,
-                error_code="PARSE_ERROR",
-            ) from e
+    def _get_parser(self) -> BaseParser:
+        config = ParserConfig(file_path=self.file_path)
+        parser = ParserFactory.get_parser(self.platform, config)
+        if not parser:
+            raise ParsingError(f"Unsupported platform: {self.platform}")
+        return parser
+
+    def parse(self) -> ParserResult:
+        """Parse the file using the appropriate platform parser and return structured data."""
+        parser = self._get_parser()
+        return parser.parse()
 
     def _parse_with_fallback(self) -> List[Dict[str, Any]]:
         """Parse file with multiple encoding fallbacks."""

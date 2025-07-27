@@ -107,6 +107,7 @@ def tui_command(theme: str):
 
 @process_group.command(name="parse")
 @click.argument("history_file", type=click.Path(exists=True))
+@click.argument("platform", type=str)
 @click.option("--output", "-o", type=click.Path(), help="Output file for parsed data")
 @click.option(
     "--format",
@@ -117,22 +118,26 @@ def tui_command(theme: str):
 )
 @click.option("--verbose", "-v", is_flag=True, help="Enable verbose output")
 def parse(
-    history_file: str, output: Optional[str], output_format: str, verbose: bool = False
+    history_file: str,
+    platform: str,
+    output: Optional[str],
+    output_format: str,
+    verbose: bool = False,
 ):
-    """Parse a YouTube watch history file."""
+    """Parse a history file from the specified platform."""
     try:
-        parser = HistoryParser(history_file)
-        entries = parser.parse()
+        parser = HistoryParser(history_file, platform)
+        result = parser.parse()
 
         if output:
             output_path = Path(output)
             exporter = ExportFormatter(output_dir=output_path.parent)
             output_file = exporter.export_data(
-                {"entries": entries}, output_format, output_path.stem
+                {"entries": result.entries}, output_format, output_path.stem
             )
-            click.echo(f"✅ Exported {len(entries)} entries to {output_file}")
+            click.echo(f"✅ Exported {len(result.entries)} entries to {output_file}")
         else:
-            click.echo(entries)
+            click.echo(result.entries)
 
     except RabbitMirrorError as e:
         symbolic_logger.log_error("parse_error", e.to_dict())

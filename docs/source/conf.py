@@ -45,7 +45,6 @@ myst_enable_extensions = [
     "replacements",
     "linkify",
     "strikethrough",
-    "table",
 ]
 
 templates_path = ["_templates"]
@@ -208,7 +207,7 @@ html_search_language = "en"
 html_search_options = {"type": "default"}
 
 # HTML search scorer
-html_search_scorer = "scorer.js"
+# html_search_scorer = "scorer.js"
 
 # HTML output encoding
 html_output_encoding = "utf-8"
