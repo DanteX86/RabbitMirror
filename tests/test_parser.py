@@ -8,8 +8,9 @@ from rabbitmirror.parser import HistoryParser
 
 def test_parse_sample_history():
     file_path = Path(__file__).parent / "fixtures" / "sample_history.html"
-    parser = HistoryParser(file_path)
-    entries = parser.parse()
+    parser = HistoryParser(str(file_path), "youtube")
+    result = parser.parse()
+    entries = result.entries
     assert len(entries) == 5, "Should parse 5 entries from the sample history"
     assert (
         entries[0]["title"] == "Python Machine Learning Tutorial"
@@ -37,14 +38,15 @@ def test_parse_entry_with_missing_title(tmp_path):
     test_file = tmp_path / "test_no_title.html"
     test_file.write_text(html_content)
 
-    parser = HistoryParser(str(test_file))
-    entries = parser.parse()
+    parser = HistoryParser(str(test_file), "youtube")
+    result = parser.parse()
+    entries = result.entries
     assert len(entries) == 0, "Should return empty list when no title tag found"
 
 
 def test_convert_timestamp_unknown():
     """Test timestamp conversion with 'Unknown' input."""
-    parser = HistoryParser("dummy_path")
+    parser = HistoryParser("dummy_path", "youtube")
     result = parser._convert_timestamp("Unknown")
     # Should return current time in ISO format
     assert isinstance(result, str)
@@ -53,7 +55,7 @@ def test_convert_timestamp_unknown():
 
 def test_convert_timestamp_valid():
     """Test timestamp conversion with valid YouTube format."""
-    parser = HistoryParser("dummy_path")
+    parser = HistoryParser("dummy_path", "youtube")
     result = parser._convert_timestamp("Dec 15, 2023, 2:30:45 PM PST")
     assert result == "2023-12-15T14:30:45"
 
@@ -62,7 +64,7 @@ def test_convert_timestamp_invalid():
     """Test timestamp conversion with invalid format."""
     import pytest
 
-    parser = HistoryParser("dummy_path")
+    parser = HistoryParser("dummy_path", "youtube")
     # Should raise InvalidFormatError with invalid format
     with pytest.raises(InvalidFormatError):
         parser._convert_timestamp("Invalid timestamp format")
@@ -83,8 +85,9 @@ def test_parse_entry_with_missing_timestamp(tmp_path):
     test_file = tmp_path / "test_no_timestamp.html"
     test_file.write_text(html_content)
 
-    parser = HistoryParser(str(test_file))
-    entries = parser.parse()
+    parser = HistoryParser(str(test_file), "youtube")
+    result = parser.parse()
+    entries = result.entries
     assert len(entries) == 1
     assert entries[0]["title"] == "Test Video"
     assert "T" in entries[0]["timestamp"]  # Should have ISO timestamp
@@ -106,20 +109,30 @@ def test_parse_entry_with_missing_url(tmp_path):
     test_file = tmp_path / "test_no_url.html"
     test_file.write_text(html_content)
 
-    parser = HistoryParser(str(test_file))
-    entries = parser.parse()
+    parser = HistoryParser(str(test_file), "youtube")
+    result = parser.parse()
+    entries = result.entries
     assert len(entries) == 1
     assert entries[0]["title"] == "Test Video Without URL"
     assert entries[0]["url"] == ""  # Should default to empty string
 
 
 def test_parse_empty_html(tmp_path):
-    """Test parsing empty HTML file."""
-    html_content = "<html><body></body></html>"
+    """Test parsing HTML file with YouTube structure but no entries."""
+    html_content = """
+    <html>
+    <head><title>Watch History</title></head>
+    <body>
+        <h1>YouTube Watch History</h1>
+        <!-- No content-cell divs here -->
+    </body>
+    </html>
+    """
 
     test_file = tmp_path / "empty.html"
     test_file.write_text(html_content)
 
-    parser = HistoryParser(str(test_file))
-    entries = parser.parse()
-    assert len(entries) == 0, "Should return empty list for empty HTML"
+    parser = HistoryParser(str(test_file), "youtube")
+    result = parser.parse()
+    entries = result.entries
+    assert len(entries) == 0, "Should return empty list for HTML with no entries"

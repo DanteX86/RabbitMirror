@@ -14,13 +14,14 @@ def sample_history_file():
 @pytest.fixture
 def sample_parser(sample_history_file):
     """Fixture providing a HistoryParser instance with sample data."""
-    return HistoryParser(sample_history_file)
+    return HistoryParser(str(sample_history_file), "youtube")
 
 
 @pytest.fixture
 def sample_entries(sample_parser):
     """Fixture providing parsed entries from sample history."""
-    return sample_parser.parse()
+    result = sample_parser.parse()
+    return result.entries
 
 
 @pytest.fixture

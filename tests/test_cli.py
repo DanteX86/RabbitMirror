@@ -43,7 +43,7 @@ class TestCLI:
         runner = CliRunner()
         result = runner.invoke(cli, ["process", "parse", "--help"])
         assert result.exit_code == 0
-        assert "Parse a YouTube watch history file" in result.output
+        assert "Parse a history file from the specified platform" in result.output
 
     def test_parse_command_with_sample_file(self, sample_history_file, temp_output_dir):
         """Test parse command with sample history file."""
@@ -56,6 +56,7 @@ class TestCLI:
                 "process",
                 "parse",
                 str(sample_history_file),
+                "youtube",
                 "--output",
                 str(output_file),
                 "--format",
@@ -151,7 +152,9 @@ class TestCLI:
     def test_invalid_file_path_handling(self):
         """Test that invalid file paths are handled gracefully."""
         runner = CliRunner()
-        result = runner.invoke(cli, ["process", "parse", "nonexistent_file.html"])
+        result = runner.invoke(
+            cli, ["process", "parse", "nonexistent_file.html", "youtube"]
+        )
         assert result.exit_code != 0
         assert "Error" in result.output or "No such file or directory" in result.output
 
@@ -294,6 +297,7 @@ class TestCLI:
                 "process",
                 "parse",
                 str(sample_history_file),
+                "youtube",
                 "--output",
                 str(json_file),
                 "--format",
@@ -319,7 +323,15 @@ class TestCLI:
 
         # First parse the history file to create a JSON file for validation
         result_parse = runner.invoke(
-            cli, ["process", "parse", str(sample_history_file), "--format", "json"]
+            cli,
+            [
+                "process",
+                "parse",
+                str(sample_history_file),
+                "youtube",
+                "--format",
+                "json",
+            ],
         )
         assert result_parse.exit_code == 0
 
@@ -436,6 +448,7 @@ class TestCLI:
                 "process",
                 "parse",
                 str(sample_history_file),
+                "youtube",
                 "--output",
                 str(json_file),
                 "--format",

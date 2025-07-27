@@ -175,8 +175,9 @@ def cluster(
 ):
     """Cluster videos in watch history."""
     try:
-        parser = HistoryParser(history_file)
-        entries = parser.parse()
+        parser = HistoryParser(history_file, "youtube")
+        result = parser.parse()
+        entries = result.entries
 
         engine = ClusterEngine(eps=eps, min_samples=min_samples)
         clusters = engine.cluster_videos(entries)
@@ -231,8 +232,9 @@ def analyze_suppression(
 ):
     """Analyze content suppression patterns."""
     try:
-        parser = HistoryParser(history_file)
-        entries = parser.parse()
+        parser = HistoryParser(history_file, "youtube")
+        result = parser.parse()
+        entries = result.entries
 
         analyzer = SuppressionIndex(baseline_period_days=period)
         results = analyzer.calculate_suppression(entries)
@@ -289,8 +291,9 @@ def detect_patterns(
 ):
     """Detect potential adversarial patterns."""
     try:
-        parser = HistoryParser(history_file)
-        entries = parser.parse()
+        parser = HistoryParser(history_file, "youtube")
+        result = parser.parse()
+        entries = result.entries
 
         profiler = AdversarialProfiler(similarity_threshold=threshold)
         patterns = profiler.identify_adversarial_patterns(entries)
@@ -350,8 +353,9 @@ def simulate(
 ):
     """Simulate a watch history profile."""
     try:
-        parser = HistoryParser(history_file)
-        entries = parser.parse()
+        parser = HistoryParser(history_file, "youtube")
+        result = parser.parse()
+        entries = result.entries
 
         simulator = ProfileSimulator(seed=seed)
         simulated_profile = simulator.simulate_profile(entries, duration_days=duration)
@@ -433,8 +437,9 @@ def batch_process(
             for file_path in files:
                 try:
                     # Parse file
-                    parser = HistoryParser(str(file_path))
-                    entries = parser.parse()
+                    parser = HistoryParser(str(file_path), "youtube")
+                    result = parser.parse()
+                    entries = result.entries
 
                     # Generate output filename
                     relative_path = file_path.relative_to(input_path)
@@ -556,8 +561,9 @@ def trend_analysis(
     """Analyze trends in watch history."""
     try:
         # Parse history file
-        parser = HistoryParser(history_file)
-        entries = parser.parse()
+        parser = HistoryParser(history_file, "youtube")
+        result = parser.parse()
+        entries = result.entries
 
         # Calculate trends
         analyzer = TrendAnalyzer(period_type=period, normalize=normalize)
