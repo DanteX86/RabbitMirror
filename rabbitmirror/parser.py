@@ -22,7 +22,7 @@ class HistoryParser:
         return parser
 
     def parse(self) -> ParserResult:
-        """Parse the file using the appropriate platform parser and return structured data."""
+        """Parse file using appropriate platform parser and return structured data."""
         parser = self._get_parser()
         return parser.parse()
 
@@ -105,7 +105,7 @@ class HistoryParser:
             return None
 
     def _convert_timestamp(self, timestamp_str: str) -> str:
-        """Convert timestamp from YouTube format to ISO format with multiple format support."""
+        """Convert timestamp from YouTube format to ISO with multiple format support."""
         if timestamp_str == "Unknown" or not timestamp_str.strip():
             return datetime.now().isoformat()
 
