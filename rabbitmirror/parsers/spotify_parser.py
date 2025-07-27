@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 
 import json
-import re
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
-from ..exceptions import InvalidFormatError, ParsingError
-from .base_parser import BaseParser, ParserConfig, ParserResult
+from ..exceptions import InvalidFormatError
+from .base_parser import BaseParser
 
 
 class SpotifyParser(BaseParser):

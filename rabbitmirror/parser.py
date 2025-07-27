@@ -5,9 +5,8 @@ from typing import Any, Dict, List, Optional
 
 from bs4 import BeautifulSoup
 
-from .error_recovery import RetryConfig, monitor_errors, with_retry
 from .exceptions import InvalidFormatError, ParsingError
-from .parsers import ParserConfig, ParserFactory, ParserResult
+from .parsers import BaseParser, ParserConfig, ParserFactory, ParserResult
 
 
 class HistoryParser:

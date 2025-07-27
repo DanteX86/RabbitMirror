@@ -28,7 +28,7 @@ def build_docs():
 
         if result.returncode == 0:
             print("✅ Documentation built successfully!")
-            print(f"📖 Open docs/build/html/index.html in your browser")
+            print("📖 Open docs/build/html/index.html in your browser")
             return True
         else:
             print("❌ Error building documentation:")
@@ -168,7 +168,7 @@ Examples:
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
     # Build command
-    build_parser = subparsers.add_parser("build", help="Build documentation")
+    subparsers.add_parser("build", help="Build documentation")
 
     # Serve command
     serve_parser = subparsers.add_parser("serve", help="Serve documentation locally")
@@ -177,13 +177,13 @@ Examples:
     )
 
     # Clean command
-    clean_parser = subparsers.add_parser("clean", help="Clean build files")
+    subparsers.add_parser("clean", help="Clean build files")
 
     # Check command
-    check_parser = subparsers.add_parser("check", help="Check documentation")
+    subparsers.add_parser("check", help="Check documentation")
 
     # Init command
-    init_parser = subparsers.add_parser("init", help="Initialize documentation")
+    subparsers.add_parser("init", help="Initialize documentation")
 
     args = parser.parse_args()
 

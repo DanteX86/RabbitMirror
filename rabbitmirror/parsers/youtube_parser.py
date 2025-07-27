@@ -7,8 +7,8 @@ from typing import Any, Dict, List, Optional, Union
 
 from bs4 import BeautifulSoup
 
-from ..exceptions import InvalidFormatError, ParsingError
-from .base_parser import BaseParser, ParserConfig, ParserResult
+from ..exceptions import InvalidFormatError
+from .base_parser import BaseParser
 
 
 class YouTubeParser(BaseParser):
