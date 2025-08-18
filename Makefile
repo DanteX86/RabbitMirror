@@ -211,6 +211,16 @@ update: ## Update repository: upgrade deps, format, lint, and run quick tests
 	$(MAKE) lint
 	$(MAKE) test-quick
 
+.PHONY: update-cli
+update-cli: ## Use the user-level 'update' CLI: no args runs maintenance; args open in 
+	@echo "Usage: update [paths...]"
+	@echo " - No args: runs 'make update' in the current Git repo"
+	@echo " - With args: opens files/dirs in \$$EDITOR (fallback: VS Code or TextEdit)"
+	@echo "Script location: $$HOME/bin/update"
+	@echo "Examples:"
+	@echo "   update"
+	@echo "   update README.md DEVELOPMENT.md"
+
 # Next.js server management
 .PHONY: next-start next-stop
 NEXT_HOST ?= 0.0.0.0
