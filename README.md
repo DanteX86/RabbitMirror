@@ -401,6 +401,16 @@ Generates synthetic profiles for:
 
 ## 🛠️ Development
 
+### Maintenance: update target and update CLI
+- Make target: run repository maintenance (upgrade deps, format, lint, quick tests)
+  - make update
+- User-level CLI shortcut: update
+  - No args: runs make update in the current Git repo
+  - With paths: opens files/dirs in your $EDITOR (falls back to VS Code or TextEdit on macOS)
+  - Examples:
+    - update
+    - update README.md DEVELOPMENT.md
+
 ### Setting Up Development Environment
 
 1. **Fork and clone the repository**

@@ -32,6 +32,15 @@
 
 ## 🛠️ Development Commands
 
+### Maintenance helpers
+- make update — upgrades dependencies, formats code, runs linters, and executes quick tests
+- update (CLI) — convenience command installed to ~/bin/update
+  - No arguments: runs make update in the current Git repository
+  - With file paths: opens them in $EDITOR (fallback to VS Code or TextEdit on macOS)
+  - Examples:
+    - update
+    - update README.md DEVELOPMENT.md
+
 Use our Makefile for common development tasks:
 
 ```bash
