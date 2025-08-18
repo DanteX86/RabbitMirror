@@ -77,6 +77,9 @@ demo: ensure-venv ## Run a demo of the CLI tool
 	@echo "====================="
 	"$(VENV_BIN)/python" -m rabbitmirror.cli --help
 
+run-tui: ensure-venv ## Launch the TUI (uses 256-color TERM)
+	TERM=xterm-256color "$(VENV_BIN)/rabbitmirror" tui
+
 all-checks: format-check lint type-check test security ## Run all quality checks
 
 ci: all-checks ## Run CI pipeline locally
@@ -84,8 +87,10 @@ ci: all-checks ## Run CI pipeline locally
 dev-setup: install pre-commit ## Complete development setup
 
 upgrade-deps: ensure-venv ## Upgrade all dependencies
-	"$(VENV_BIN)/pip" install --upgrade pip
-	"$(VENV_BIN)/pip" install --upgrade -r requirements.txt
+	"$(VENV_BIN)/pip" install --upgrade pip setuptools wheel
+	@if [ -f requirements.txt ]; then "$(VENV_BIN)/pip" install --upgrade -r requirements.txt; fi
+	# Also upgrade editable install with dev extras
+	"$(VENV_BIN)/pip" install --upgrade -e ".[dev]"
 
 benchmark: ## Run performance benchmarks (if available)
 	@echo "Benchmarks not yet implemented"
@@ -109,6 +114,8 @@ suggestions: ## Show development suggestions and next steps
 	@echo "  • Run pre-commit hooks: make pre-commit"
 	@echo "  • Clean workspace: make clean"
 	@echo "  • Demo CLI: make demo"
+	@echo "  • Launch TUI: rabbitmirror tui"
+	@echo "  • CLI help: rabbitmirror --help"
 	@echo ""
 	@echo "\033[1;36m📊 Quality Assurance:\033[0m"
 	@echo "  • Type checking: make type-check"
@@ -137,6 +144,9 @@ ensure-venv:
 
 venv-pip-upgrade: ensure-venv
 	"$(VENV_BIN)/python" -m pip install --upgrade pip
+
+activate: ensure-venv ## Show activation command for current shell
+	@echo "Run: source $(VENV_BIN)/activate"
 
 venv-shell: ensure-venv ## Open a subshell with the venv activated
 	@echo "Activating virtual environment at $(VENV_DIR). Exit the shell to deactivate."

@@ -280,6 +280,9 @@ class RabbitMirrorTUI(App):
         self.analysis_results = {}
         self.operation_start_time = None
         self.timer_task = None
+        # Initialize demo workflow attributes to avoid attribute-before-definition issues
+        self.demo_task = None
+        self.demo_report_path = None
 
     def compose(self) -> ComposeResult:
         """Create the main layout"""
@@ -596,7 +599,7 @@ class RabbitMirrorTUI(App):
 
             # Quick pattern detection
             profiler = AdversarialProfiler()
-            patterns = profiler.identify_patterns(self.current_data)
+            patterns = profiler.identify_adversarial_patterns(self.current_data)
 
             # Quick clustering
             cluster_engine = ClusterEngine()
@@ -650,7 +653,7 @@ class RabbitMirrorTUI(App):
 
             # Run pattern detection
             profiler = AdversarialProfiler(similarity_threshold=threshold)
-            patterns = profiler.identify_patterns(self.current_data)
+            patterns = profiler.identify_adversarial_patterns(self.current_data)
 
             # Store and display results
             self.analysis_results["patterns"] = patterns
@@ -784,12 +787,22 @@ class RabbitMirrorTUI(App):
         try:
             self.notify("📋 Generating report...", severity="information")
 
-            # Generate report
+            # Generate report using the dashboard generator
             dashboard_generator = DashboardGenerator()
-            report_path = dashboard_generator.generate_comprehensive_dashboard(
-                self.analysis_results, output_path="rabbitmirror_report.html"
+            output_dir = Path("report_output")
+            generated_files = dashboard_generator.generate_dashboard(
+                self.analysis_results, output_dir
             )
 
+            # Prefer index if present, otherwise pick any generated file
+            report_path = generated_files.get("index") or next(
+                iter(generated_files.values()), None
+            )
+            if report_path is None:
+                raise ValueError("No dashboard files were generated.")
+
+            # Store for 'Open Report' action compatibility
+            self.demo_report_path = str(report_path)
             self.notify(f"✅ Report generated: {report_path}", severity="success")
 
         except (OSError, ValueError) as e:

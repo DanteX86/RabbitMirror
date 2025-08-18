@@ -42,6 +42,44 @@ RabbitMirror is a comprehensive Python-based analysis tool designed to analyze a
 
 ## 🚀 Quick Start
 
+### Developer Quickstart
+
+For contributors and local development, the Makefile is wired to a project-local virtual environment (.venv) and routes all tools through it.
+
+Requirements:
+- Python 3.9+ (Homebrew on Apple Silicon: /opt/homebrew/bin/python3)
+- git and make
+
+Get started:
+1) Clone and enter the repo:
+   git clone https://github.com/DanteX86/RabbitMirror.git
+   cd RabbitMirror
+
+2) Bootstrap local venv and install dev extras:
+   make dev-setup
+
+3) Verify CLI and TUI:
+   .venv/bin/rabbitmirror --help
+   TERM=xterm-256color .venv/bin/rabbitmirror tui
+
+4) Common workflows:
+   make test          # run tests with coverage
+   make test-quick    # faster tests without coverage
+   make lint          # flake8/pylint/bandit
+   make format        # black + isort
+   make type-check    # mypy
+   make all-checks    # run all quality gates
+
+5) Optional: activate the venv for ad‑hoc work:
+   source .venv/bin/activate
+
+6) Upgrade dependencies later:
+   make upgrade-deps
+
+Tip:
+- Run make help to see all available commands.
+- You can also run CLI groups directly: .venv/bin/rabbitmirror process --help | analyze --help | report --help | config --help | utils --help
+
 ### Prerequisites
 - Python 3.8 or higher
 - pip package manager
@@ -157,7 +195,7 @@ python run.py process batch-process ./history_files/ --output-dir ./processed/ -
 
 #### Generate Reports
 ```bash
-python run.py report generate-report data.json template.html report.html --format html --theme dark
+rabbitmirror report generate-report data.json template.html report.html --format html --theme dark
 ```
 
 ### Command Groups
@@ -208,33 +246,33 @@ RabbitMirror includes a built-in configuration system to manage persistent setti
 #### Set Configuration Values
 ```bash
 # Set local configuration (project-specific)
-python run.py config set api_key "your-api-key"
-python run.py config set default_output_format "json"
+rabbitmirror config set api_key "your-api-key"
+rabbitmirror config set default_output_format "json"
 
 # Set global configuration (user-wide)
-python run.py config set default_theme "dark" --global
-python run.py config set analysis_threshold "0.7" --global
+rabbitmirror config set default_theme "dark" --global
+rabbitmirror config set analysis_threshold "0.7" --global
 ```
 
 #### Get Configuration Values
 ```bash
 # Get local configuration
-python run.py config get api_key
+rabbitmirror config get api_key
 
 # Get global configuration
-python run.py config get default_theme --global
+rabbitmirror config get default_theme --global
 ```
 
 #### List All Configuration
 ```bash
 # List all configuration (text format)
-python run.py config list
+rabbitmirror config list
 
 # List in JSON format
-python run.py config list --format json
+rabbitmirror config list --format json
 
 # List in YAML format
-python run.py config list --format yaml
+rabbitmirror config list --format yaml
 ```
 
 ### Output Formats
@@ -491,19 +529,21 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ```bash
 # 1. Parse your watch history
-python run.py process parse watch-history.html --output parsed.json
+rabbitmirror process parse watch-history.html --output parsed.json
+ata.json
 
 # 2. Analyze clusters
-python run.py analyze cluster watch-history.html --output clusters.json
+rabbitmirror analyze cluster watch-history.html --output clusters.json
+son --visualization
 
 # 3. Detect patterns
-python run.py analyze detect-patterns watch-history.html --output patterns.json
+rabbitmirror analyze detect-patterns watch-history.html --output patterns.json
 
 # 4. Analyze suppression
-python run.py analyze analyze-suppression watch-history.html --output suppression.json
+rabbitmirror analyze analyze-suppression watch-history.html --output suppression.json
 
 # 5. Generate comprehensive report
-python run.py report generate-report parsed.json template.html report.html
+rabbitmirror report generate-report parsed.json template.html report.html
 ```
 
 ### Scripted Analysis

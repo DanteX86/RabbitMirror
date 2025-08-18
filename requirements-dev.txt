@@ -8,6 +8,9 @@ pytest-mock>=3.10.0
 pytest-benchmark>=4.0.0
 pytest-xdist>=3.0.0
 
+# Additional tools for benchmarks
+psutil>=5.9.0
+
 # Type checking
 mypy>=1.8.0
 
