@@ -30,9 +30,7 @@ class TestCLIErrorBranches:
         bad_file.write_text("not supported format", encoding="utf-8")
 
         runner = CliRunner()
-        res = runner.invoke(
-            report_group.commands["export-dashboard"], [str(bad_file)]
-        )
+        res = runner.invoke(report_group.commands["export-dashboard"], [str(bad_file)])
         # Should print an error via exception branch
         assert res.exit_code == 0 or res.exit_code == 1
         assert "Error exporting dashboard" in res.output or "❌" in res.output
@@ -44,7 +42,7 @@ class TestCLIErrorBranches:
 
         runner = CliRunner()
         res = runner.invoke(
-            utils_group.commands["convert"], [str(bad_file), "json", "--output", str(tmp_path / "o.json")]
+            utils_group.commands["convert"],
+            [str(bad_file), "json", "--output", str(tmp_path / "o.json")],
         )
         assert res.exit_code != 0 or "Error converting file" in res.output
-

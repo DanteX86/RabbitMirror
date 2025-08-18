@@ -416,7 +416,12 @@ def generate_report(
         generator.generate_report(data, template_name, output_file)
         click.echo(f"✅ Generated report at {output_file}")
 
-    except (FileNotFoundError, ValueError, json.JSONDecodeError) as e:
+    except (
+        RabbitMirrorError,
+        FileNotFoundError,
+        ValueError,
+        json.JSONDecodeError,
+    ) as e:
         symbolic_logger.log_error("report_generation_error", e)
         click.echo(f"❌ Error generating report: {str(e)}", err=True)
 
@@ -728,7 +733,12 @@ def export_dashboard(
         else:
             click.echo(f"\nDashboard exported to: {output_path}")
 
-    except (FileNotFoundError, ValueError, json.JSONDecodeError) as e:
+    except (
+        RabbitMirrorError,
+        FileNotFoundError,
+        ValueError,
+        json.JSONDecodeError,
+    ) as e:
         symbolic_logger.log_error("dashboard_export_error", e)
         click.echo(f"❌ Error exporting dashboard: {str(e)}", err=True)
 
@@ -929,7 +939,12 @@ def convert_file(input_file: str, output_format: str, output: Optional[str]):
 
         click.echo(f"✅ Converted {input_file} to {output_file}")
 
-    except (FileNotFoundError, ValueError, json.JSONDecodeError) as e:
+    except (
+        RabbitMirrorError,
+        FileNotFoundError,
+        ValueError,
+        json.JSONDecodeError,
+    ) as e:
         symbolic_logger.log_error("conversion_error", e)
         click.echo(f"❌ Error converting file: {str(e)}", err=True)
 

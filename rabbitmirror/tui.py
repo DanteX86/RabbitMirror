@@ -765,7 +765,9 @@ class RabbitMirrorTUI(App):
             self.notify("✅ Trend analysis complete!", severity="success")
 
         except ValueError as e:
-            self.notify(f"❌ Trend analysis input invalid: {str(e)}", severity="warning")
+            self.notify(
+                f"❌ Trend analysis input invalid: {str(e)}", severity="warning"
+            )
             self.logger.log_error("TrendAnalysisInputError", e)
         except (RuntimeError, OSError) as e:
             self.notify(f"❌ Trend analysis failed: {str(e)}", severity="error")
