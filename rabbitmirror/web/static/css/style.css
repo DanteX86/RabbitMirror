@@ -1,3 +1,59 @@
+/* Theme styles and prefers-color-scheme support */
+:root {
+  color-scheme: light dark;
+}
+
+/* Auto mode uses system preference; explicit themes can be set via [data-theme] on html */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --rm-bg: #121212;
+    --rm-text: #e6e6e6;
+    --rm-card: #1e1e1e;
+    --rm-border: #2c2c2c;
+  }
+}
+
+:root[data-theme="dark"] {
+  --rm-bg: #121212;
+  --rm-text: #e6e6e6;
+  --rm-card: #1e1e1e;
+  --rm-border: #2c2c2c;
+}
+
+:root[data-theme="light"] {
+  --rm-bg: #ffffff;
+  --rm-text: #212529;
+  --rm-card: #ffffff;
+  --rm-border: #dee2e6;
+}
+
+body {
+  background-color: var(--rm-bg, #ffffff);
+  color: var(--rm-text, #212529);
+}
+
+.card, .alert, .dropdown-menu, .modal-content {
+  background-color: var(--rm-card, #ffffff);
+  color: var(--rm-text, #212529);
+  border-color: var(--rm-border, #dee2e6);
+}
+
+/* Ensure tables readable in dark mode */
+.table {
+  --bs-table-bg: var(--rm-card, #ffffff);
+  --bs-table-striped-bg: rgba(255,255,255,0.05);
+  --bs-table-striped-color: var(--rm-text, #212529);
+  --bs-table-color: var(--rm-text, #212529);
+}
+
+.visually-hidden-focusable:active, .visually-hidden-focusable:focus {
+  position: static !important;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  clip: auto;
+}
+
 /* RabbitMirror Web Interface Styles */
 
 .feature-icon {

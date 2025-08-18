@@ -1,4 +1,4 @@
-.PHONY: help install test lint format clean docs build suggestions cl venv-shell ensure-venv venv-pip-upgrade
+.PHONY: help install test lint format clean docs build suggestions cl venv-shell ensure-venv venv-pip-upgrade tokei-artifacts
 
 # Venv settings
 VENV_DIR ?= .venv
@@ -108,6 +108,7 @@ suggestions: ## Show development suggestions and next steps
 	@echo "  • Check code quality: make all-checks"
 	@echo "  • Format code: make format"
 	@echo "  • Build package: make build"
+	@echo "  • Generate Tokei stats: make tokei-artifacts"
 	@echo ""
 	@echo "\033[1;36m🔧 Development Workflow:\033[0m"
 	@echo "  • Setup environment: make dev-setup"
@@ -131,7 +132,7 @@ suggestions: ## Show development suggestions and next steps
 	@echo "  5. Add performance benchmarks"
 	@echo "  6. Implement web interface (optional)"
 	@echo ""
-	@echo "\033[1;36m📦 Publishing:\033[0m"
+	@echo "\033[1;33m💡 Tip: Run 'make help' to see all available commands\033[0m"
 	@echo "  • Release preparation: make release-check"
 	@echo "  • Build for PyPI: make build"
 	@echo "  • Upload to PyPI: twine upload dist/*"
@@ -151,6 +152,113 @@ activate: ensure-venv ## Show activation command for current shell
 venv-shell: ensure-venv ## Open a subshell with the venv activated
 	@echo "Activating virtual environment at $(VENV_DIR). Exit the shell to deactivate."
 	@. "$(VENV_BIN)/activate"; exec "$(SHELL)" -l
+
+# Code statistics via Tokei
+# Generates JSON, per-file JSON, CSVs, YAML, and a context.json into _artifacts/tokei
+# Requires: tokei, jq; YAML prefers yq or PyYAML. Uses $(PYTHON) for conversions.
+tokei-artifacts: ## Generate Tokei stats (JSON, per-file JSON, CSV, YAML) in _artifacts/tokei
+	@set -eo pipefail; \
+	ARTIFACTS_DIR="_artifacts/tokei"; export ARTIFACTS_DIR; \
+	mkdir -p "$$ARTIFACTS_DIR"; \
+	if ! command -v tokei >/dev/null 2>&1; then echo "ERROR: tokei not found. Install with: brew install tokei"; exit 2; fi; \
+	if ! command -v jq >/dev/null 2>&1; then echo "ERROR: jq not found. Install with: brew install jq"; exit 2; fi; \
+	echo "==> Generating Tokei JSON"; \
+	tokei -o json \
+	  -e .git -e target -e node_modules -e dist -e build \
+	  -e venv -e .venv -e .tox -e .nox -e .mypy_cache -e .pytest_cache \
+	  -e .direnv -e .idea -e .vscode \
+	  . \
+	| jq -S '.' > "_artifacts/tokei/tokei.json"; \
+	echo "==> Generating per-file JSON"; \
+	tokei -o json --files \
+	  -e .git -e target -e node_modules -e dist -e build \
+	  -e venv -e .venv -e .tox -e .nox -e .mypy_cache -e .pytest_cache \
+	  -e .direnv -e .idea -e .vscode \
+	  . \
+	| jq -S '.' > "_artifacts/tokei/tokei_files.json"; \
+	echo "==> Converting JSON to CSV (per-language)"; \
+	printf '%s\n' \
+	  'import json, sys, csv' \
+	  'src, dst = sys.argv[1], sys.argv[2]' \
+	  'with open(src, "r", encoding="utf-8") as f:' \
+	  '    data = json.load(f)' \
+	  'rows = []' \
+	  'for lang in sorted(data.keys()):' \
+	  '    if lang == "Total":' \
+	  '        continue' \
+	  '    stats = data.get(lang) or {}' \
+	  '    code = int(stats.get("code", 0))' \
+	  '    comments = int(stats.get("comments", 0))' \
+	  '    blanks = int(stats.get("blanks", 0))' \
+	  '    lines = int(stats.get("lines", code + comments + blanks))' \
+	  '    files = int(stats.get("n_files", len(stats.get("reports", []))))' \
+	  '    rows.append([lang, files, code, comments, blanks, lines])' \
+	  'with open(dst, "w", newline="", encoding="utf-8") as f:' \
+	  '    w = csv.writer(f)' \
+	  '    w.writerow(["language","files","code","comments","blanks","lines"])' \
+	  '    w.writerows(rows)' \
+	| "$(PYTHON)" - "_artifacts/tokei/tokei.json" "_artifacts/tokei/tokei.csv";
+	echo "==> Converting per-file JSON to CSV"; \
+	printf '%s\n' \
+	  'import json, sys, csv' \
+	  'src, dst = sys.argv[1], sys.argv[2]' \
+	  'with open(src, "r", encoding="utf-8") as f:' \
+	  '    data = json.load(f)' \
+	  'with open(dst, "w", newline="", encoding="utf-8") as f:' \
+	  '    w = csv.writer(f)' \
+	  '    w.writerow(["language","path","code","comments","blanks","lines"])' \
+	  '    for lang in sorted(data.keys()):' \
+	  '        if lang == "Total":' \
+	  '            continue' \
+	  '        stats = data.get(lang) or {}' \
+	  '        for rep in stats.get("reports", []) or []:' \
+	  '            name = rep.get("name") or rep.get("path") or rep.get("file") or "?"' \
+	  '            s = rep.get("stats") or rep' \
+	  '            code = int(s.get("code", 0))' \
+	  '            comments = int(s.get("comments", 0))' \
+	  '            blanks = int(s.get("blanks", 0))' \
+	  '            lines = int(s.get("lines", code + comments + blanks))' \
+	  '            w.writerow([lang, name, code, comments, blanks, lines])' \
+	| "$(PYTHON)" - "_artifacts/tokei/tokei_files.json" "_artifacts/tokei/tokei_files.csv";
+	echo "==> YAML export"; \
+	if command -v yq > /dev/null 2>&1; then \
+	  yq -P '.' "_artifacts/tokei/tokei.json" > "_artifacts/tokei/tokei.yaml"; \
+	else \
+	  printf '%s\n' \
+	    'import json, sys' \
+	    'try:' \
+	    '    import yaml' \
+	    'except Exception as e:' \
+	    '    print("WARN: PyYAML not installed; skipping YAML export. Install with: pip install pyyaml", file=sys.stderr)' \
+	    '    sys.exit(0)' \
+	    'src, dst = sys.argv[1], sys.argv[2]' \
+	    'with open(src, "r", encoding="utf-8") as f:' \
+	    '    data = json.load(f)' \
+	    'with open(dst, "w", encoding="utf-8") as f:' \
+	    '    yaml.safe_dump(data, f, sort_keys=True)' \
+	  | "$(PYTHON)" - "_artifacts/tokei/tokei.json" "_artifacts/tokei/tokei.yaml"; \
+	fi;
+	echo "==> Stamping context"; \
+	printf '{ "repo":"%s","commit":"%s","tokei_version":"%s","generated_at":"%s" }\n' \
+	  "$(notdir $(CURDIR))" \
+	  "$$(git rev-parse --short HEAD 2>/dev/null || echo unknown)" \
+	  "$$(tokei --version | awk '{print $$2}')" \
+	  "$$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
+	  > "_artifacts/tokei/context.json"; \
+	echo "==> Validating CSV"; \
+	printf '%s\n' \
+	  'import csv, sys' \
+	  'ok = True' \
+	  'with open(sys.argv[1], newline="", encoding="utf-8") as f:' \
+	  '    r = csv.DictReader(f)' \
+	  '    for row in r:' \
+	  '        code = int(row["code"]) ; comments = int(row["comments"]) ; blanks = int(row["blanks"]) ; lines = int(row["lines"])' \
+	  '        if lines != code + comments + blanks:' \
+	  '            ok = False' \
+	  '            print("Mismatch:", row)' \
+	  '            break' \
+	  'print("OK" if ok else "FAIL")' \
+	| "$(PYTHON)" - "_artifacts/tokei/tokei.csv";
 
 # Convenience aliases
 .PHONY: similar similar.

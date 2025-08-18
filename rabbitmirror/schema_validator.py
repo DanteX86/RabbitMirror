@@ -377,4 +377,3 @@ class SchemaValidator:
         if expected_type == "null":
             return value is None
         return False
-        return False

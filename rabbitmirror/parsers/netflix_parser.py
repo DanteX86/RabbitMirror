@@ -125,9 +125,9 @@ class NetflixParser(BaseParser):
         """
         try:
             return datetime.strptime(timestamp_str, "%m/%d/%y").isoformat()
-        except ValueError:
+        except ValueError as exc:
             raise InvalidFormatError(
                 f"Invalid Netflix timestamp format: {timestamp_str}",
                 file_path=str(self.config.file_path),
                 error_code="INVALID_TIMESTAMP_FORMAT",
-            )
+            ) from exc

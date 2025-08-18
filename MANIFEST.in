@@ -8,8 +8,11 @@ include pytest.ini
 include .gitignore
 include Makefile
 
-# Include any template files
+# Include any template and static files
 recursive-include rabbitmirror/templates *.html *.md *.css *.js
+recursive-include rabbitmirror/static *.css *.js *.png *.jpg *.jpeg *.svg *.ico
+recursive-include rabbitmirror/web/static *.css *.js *.png *.jpg *.jpeg *.svg *.ico
+recursive-include rabbitmirror/web/templates *.html
 
 # Include test data and fixtures
 recursive-include tests *.py *.json *.html *.yaml

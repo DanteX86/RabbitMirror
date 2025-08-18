@@ -10,6 +10,9 @@ from .base_parser import BaseParser
 from .registry import get_global_registry
 
 
+# pylint: disable=duplicate-code
+# TODO: Several parser modules share similar validation/timestamp parsing logic.
+# Consider refactoring common parts into shared utilities to reduce duplication.
 class PluginManager:
     """Manager for dynamically loading and managing parser plugins."""
 

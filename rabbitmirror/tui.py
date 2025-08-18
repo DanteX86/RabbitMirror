@@ -259,7 +259,6 @@ class ResultsViewer(ModalScreen):
 class RabbitMirrorTUI(App):
     """Main Terminal User Interface for RabbitMirror"""
 
-    CSS_PATH = "/Users/romulusaugustus/Documents/RabbitMirror/rabbitmirror/tui.css"
     TITLE = "🐰 RabbitMirror - YouTube Watch History Analyzer"
     SUB_TITLE = "Interactive Terminal Interface"
 
@@ -472,6 +471,28 @@ class RabbitMirrorTUI(App):
 
     def on_mount(self) -> None:
         """Initialize the application"""
+        # Attempt to load packaged CSS for the TUI
+        try:
+            from importlib.resources import as_file, files
+
+            res = files("rabbitmirror").joinpath("static/css/tui.css")
+            with as_file(res) as css_path:
+                # Textual will read the CSS from this file path
+                self.load_css(str(css_path))  # type: ignore[attr-defined]
+        except Exception as e:  # pylint: disable=broad-except
+            # Non-fatal if stylesheet cannot be loaded; attempt to log, fall back to stderr
+            try:
+                if getattr(self, "logger", None) is not None:
+                    self.logger.log_event("tui_css_load_failed", {"error": str(e)})
+                else:
+                    import sys  # pylint: disable=import-outside-toplevel
+
+                    sys.stderr.write(f"TUI CSS load failed: {e}\n")
+            except Exception as le:  # pylint: disable=broad-except
+                import sys  # pylint: disable=import-outside-toplevel
+
+                sys.stderr.write(f"TUI CSS warning: {le}\n")
+
         self.notify("🐰 RabbitMirror TUI started!", severity="information")
         self.load_settings()
 
@@ -493,7 +514,7 @@ class RabbitMirrorTUI(App):
                     settings["default_threshold"]
                 )
 
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-except
             self.logger.log_error("SettingsError", e)
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
@@ -768,9 +789,7 @@ class RabbitMirrorTUI(App):
             self.notify("✅ Trend analysis complete!", severity="success")
 
         except ValueError as e:
-            self.notify(
-                f"❌ Trend analysis input invalid: {str(e)}", severity="warning"
-            )
+            self.notify(f"❌ Trend analysis input invalid: {str(e)}", severity="warning")
             self.logger.log_error("TrendAnalysisInputError", e)
         except (RuntimeError, OSError) as e:
             self.notify(f"❌ Trend analysis failed: {str(e)}", severity="error")
@@ -824,15 +843,18 @@ class RabbitMirrorTUI(App):
         # Disable Open Report until run completes
         try:
             self.query_one("#open-report", Button).disabled = True
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-except
             # If button not present yet, log and continue
             self.logger.log_error("OpenReportButtonMissing", e)
         self.demo_task = asyncio.create_task(self._run_demo_workflow_task())
 
     async def _run_demo_workflow_task(self) -> None:
-        import os
-        import re
-        from asyncio.subprocess import PIPE, create_subprocess_exec
+        import os  # pylint: disable=import-outside-toplevel
+        import re  # pylint: disable=import-outside-toplevel
+        from asyncio.subprocess import (  # pylint: disable=import-outside-toplevel
+            PIPE,
+            create_subprocess_exec,
+        )
 
         log = self.query_one("#results-log", Log)
         root = Path(__file__).resolve().parents[1]
@@ -902,7 +924,7 @@ class RabbitMirrorTUI(App):
             url = p.resolve().as_uri()
             webbrowser.open(url)
             self.notify(f"Opening {url}", severity="information")
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-except
             self.notify(f"Failed to open report: {e}", severity="error")
 
     def save_settings(self) -> None:
@@ -923,7 +945,7 @@ class RabbitMirrorTUI(App):
 
             self.notify("✅ Settings saved!", severity="success")
 
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-except
             self.notify(f"❌ Failed to save settings: {str(e)}", severity="error")
             self.logger.log_error("SettingsSaveError", e)
 

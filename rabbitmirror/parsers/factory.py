@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import importlib
-from typing import Dict, Optional, Type
+from typing import Dict, List, Optional, Type, Union
 
 from .base_parser import BaseParser, ParserConfig
 
@@ -9,7 +9,7 @@ from .base_parser import BaseParser, ParserConfig
 class ParserFactory:
     """Factory class for creating platform-specific parsers."""
 
-    _parsers: Dict[str, str] = {
+    _parsers: Dict[str, Union[str, Type[BaseParser]]] = {
         "youtube": "rabbitmirror.parsers.youtube_parser.YouTubeParser",
         "netflix": "rabbitmirror.parsers.netflix_parser.NetflixParser",
         "spotify": "rabbitmirror.parsers.spotify_parser.SpotifyParser",
@@ -30,16 +30,23 @@ class ParserFactory:
         target = cls._parsers.get(platform.lower())
         if not target:
             return None
-        module_name, class_name = target.rsplit(".", 1)
-        try:
-            module = importlib.import_module(module_name)
-            parser_cls: Type[BaseParser] = getattr(module, class_name)
-            return parser_cls(config)
-        except Exception:  # If optional deps missing (e.g., bs4), defer to caller
-            return None
+        # Allow either a string path or a direct class
+        if isinstance(target, str):
+            module_name, class_name = target.rsplit(".", 1)
+            try:
+                module = importlib.import_module(module_name)
+                parser_cls: Type[BaseParser] = getattr(module, class_name)
+                return parser_cls(config)
+            except Exception:  # If optional deps missing (e.g., bs4), defer to caller
+                return None
+        else:
+            try:
+                return target(config)
+            except Exception:
+                return None
 
     @classmethod
-    def get_supported_platforms(cls) -> list[str]:
+    def get_supported_platforms(cls) -> List[str]:
         """Get list of supported platforms."""
         return list(cls._parsers.keys())
 

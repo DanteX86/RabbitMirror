@@ -226,7 +226,7 @@ class YouTubeParser(BaseParser):
         Returns:
             Dictionary of metadata
         """
-        metadata = {}
+        metadata: Dict[str, Any] = {}
 
         # Look for watched/removed indicators
         text_content = entry_element.get_text().lower()

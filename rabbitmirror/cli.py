@@ -1,19 +1,25 @@
 #!/usr/bin/env python3
 
+# pylint: disable=C0415
+# Rationale: The CLI lazily imports heavy optional modules inside command
+# handlers to improve startup time and avoid hard dependencies for simple
+# invocations like `rabbitmirror --help`. These imports are intentionally
+# placed inside functions.
+
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 import click
 
-# Make click_aliases optional; provide a safe fallback
+# Make click_aliases optional; provide a safe fallback for group class
 try:
     import click_aliases  # type: ignore
 
-    _AliasedBase = click_aliases.ClickAliasedGroup
+    BaseGroup: Any = click_aliases.ClickAliasedGroup  # type: ignore[attr-defined,assignment]
 except ModuleNotFoundError:
-    _AliasedBase = click.Group
+    BaseGroup = click.Group
 
 from .adversarial_profiler import AdversarialProfiler
 from .cluster_engine import ClusterEngine
@@ -27,30 +33,17 @@ from .suppression_index import SuppressionIndex
 try:
     from .symbolic_logger import SymbolicLogger
 
-    symbolic_logger = SymbolicLogger()
+    symbolic_logger: Any = SymbolicLogger()
 except Exception:
 
     class _NoOpLogger:
         def log_error(self, *args, **kwargs):
             return None
 
-    symbolic_logger = _NoOpLogger()
+    symbolic_logger = _NoOpLogger()  # type: ignore[assignment]
 
 
-class AliasedGroup(_AliasedBase):
-    def get_command(self, ctx, cmd_name):
-        # Try to get builtin commands first
-        rv = click.Group.get_command(self, ctx, cmd_name)
-        if rv is not None:
-            return rv
-        # If alias support is available, defer to base class; otherwise re-check default group
-        try:
-            return super().get_command(ctx, cmd_name)
-        except Exception:
-            return click.Group.get_command(self, ctx, cmd_name)
-
-
-@click.group(cls=AliasedGroup)
+@click.group(cls=BaseGroup)
 def cli():
     """RabbitMirror - Advanced YouTube Watch History Analysis Tool
 

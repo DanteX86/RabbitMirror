@@ -2,7 +2,7 @@
 
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional, Set
 
 import plotly.graph_objects as go
 from jinja2 import Template
@@ -20,7 +20,7 @@ class DashboardGenerator:
         interactive: bool = True,
         theme: str = "light",
         include_plots: bool = True,
-        metrics: List[str] | None = None,
+        metrics: Optional[List[str]] = None,
         top_n: int = 10,
         hist_bins: int = 24,
         velocity_cap: int = 10,
@@ -42,7 +42,9 @@ class DashboardGenerator:
         self.interactive = interactive
         self.theme = theme
         self.include_plots = include_plots
-        self.metrics = set(m.lower() for m in metrics) if metrics else None
+        self.metrics: Optional[Set[str]] = (
+            set(m.lower() for m in metrics) if metrics else None
+        )
         self.top_n = top_n
         self.hist_bins = hist_bins
         self.velocity_cap = velocity_cap
@@ -633,12 +635,12 @@ class DashboardGenerator:
         """
         if self.metrics is None:
             return True
+        # Narrow Optional[Set[str]] to a concrete set for membership checks
+        metrics: Set[str] = self.metrics if self.metrics is not None else set()
         # Always allow both aliases
         if metric_name == "video_count_by_day":
-            return ("video_count_by_day" in self.metrics) or (
-                "time_series" in self.metrics
-            )
-        return metric_name in self.metrics
+            return ("video_count_by_day" in metrics) or ("time_series" in metrics)
+        return metric_name in metrics
 
     def _aggregate_daily_counts(self, timestamps: List[str]) -> Dict[str, int]:
         """Aggregate watch counts by day."""

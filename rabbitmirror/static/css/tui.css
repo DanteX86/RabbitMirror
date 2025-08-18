@@ -1,0 +1,18 @@
+/* TUI stylesheet for RabbitMirror (packaged)
+   Keep minimal, Textual 0.58+ CSS subset */
+
+Screen {
+  background: $background 0%;
+}
+
+#results-log {
+  height: 20;
+}
+
+#main-progress {
+  dock: bottom;
+}
+
+.hidden {
+  display: none;
+}

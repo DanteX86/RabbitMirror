@@ -7,6 +7,7 @@
 [![Python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![PyPI](https://img.shields.io/pypi/v/rabbitmirror.svg)](https://pypi.org/project/rabbitmirror/)
+[![Docs](https://img.shields.io/badge/docs-web%20app-blue)](docs/README_web.md)
 
 RabbitMirror is a comprehensive Python-based analysis tool designed to analyze and understand YouTube watch history patterns. It provides deep insights into viewing behavior, detects potential algorithmic manipulation, and offers both command-line and web-based interfaces for comprehensive analysis capabilities for researchers, content creators, and curious users.
 
@@ -84,7 +85,11 @@ Tip:
 - Python 3.8 or higher
 - pip package manager
 
-### Installation
+## Documentation
+
+- Web app notes, including API rate limiting configuration: see docs/README_web.md
+
+## Installation
 
 RabbitMirror can be installed directly from GitHub.
 

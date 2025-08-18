@@ -60,6 +60,132 @@ jobs:
         name: codecov-umbrella
         fail_ci_if_error: false
 
+    - name: Install tokei (for code stats)
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+      uses: taiki-e/install-action@v2
+      with:
+        tool: tokei
+
+    - name: Ensure jq and PyYAML for conversions
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y jq
+        python -m pip install --upgrade pip
+        python -m pip install --user pyyaml
+
+    - name: Generate Tokei artifacts (JSON, CSV, YAML)
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+      shell: bash
+      run: |
+        set -euo pipefail
+        ARTIFACTS_DIR="_artifacts/tokei"
+        mkdir -p "$ARTIFACTS_DIR"
+
+        # Aggregate per-language JSON
+        tokei -o json \
+          -e .git -e target -e node_modules -e dist -e build \
+          -e venv -e .venv -e .tox -e .nox -e .mypy_cache -e .pytest_cache \
+          -e .direnv -e .idea -e .vscode \
+          . \
+        | jq -S '.' > "$ARTIFACTS_DIR/tokei.json"
+
+        # Per-file JSON
+        tokei -o json --files \
+          -e .git -e target -e node_modules -e dist -e build \
+          -e venv -e .venv -e .tox -e .nox -e .mypy_cache -e .pytest_cache \
+          -e .direnv -e .idea -e .vscode \
+          . \
+        | jq -S '.' > "$ARTIFACTS_DIR/tokei_files.json"
+
+        # Convert aggregate JSON to CSV (per-language totals)
+        python - <<'PY' "$ARTIFACTS_DIR/tokei.json" "$ARTIFACTS_DIR/tokei.csv"
+        import json, sys, csv
+        src, dst = sys.argv[1], sys.argv[2]
+        with open(src, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        rows = []
+        for lang in sorted(data.keys()):
+            if lang == "Total":
+                continue
+            stats = data.get(lang) or {}
+            code = int(stats.get("code", 0))
+            comments = int(stats.get("comments", 0))
+            blanks = int(stats.get("blanks", 0))
+            lines = int(stats.get("lines", code + comments + blanks))
+            files = int(stats.get("n_files", len(stats.get("reports", []))))
+            rows.append([lang, files, code, comments, blanks, lines])
+        with open(dst, 'w', newline='', encoding='utf-8') as f:
+            w = csv.writer(f)
+            w.writerow(["language","files","code","comments","blanks","lines"])
+            w.writerows(rows)
+        PY
+
+        # Convert per-file JSON to per-file CSV
+        python - <<'PY' "$ARTIFACTS_DIR/tokei_files.json" "$ARTIFACTS_DIR/tokei_files.csv"
+        import json, sys, csv
+        src, dst = sys.argv[1], sys.argv[2]
+        with open(src, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        with open(dst, 'w', newline='', encoding='utf-8') as f:
+            w = csv.writer(f)
+            w.writerow(["language","path","code","comments","blanks","lines"])
+            for lang in sorted(data.keys()):
+                if lang == "Total":
+                    continue
+                stats = data.get(lang) or {}
+                for rep in stats.get("reports", []) or []:
+                    name = rep.get("name") or rep.get("path") or rep.get("file") or "?"
+                    s = rep.get("stats") or rep
+                    code = int(s.get("code", 0))
+                    comments = int(s.get("comments", 0))
+                    blanks = int(s.get("blanks", 0))
+                    lines = int(s.get("lines", code + comments + blanks))
+                    w.writerow([lang, name, code, comments, blanks, lines])
+        PY
+
+        # YAML export from aggregate JSON (uses PyYAML installed above)
+        python - <<'PY' "$ARTIFACTS_DIR/tokei.json" "$ARTIFACTS_DIR/tokei.yaml"
+        import json, sys, yaml
+        src, dst = sys.argv[1], sys.argv[2]
+        with open(src, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        with open(dst, 'w', encoding='utf-8') as f:
+            yaml.safe_dump(data, f, sort_keys=True)
+        PY
+
+        # Stamp context
+        printf '{ "repo":"%s","commit":"%s","tokei_version":"%s","generated_at":"%s" }\n' \
+          "${GITHUB_REPOSITORY##*/}" \
+          "$(git rev-parse --short HEAD 2>/dev/null || echo unknown)" \
+          "$(tokei --version | awk '{print $2}')" \
+          "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
+          > "$ARTIFACTS_DIR/context.json"
+
+        # Quick validation
+        jq -e type "$ARTIFACTS_DIR/tokei.json" >/dev/null
+        python - <<'PY' "$ARTIFACTS_DIR/tokei.csv"
+        import csv, sys
+        ok = True
+        with open(sys.argv[1], newline='', encoding='utf-8') as f:
+            r = csv.DictReader(f)
+            for row in r:
+                code = int(row["code"]) ; comments = int(row["comments"]) ; blanks = int(row["blanks"]) ; lines = int(row["lines"])
+                if lines != code + comments + blanks:
+                    ok = False
+                    print("Mismatch:", row)
+                    break
+        print("OK" if ok else "FAIL")
+        sys.exit(0 if ok else 1)
+        PY
+
+    - name: Upload Tokei artifacts
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+      uses: actions/upload-artifact@v4
+      with:
+        name: tokei-stats
+        path: _artifacts/tokei/
+
   integration-test:
     runs-on: ubuntu-latest
     needs: test

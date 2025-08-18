@@ -130,9 +130,9 @@ class SpotifyParser(BaseParser):
         """
         try:
             return datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M").isoformat()
-        except ValueError:
+        except ValueError as exc:
             raise InvalidFormatError(
                 f"Invalid Spotify timestamp format: {timestamp_str}",
                 file_path=str(self.config.file_path),
                 error_code="INVALID_TIMESTAMP_FORMAT",
-            )
+            ) from exc

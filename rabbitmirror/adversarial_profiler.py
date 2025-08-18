@@ -3815,7 +3815,7 @@ class AdversarialProfiler:
             confidence = min(1.0, 1.0 - switch_rate)
         elif duration_cv > 0.8:
             pattern_type = "erratic_engagement"
-            confidence = min(1.0, duration_cv)
+            confidence = min(1.0, float(duration_cv))
         else:
             pattern_type = "mixed_pattern"
             confidence = 0.5

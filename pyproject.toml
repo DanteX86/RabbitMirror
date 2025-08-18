@@ -82,6 +82,11 @@ web = [
     "redis>=4.0.0",
     "celery>=5.0.0",
 ]
+web-tests = [
+    "flask",
+    "jinja2",
+    "werkzeug"
+]
 all = [
     "rabbitmirror[dev,docs,web]"
 ]
@@ -102,7 +107,18 @@ packages = ["rabbitmirror", "rabbitmirror.web"]
 include-package-data = true
 
 [tool.setuptools.package-data]
-rabbitmirror = ["templates/*.html", "templates/*.md", "static/css/*.css", "static/js/*.js"]
+"rabbitmirror" = [
+    "templates/*.html",
+    "templates/**/*.html",
+    "templates/*.md",
+    "static/css/*.css",
+    "static/css/**/*.css",
+    "static/js/*.js",
+]
+"rabbitmirror.web" = [
+    "static/**/*",
+    "templates/**/*.html",
+]
 
 [tool.black]
 line-length = 88
