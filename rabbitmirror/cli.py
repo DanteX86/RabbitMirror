@@ -382,7 +382,11 @@ def simulate(
 @click.argument("template_file", type=click.Path(exists=True))
 @click.argument("output_file", type=click.Path())
 @click.option(
-    "--format", "-f", type=click.Choice(["html", "pdf", "md"]), default="html"
+    "--format",
+    "-f",
+    "out_format",
+    type=click.Choice(["html", "pdf", "md"]),
+    default="html",
 )
 @click.option("--theme", "-t", type=click.Choice(["light", "dark"]), default="light")
 @click.option("--include-viz", "-v", is_flag=True, help="Include visualizations")
@@ -390,7 +394,7 @@ def generate_report(
     data_file: str,
     template_file: str,
     output_file: str,
-    format: str,  # noqa: A002 - name aligns with CLI option
+    out_format: str,  # CLI option '--format' bound to parameter name
     theme: str,
     include_viz: bool,
 ):
@@ -406,10 +410,9 @@ def generate_report(
         data = exporter.load_data(data_file)
 
         # Generate report
-        generator = ReportGenerator()
-        from pathlib import Path as _P
-
-        template_name = _P(template_file).name
+        template_path = Path(template_file)
+        generator = ReportGenerator(template_dir=str(template_path.parent))
+        template_name = template_path.name
         generator.generate_report(data, template_name, output_file)
         click.echo(f"✅ Generated report at {output_file}")
 
@@ -660,7 +663,9 @@ def trend_analysis(
         click.echo(f"❌ Error analyzing trends: {str(e)}", err=True)
 
 
-@report_group.command(name="export-dashboard")
+@report_group.command(
+    name="export-dashboard", help="Export data as an interactive dashboard"
+)
 @click.argument("data_file", type=click.Path(exists=True))
 @click.option(
     "--template",
@@ -703,7 +708,7 @@ def export_dashboard(
         # Generate dashboard files
         dashboard_files = dashboard.generate_dashboard(data, output_path)
 
-        # Print summary (commented out due to missing implementation)
+        # Print summary
         click.echo("\nDashboard Generation Complete:")
         click.echo(f"Template: {template}")
         click.echo(f"Interactive: {'Yes' if interactive else 'No'}")
@@ -946,7 +951,7 @@ def completion(shell: str):
         click.echo(script)
     except (ImportError, AttributeError) as e:
         click.echo(f"❌ Shell completion not available for {shell}: {e}", err=True)
-        raise SystemExit(1)
+        raise SystemExit(1) from e
 
 
 @utils_group.command(name="generate-qr")

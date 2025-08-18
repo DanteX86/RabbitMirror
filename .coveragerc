@@ -1,0 +1,20 @@
+[run]
+branch = True
+source = rabbitmirror
+omit =
+    rabbitmirror/tui.py
+    rabbitmirror/parsers/netflix_parser.py
+    rabbitmirror/parsers/spotify_parser.py
+    rabbitmirror/parsers/plugin_manager.py
+    rabbitmirror/parsers/registry.py
+    rabbitmirror/web/*
+    benchmarks/*
+
+[report]
+show_missing = True
+skip_covered = True
+fail_under = 80
+precision = 2
+exclude_lines =
+    pragma: no cover
+    if __name__ == .__main__.:
