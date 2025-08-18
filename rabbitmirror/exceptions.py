@@ -30,10 +30,17 @@ class RabbitMirrorError(Exception):
         self.error_code = error_code or "UNKNOWN_ERROR"
         self.details = details or {}
 
-    def __str__(self) -> str:  # Ensure error_code appears in default string form
+    def __str__(self) -> str:
+        """Return a user-friendly error message.
+
+        By default, only return the message. If an explicit error_code is set
+        (and is not the generic UNKNOWN_ERROR), prefix it for additional context.
+        """
         try:
-            code = self.error_code or "UNKNOWN_ERROR"
-            return f"[{code}] {self.message}"
+            code = (self.error_code or "UNKNOWN_ERROR").strip()
+            if code and code != "UNKNOWN_ERROR":
+                return f"[{code}] {self.message}"
+            return self.message
         except Exception:
             return self.message
 

@@ -9,6 +9,7 @@ This migration simplifies the database schema for single-user YouTube history an
 - Renames AnalysisResult to YouTubeAnalysis (more specific)
 - Keeps CacheEntry and DataRetentionPolicy tables (still useful)
 """
+
 import sqlalchemy as sa
 import sqlalchemy_utils
 from alembic import op

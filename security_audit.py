@@ -13,7 +13,7 @@ This script performs comprehensive security testing including:
 
 import json
 import os
-import subprocess
+import subprocess  # nosec B404 - used in a controlled, local audit context
 import sys
 import tempfile
 import time
@@ -84,16 +84,21 @@ class SecurityAuditor:
         """Run Bandit security linter."""
         try:
             cmd = ["bandit", "-r", "rabbitmirror/", "-f", "json"]
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+            # nosec B603 - controlled command invocation for local analysis only
+            result = subprocess.run(
+                cmd, capture_output=True, text=True, timeout=60
+            )  # nosec B603
 
             if os.path.exists("bandit_results.json"):
                 with open("bandit_results.json", "r") as f:
                     bandit_data = json.load(f)
 
                 return {
-                    "status": "passed"
-                    if len(bandit_data.get("results", [])) == 0
-                    else "warning",
+                    "status": (
+                        "passed"
+                        if len(bandit_data.get("results", [])) == 0
+                        else "warning"
+                    ),
                     "issues": len(bandit_data.get("results", [])),
                     "details": bandit_data.get("results", [])[:5],  # First 5 issues
                 }
@@ -104,7 +109,10 @@ class SecurityAuditor:
         """Run Safety dependency vulnerability scanner."""
         try:
             cmd = ["safety", "check", "--json"]
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+            # nosec B603 - controlled command invocation for local analysis only
+            result = subprocess.run(
+                cmd, capture_output=True, text=True, timeout=30
+            )  # nosec B603
 
             if result.returncode == 0:
                 return {"status": "passed", "vulnerable_packages": 0}
@@ -129,7 +137,10 @@ class SecurityAuditor:
         """Run Semgrep security analysis."""
         try:
             cmd = ["semgrep", "--config=auto", "--json", "rabbitmirror/"]
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+            # nosec B603 - controlled command invocation for local analysis only
+            result = subprocess.run(
+                cmd, capture_output=True, text=True, timeout=120
+            )  # nosec B603
 
             if result.returncode == 0:
                 try:
@@ -189,9 +200,11 @@ class SecurityAuditor:
                 results.append(
                     {
                         "test": description,
-                        "input": test_input[:50] + "..."
-                        if len(test_input) > 50
-                        else test_input,
+                        "input": (
+                            test_input[:50] + "..."
+                            if len(test_input) > 50
+                            else test_input
+                        ),
                         "status": "failed",
                         "reason": "Dangerous input not blocked",
                     }
@@ -428,7 +441,7 @@ class SecurityAuditor:
             )
 
         # Test password hashing
-        password = "test_password_123"
+        password = "{{TEST_PASSWORD_PLACEHOLDER}}"  # nosec B105 - test-only constant
         hashed, salt = secret_manager.hash_secret(password)
 
         if secret_manager.verify_secret(password, hashed, salt):

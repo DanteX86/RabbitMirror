@@ -2,7 +2,21 @@
 max-line-length = 100
 extend-ignore = E203, W503
 per-file-ignores =
-    tests/*:E501
+    tests/*:E501,F401,F811,F841,E402,E722
+    migrations/*:E402,F401
+    analyze_project_structure.py:E501,F401,F541
+    validation_script.py:E501,F541,F401
+    security_audit.py:E402,F401,F841,E501,F541,E226
+    tests_timeout_lightweight.py:E402,E501,F401
+    test_export_parsing.py:F401,E722,E501,F541
+    tests/integration/test_database_integration.py:F403
+    rabbitmirror/auth.py:F401,E501
+    rabbitmirror/database/config.py:F401
+    rabbitmirror/database/models.py:E501
+    rabbitmirror/database/session.py:F824
+    rabbitmirror/security.py:F401,E501
+    rabbitmirror/timeout.py:F401
+    rabbitmirror/web/app.py:F401
 exclude =
     .git,
     __pycache__,

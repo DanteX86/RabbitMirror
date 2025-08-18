@@ -618,9 +618,9 @@ def generate_statistics_json(results: Dict) -> Dict:
     stats = {
         "validation_timestamp": results["timestamp"],
         "validation_summary": {
-            "overall_status": "passed"
-            if results["schema_validation"]["failed"] == 0
-            else "failed",
+            "overall_status": (
+                "passed" if results["schema_validation"]["failed"] == 0 else "failed"
+            ),
             "files_validated": len(results["files_validated"]),
             "schema_validation_passed": results["schema_validation"]["passed"],
             "schema_validation_failed": results["schema_validation"]["failed"],
@@ -648,9 +648,11 @@ def generate_statistics_json(results: Dict) -> Dict:
         },
         "data_integrity_metrics": {
             "integrity_issues_count": results["data_integrity"]["issues_found"],
-            "data_quality_status": "good"
-            if results["data_integrity"]["issues_found"] == 0
-            else "issues_detected",
+            "data_quality_status": (
+                "good"
+                if results["data_integrity"]["issues_found"] == 0
+                else "issues_detected"
+            ),
         },
         "export_metadata": {
             "export_format": "json_with_markdown_chunks",

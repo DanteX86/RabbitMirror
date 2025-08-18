@@ -212,7 +212,7 @@ update: ## Update repository: upgrade deps, format, lint, and run quick tests
 	$(MAKE) test-quick
 
 .PHONY: update-cli
-update-cli: ## Use the user-level 'update' CLI: no args runs maintenance; args open in 
+update-cli: ## Use the user-level 'update' CLI: no args runs maintenance; args open in
 	@echo "Usage: update [paths...]"
 	@echo " - No args: runs 'make update' in the current Git repo"
 	@echo " - With args: opens files/dirs in \$$EDITOR (fallback: VS Code or TextEdit)"

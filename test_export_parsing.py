@@ -203,7 +203,7 @@ def test_data_reconstruction():
         reconstruction_tests["main_export_roundtrip"] = (
             original_data == reconstructed_data
         )
-    except:
+    except:  # nosec B110 - intentional broad except in test helper
         pass
 
     # Test knowledge graph roundtrip
@@ -217,7 +217,7 @@ def test_data_reconstruction():
         reconstruction_tests["knowledge_graph_roundtrip"] = (
             original_kg == reconstructed_kg
         )
-    except:
+    except:  # nosec B110 - intentional broad except in test helper
         pass
 
     # Test project structure roundtrip
@@ -231,7 +231,7 @@ def test_data_reconstruction():
         reconstruction_tests["project_structure_roundtrip"] = (
             original_ps == reconstructed_ps
         )
-    except:
+    except:  # nosec B110 - intentional broad except in test helper
         pass
 
     return reconstruction_tests

@@ -1,8 +1,8 @@
 """Integration tests for database and persistence components."""
 
+# flake8: noqa
 import json
 import os
-import sqlite3
 import tempfile
 from pathlib import Path
 from unittest.mock import MagicMock, patch

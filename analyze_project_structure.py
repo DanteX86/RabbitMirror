@@ -193,9 +193,9 @@ class ProjectAnalyzer:
                             "directory_count": 0,
                             "total_size": dir_size,
                             "file_categories": {
-                                "cache_files"
-                                if "cache" in entry.name
-                                else "other": dir_files
+                                (
+                                    "cache_files" if "cache" in entry.name else "other"
+                                ): dir_files
                             },
                             "depth": current_depth + 1,
                             "skipped": True,

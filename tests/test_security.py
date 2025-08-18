@@ -136,7 +136,7 @@ class TestInputValidator:
 
     def test_control_character_removal(self):
         """Test removal of control characters."""
-        input_with_controls = "test\x00\x08\x1F\x7Fstring"
+        input_with_controls = "test\x00\x08\x1f\x7fstring"
         result = self.validator.validate_string(input_with_controls)
         assert result == "teststring"
 

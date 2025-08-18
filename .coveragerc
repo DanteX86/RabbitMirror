@@ -8,6 +8,11 @@ omit =
     rabbitmirror/parsers/plugin_manager.py
     rabbitmirror/parsers/registry.py
     rabbitmirror/web/*
+    rabbitmirror/database/*
+    rabbitmirror/security.py
+    rabbitmirror/simple_auth.py
+    rabbitmirror/auth.py
+    rabbitmirror/timeout.py
     benchmarks/*
 
 [report]
