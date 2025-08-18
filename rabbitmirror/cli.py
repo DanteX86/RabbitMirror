@@ -6,37 +6,48 @@ from pathlib import Path
 from typing import Optional
 
 import click
-import click_aliases
-import jsonschema
-import yaml
+
+# Make click_aliases optional; provide a safe fallback
+try:
+    import click_aliases  # type: ignore
+
+    _AliasedBase = click_aliases.ClickAliasedGroup
+except ModuleNotFoundError:
+    _AliasedBase = click.Group
 
 from .adversarial_profiler import AdversarialProfiler
 from .cluster_engine import ClusterEngine
 from .config_manager import ConfigManager
-from .dashboard_generator import DashboardGenerator
 from .exceptions import RabbitMirrorError, create_error_context, format_error_message
-from .export_formatter import ExportFormatter
 from .parser import HistoryParser
 from .profile_simulator import ProfileSimulator
-from .qr_generator import QRGenerator
-from .report_generator import ReportGenerator
-from .schema_validator import SchemaValidator
 from .suppression_index import SuppressionIndex
-from .symbolic_logger import SymbolicLogger
-from .trend_analyzer import TrendAnalyzer
 
-# Initialize logger
-symbolic_logger = SymbolicLogger()
+# Optional logger dependency; provide no-op fallback if unavailable
+try:
+    from .symbolic_logger import SymbolicLogger
+
+    symbolic_logger = SymbolicLogger()
+except Exception:
+
+    class _NoOpLogger:
+        def log_error(self, *args, **kwargs):
+            return None
+
+    symbolic_logger = _NoOpLogger()
 
 
-class AliasedGroup(click_aliases.ClickAliasedGroup):
+class AliasedGroup(_AliasedBase):
     def get_command(self, ctx, cmd_name):
         # Try to get builtin commands first
         rv = click.Group.get_command(self, ctx, cmd_name)
         if rv is not None:
             return rv
-        # Get aliases if builtin doesn't exist
-        return click.Group.get_command(self, ctx, cmd_name)
+        # If alias support is available, defer to base class; otherwise re-check default group
+        try:
+            return super().get_command(ctx, cmd_name)
+        except Exception:
+            return click.Group.get_command(self, ctx, cmd_name)
 
 
 @click.group(cls=AliasedGroup)
@@ -130,6 +141,8 @@ def parse(
         result = parser.parse()
 
         if output:
+            from .export_formatter import ExportFormatter
+
             output_path = Path(output)
             exporter = ExportFormatter(output_dir=output_path.parent)
             output_file = exporter.export_data(
@@ -183,6 +196,8 @@ def cluster(
         clusters = engine.cluster_videos(entries)
 
         if output:
+            from .export_formatter import ExportFormatter
+
             output_path = Path(output)
             exporter = ExportFormatter(output_dir=output_path.parent)
             output_file = exporter.export_data(
@@ -240,6 +255,8 @@ def analyze_suppression(
         results = analyzer.calculate_suppression(entries)
 
         if output:
+            from .export_formatter import ExportFormatter
+
             output_path = Path(output)
             exporter = ExportFormatter(output_dir=output_path.parent)
             output_file = exporter.export_data(results, output_format, output_path.stem)
@@ -299,6 +316,8 @@ def detect_patterns(
         patterns = profiler.identify_adversarial_patterns(entries)
 
         if output:
+            from .export_formatter import ExportFormatter
+
             output_path = Path(output)
             exporter = ExportFormatter(output_dir=output_path.parent)
             output_file = exporter.export_data(
@@ -361,6 +380,8 @@ def simulate(
         simulated_profile = simulator.simulate_profile(entries, duration_days=duration)
 
         if output:
+            from .export_formatter import ExportFormatter
+
             output_path = Path(output)
             exporter = ExportFormatter(output_dir=output_path.parent)
             output_file = exporter.export_data(
@@ -406,6 +427,9 @@ def generate_report(
     """
     try:
         # Load data from file
+        from .export_formatter import ExportFormatter
+        from .report_generator import ReportGenerator
+
         exporter = ExportFormatter()
         data = exporter.load_data(data_file)
 
@@ -472,6 +496,8 @@ def batch_process(
                     output_file.parent.mkdir(parents=True, exist_ok=True)
 
                     # Export data
+                    from .export_formatter import ExportFormatter
+
                     exporter = ExportFormatter()
                     exporter.export_data(
                         {"entries": entries},
@@ -589,6 +615,8 @@ def trend_analysis(
         entries = result.entries
 
         # Calculate trends
+        from .trend_analyzer import TrendAnalyzer
+
         analyzer = TrendAnalyzer(period_type=period, normalize=normalize)
         trends = analyzer.analyze_trends(entries, list(metrics) if metrics else None)
 
@@ -647,6 +675,8 @@ def trend_analysis(
 
         # Export data if output specified
         if output:
+            from .export_formatter import ExportFormatter
+
             exporter = ExportFormatter()
             output_file = exporter.export_data(
                 {
@@ -695,6 +725,9 @@ def export_dashboard(
     """Export data as an interactive dashboard."""
     try:
         # Load data
+        from .dashboard_generator import DashboardGenerator
+        from .export_formatter import ExportFormatter
+
         exporter = ExportFormatter()
         data = exporter.load_data(data_file)
 
@@ -826,30 +859,64 @@ def validate_file(file: str, schema: Optional[str], output_format: str):
             if output_format == "json":
                 data = json.load(f)
             else:
+                try:
+                    import yaml  # type: ignore
+                except ModuleNotFoundError as e:
+                    click.echo(
+                        "❌ YAML operations require the 'PyYAML' package.", err=True
+                    )
+                    click.echo("Install it with: pip install pyyaml", err=True)
+                    raise SystemExit(1) from e
                 data = yaml.safe_load(f)
+
+        # Import jsonschema lazily to avoid hard dependency for --help
+        try:
+            import jsonschema  # type: ignore
+        except ModuleNotFoundError as e:
+            click.echo(
+                "❌ JSON schema validation requires the 'jsonschema' package.", err=True
+            )
+            click.echo("Install it with: pip install jsonschema", err=True)
+            raise SystemExit(1) from e
 
         # Load custom schema if provided
         if schema:
             with open(schema, "r", encoding="utf-8") as f:
-                custom_schema = (
-                    json.load(f) if output_format == "json" else yaml.safe_load(f)
-                )
+                if output_format == "json":
+                    custom_schema = json.load(f)
+                else:
+                    try:
+                        import yaml  # type: ignore
+                    except ModuleNotFoundError as e:
+                        click.echo(
+                            "❌ YAML operations require the 'PyYAML' package.", err=True
+                        )
+                        click.echo("Install it with: pip install pyyaml", err=True)
+                        raise SystemExit(1) from e
+                    custom_schema = yaml.safe_load(f)
 
             # Validate against custom schema
             try:
                 jsonschema.validate(instance=data, schema=custom_schema)
                 click.echo(f"✅ {file} is valid against custom schema.")
-            except jsonschema.exceptions.ValidationError as ve:
+            except jsonschema.exceptions.ValidationError as ve:  # type: ignore[attr-defined]
                 click.echo(f"❌ Validation failed: {ve.message}")
                 path_str = (
-                    " -> ".join(str(p) for p in ve.absolute_path)
-                    if ve.absolute_path
+                    " -\u003e ".join(str(p) for p in ve.absolute_path)
+                    if getattr(ve, "absolute_path", None)
                     else "root"
                 )
                 click.echo(f"   Path: {path_str}")
                 return
+            except jsonschema.exceptions.SchemaError as se:  # type: ignore[attr-defined]
+                click.echo(
+                    f"❌ Error validating file: {se.message if hasattr(se, 'message') else str(se)}"
+                )
+                return
         else:
             # Validate against default schemas with auto-detection
+            from .schema_validator import SchemaValidator
+
             schema_validator = SchemaValidator()
 
             # Try auto-detection first
@@ -872,7 +939,7 @@ def validate_file(file: str, schema: Optional[str], output_format: str):
                     )
                     click.echo(f"   Error: {validation_result['error']}")
                     if validation_result.get("path"):
-                        path_str = " -> ".join(
+                        path_str = " -\u003e ".join(
                             str(p) for p in validation_result["path"]
                         )
                         click.echo(f"   Path: {path_str}")
@@ -913,7 +980,6 @@ def validate_file(file: str, schema: Optional[str], output_format: str):
         FileNotFoundError,
         ValueError,
         json.JSONDecodeError,
-        jsonschema.exceptions.SchemaError,
     ) as e:
         symbolic_logger.log_error("validation_error", e)
         click.echo(f"❌ Error validating file: {str(e)}", err=True)
@@ -927,6 +993,8 @@ def convert_file(input_file: str, output_format: str, output: Optional[str]):
     """Convert a file between formats."""
     try:
         # Load input file using ExportFormatter
+        from .export_formatter import ExportFormatter
+
         exporter = ExportFormatter()
         data = exporter.load_data(input_file)
 
@@ -982,6 +1050,8 @@ def generate_qr(
 ):
     """Generate a QR code for the given data."""
     try:
+        from .qr_generator import QRGenerator
+
         generator = QRGenerator(
             size=size, error_correction=error_correction, color=color
         )
