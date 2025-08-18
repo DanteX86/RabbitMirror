@@ -22,6 +22,12 @@ test: ensure-venv ## Run all tests
 test-quick: ensure-venv ## Run tests without coverage
 	"$(VENV_BIN)/pytest" tests/ -v
 
+# Run only authentication-related tests (by name pattern)
+# Succeeds with a message if no tests match (-k auth returns exit code 5)
+.PHONY: test-auth
+test-auth: ensure-venv ## Run only authentication-related tests (-k auth)
+	@"$(VENV_BIN)/pytest" tests/ -k "auth" -v; EXIT=$$?; if [ "$$EXIT" = "5" ]; then echo "No auth tests matched (-k auth)."; exit 0; else exit "$$EXIT"; fi
+
 lint: ensure-venv ## Run all linting tools
 	"$(VENV_BIN)/pylint" rabbitmirror/ --score=yes --disable=C0103,C0114,C0115,C0116,W0613,R0903,R0913,E0401,C0411,W0611,E0602,R0914,R0912,R0915,R0911,C0302,R0902,R0917,E1101
 	"$(VENV_BIN)/flake8" rabbitmirror/ tests/
@@ -212,7 +218,7 @@ update: ## Update repository: upgrade deps, format, lint, and run quick tests
 	$(MAKE) test-quick
 
 .PHONY: update-cli
-update-cli: ## Use the user-level 'update' CLI: no args runs maintenance; args open in 
+update-cli: ## Use the user-level 'update' CLI: no args runs maintenance; args open in
 	@echo "Usage: update [paths...]"
 	@echo " - No args: runs 'make update' in the current Git repo"
 	@echo " - With args: opens files/dirs in \$$EDITOR (fallback: VS Code or TextEdit)"
