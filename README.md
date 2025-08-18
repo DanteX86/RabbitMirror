@@ -168,6 +168,37 @@ python run.py report generate-report data.json template.html report.html --forma
 - **`utils`**: Utility commands
 - **`config`**: Configuration commands
 
+## 📚 ReadMe (rdme) CLI Integration
+
+This project includes Makefile targets to work with the ReadMe CLI.
+
+Setup
+- Install ReadMe CLI: npm install -g rdme
+- Copy env template: cp .env.example .env
+- Edit .env to set:
+  - README_API_KEY={{README_API_KEY}}
+  - README_DEFINITION_ID={{README_DEFINITION_ID}}
+  - OPENAPI_PATH=openapi.yaml (or your spec path)
+
+Common commands
+```bash
+# Authenticate with ReadMe
+make rdme-login
+
+# Validate/dry-run your OpenAPI import (does not push changes)
+make rdme-openapi-preview OPENAPI_PATH=path/to/openapi.yaml
+
+# Push your OpenAPI spec to ReadMe
+make rdme-openapi OPENAPI_PATH=path/to/openapi.yaml
+
+# Edit a specific doc page by slug in your browser
+make rdme-doc-edit DOC=your-doc-slug
+```
+
+Notes
+- The Makefile automatically loads variables from .env if it exists; .env is gitignored.
+- OPENAPI_PATH can be overridden per command as shown.
+
 ## 🔧 Configuration
 
 ### Configuration Management

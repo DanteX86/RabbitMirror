@@ -144,6 +144,43 @@ similar: suggestions ## Alias for 'suggestions'
 similar.: suggestions ## Alias for 'suggestions' (handles trailing dot)
 	@true
 
+# ReadMe CLI (rdme) integration
+# Load environment from .env if present (does not error if missing)
+ifneq (,$(wildcard .env))
+include .env
+export
+endif
+
+RDME ?= rdme
+OPENAPI_PATH ?= openapi.yaml
+README_API_KEY ?=
+README_DEFINITION_ID ?=
+
+.PHONY: rdme-login rdme-openapi rdme-openapi-preview rdme-doc-edit
+
+rdme-login: ## Authenticate with ReadMe CLI
+	$(RDME) login
+
+rdme-openapi: ## Push OpenAPI to ReadMe (requires README_API_KEY and README_DEFINITION_ID in .env)
+	@if [ -z "$(README_API_KEY)" ] || [ -z "$(README_DEFINITION_ID)" ]; then \
+		echo "ERROR: README_API_KEY and README_DEFINITION_ID must be set (e.g., in .env)"; \
+		exit 1; \
+	fi
+	$(RDME) openapi "$(OPENAPI_PATH)" --key "$(README_API_KEY)" --id "$(README_DEFINITION_ID)"
+
+rdme-openapi-preview: ## Validate/dry-run OpenAPI push (no changes on ReadMe)
+	@if [ -z "$(README_API_KEY)" ] || [ -z "$(README_DEFINITION_ID)" ]; then \
+		echo "WARN: README_API_KEY/README_DEFINITION_ID not set; running without auth where possible"; \
+	fi
+	$(RDME) openapi "$(OPENAPI_PATH)" --dry-run --validate || true
+
+rdme-doc-edit: ## Edit a ReadMe doc in the browser (usage: make rdme-doc-edit DOC=doc-slug)
+	@if [ -z "$(DOC)" ]; then \
+		echo "Usage: make rdme-doc-edit DOC=your-doc-slug"; \
+		exit 2; \
+	fi
+	$(RDME) docs:edit "$(DOC)"
+
 # Demo workflow: parse → analyze → patterns → combine → report
 .PHONY: demo-workflow
 _demo_python := /Users/romulusaugustus/Documents/RabbitMirror/.venv/bin/python
