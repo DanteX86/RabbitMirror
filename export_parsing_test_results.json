@@ -1,0 +1,144 @@
+{
+  "timestamp": "2025-08-13T17:25:00Z",
+  "tests_run": 5,
+  "tests_passed": 5,
+  "tests_failed": 0,
+  "detailed_results": {
+    "json_parsing": {
+      "successful": [
+        {
+          "file": "export_statistics.json",
+          "size_bytes": 1558,
+          "top_level_keys": 7
+        },
+        {
+          "file": "test_analysis.json",
+          "size_bytes": 13024,
+          "top_level_keys": 9
+        },
+        {
+          "file": "analysis_catalog.json",
+          "size_bytes": 16080,
+          "top_level_keys": 1
+        },
+        {
+          "file": "api_documentation.json",
+          "size_bytes": 38607,
+          "top_level_keys": 1
+        },
+        {
+          "file": "concept_embeddings.json",
+          "size_bytes": 17111,
+          "top_level_keys": 10
+        },
+        {
+          "file": "demo_results.json",
+          "size_bytes": 3558,
+          "top_level_keys": 1
+        },
+        {
+          "file": "code_architecture.json",
+          "size_bytes": 12023,
+          "top_level_keys": 17
+        },
+        {
+          "file": "rabbitmirror_kb_export.json",
+          "size_bytes": 27294,
+          "top_level_keys": 8
+        },
+        {
+          "file": "bandit_results.json",
+          "size_bytes": 6440,
+          "top_level_keys": 4
+        },
+        {
+          "file": ".rabbitmirror_config.json",
+          "size_bytes": 117,
+          "top_level_keys": 4
+        },
+        {
+          "file": "project_structure.json",
+          "size_bytes": 248156,
+          "top_level_keys": 3
+        },
+        {
+          "file": "documentation_index.json",
+          "size_bytes": 19935,
+          "top_level_keys": 9
+        },
+        {
+          "file": "knowledge_graph.json",
+          "size_bytes": 18891,
+          "top_level_keys": 13
+        },
+        {
+          "file": "security_audit_report_20250727_001147.json",
+          "size_bytes": 6196,
+          "top_level_keys": 6
+        },
+        {
+          "file": "configuration_schema.json",
+          "size_bytes": 9136,
+          "top_level_keys": 5
+        },
+        {
+          "file": "dependency_map.json",
+          "size_bytes": 19395,
+          "top_level_keys": 7
+        },
+        {
+          "file": "security_audit_report_20250727_001219.json",
+          "size_bytes": 6097,
+          "top_level_keys": 6
+        }
+      ],
+      "failed": [],
+      "total_files": 17
+    },
+    "main_export": {
+      "status": "passed",
+      "missing_sections": [],
+      "entity_counts": {
+        "core_architecture": 3,
+        "analysis_engines": 4,
+        "user_interfaces": 2,
+        "security_framework": 2,
+        "performance_optimization": 2,
+        "testing_infrastructure": 3
+      },
+      "metadata_completeness": {
+        "has_version": true,
+        "has_timestamp": true,
+        "has_project_name": true,
+        "has_file_counts": true
+      },
+      "total_size_bytes": 27294
+    },
+    "knowledge_graph": {
+      "status": "passed",
+      "missing_keys": [],
+      "actual_nodes": 8,
+      "actual_relationships": 11,
+      "metadata_consistent": false
+    },
+    "chunked_files": {
+      "total_chunks": 5,
+      "accessible_chunks": 5,
+      "chunk_sizes": {
+        "03_analysis_engines.md": 7997,
+        "01_executive_summary.md": 3291,
+        "00_index.md": 4571,
+        "11_quick_lookup_index.md": 7075,
+        "02_core_architecture.md": 5061
+      },
+      "failed_chunks": [],
+      "status": "passed"
+    },
+    "data_reconstruction": {
+      "main_export_roundtrip": true,
+      "knowledge_graph_roundtrip": true,
+      "project_structure_roundtrip": true
+    }
+  },
+  "success_rate": 100.0
+}

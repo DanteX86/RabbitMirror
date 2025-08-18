@@ -1,0 +1,336 @@
+{
+  "risk_score": -0.5232762976944014,
+  "patterns": {
+    "rapid_views": [
+      {
+        "timestamp": "2025-08-13T17:27:28.535815",
+        "interval": 2.6450000000000003e-05,
+        "previous_title": "Watched Python Tutorial: Machine Learning Basics",
+        "current_title": "Watched Deep Learning Explained Simply",
+        "confidence": 0.99999471
+      },
+      {
+        "timestamp": "2025-08-13T17:27:28.535994",
+        "interval": 2.9833333333333333e-06,
+        "previous_title": "Watched Deep Learning Explained Simply",
+        "current_title": "Watched Neural Networks from Scratch",
+        "confidence": 0.9999994033333334
+      },
+      {
+        "timestamp": "2025-08-13T17:27:28.536120",
+        "interval": 2.1e-06,
+        "previous_title": "Watched Neural Networks from Scratch",
+        "current_title": "Watched JavaScript Fundamentals",
+        "confidence": 0.99999958
+      },
+      {
+        "timestamp": "2025-08-13T17:27:28.536241",
+        "interval": 2.0166666666666667e-06,
+        "previous_title": "Watched JavaScript Fundamentals",
+        "current_title": "Watched React Hooks Tutorial",
+        "confidence": 0.9999995966666667
+      },
+      {
+        "timestamp": "2025-08-13T17:27:28.536434",
+        "interval": 3.2166666666666666e-06,
+        "previous_title": "Watched React Hooks Tutorial",
+        "current_title": "Watched Data Structures and Algorithms",
+        "confidence": 0.9999993566666666
+      },
+      {
+        "timestamp": "2025-08-13T17:27:28.536596",
+        "interval": 2.7e-06,
+        "previous_title": "Watched Data Structures and Algorithms",
+        "current_title": "Watched Docker for Beginners",
+        "confidence": 0.99999946
+      },
+      {
+        "timestamp": "2025-08-13T17:27:28.536718",
+        "interval": 2.0333333333333335e-06,
+        "previous_title": "Watched Docker for Beginners",
+        "current_title": "Watched Kubernetes Crash Course",
+        "confidence": 0.9999995933333333
+      },
+      {
+        "timestamp": "2025-08-13T17:27:28.536837",
+        "interval": 1.9833333333333335e-06,
+        "previous_title": "Watched Kubernetes Crash Course",
+        "current_title": "Watched AWS Fundamentals",
+        "confidence": 0.9999996033333334
+      },
+      {
+        "timestamp": "2025-08-13T17:27:28.536955",
+        "interval": 1.9666666666666668e-06,
+        "previous_title": "Watched AWS Fundamentals",
+        "current_title": "Watched Python Data Science Project",
+        "confidence": 0.9999996066666667
+      },
+      {
+        "timestamp": "2025-08-13T17:27:28.537070",
+        "interval": 1.916666666666667e-06,
+        "previous_title": "Watched Python Data Science Project",
+        "current_title": "Watched Pandas Tutorial Complete",
+        "confidence": 0.9999996166666667
+      },
+      {
+        "timestamp": "2025-08-13T17:27:28.537299",
+        "interval": 3.816666666666667e-06,
+        "previous_title": "Watched Pandas Tutorial Complete",
+        "current_title": "Watched Matplotlib Visualization Guide",
+        "confidence": 0.9999992366666667
+      },
+      {
+        "timestamp": "2025-08-13T17:27:28.537590",
+        "interval": 4.85e-06,
+        "previous_title": "Watched Matplotlib Visualization Guide",
+        "current_title": "Watched Git and GitHub Tutorial",
+        "confidence": 0.99999903
+      },
+      {
+        "timestamp": "2025-08-13T17:27:28.537720",
+        "interval": 2.1666666666666665e-06,
+        "previous_title": "Watched Git and GitHub Tutorial",
+        "current_title": "Watched Linux Command Line Basics",
+        "confidence": 0.9999995666666667
+      },
+      {
+        "timestamp": "2025-08-13T17:27:28.537836",
+        "interval": 1.933333333333333e-06,
+        "previous_title": "Watched Linux Command Line Basics",
+        "current_title": "Watched SQL Database Design",
+        "confidence": 0.9999996133333333
+      },
+      {
+        "timestamp": "2025-08-13T17:27:28.537957",
+        "interval": 2.0166666666666667e-06,
+        "previous_title": "Watched SQL Database Design",
+        "current_title": "Watched API Development with Flask",
+        "confidence": 0.9999995966666667
+      },
+      {
+        "timestamp": "2025-08-13T17:27:28.538069",
+        "interval": 1.8666666666666667e-06,
+        "previous_title": "Watched API Development with Flask",
+        "current_title": "Watched REST API Best Practices",
+        "confidence": 0.9999996266666666
+      },
+      {
+        "timestamp": "2025-08-13T17:27:28.538181",
+        "interval": 1.8666666666666667e-06,
+        "previous_title": "Watched REST API Best Practices",
+        "current_title": "Watched Testing with Pytest",
+        "confidence": 0.9999996266666666
+      },
+      {
+        "timestamp": "2025-08-13T17:27:28.538298",
+        "interval": 1.95e-06,
+        "previous_title": "Watched Testing with Pytest",
+        "current_title": "Watched CI/CD Pipeline Setup",
+        "confidence": 0.99999961
+      },
+      {
+        "timestamp": "2025-08-13T17:27:28.538412",
+        "interval": 1.9e-06,
+        "previous_title": "Watched CI/CD Pipeline Setup",
+        "current_title": "Watched Microservices Architecture",
+        "confidence": 0.99999962
+      }
+    ],
+    "content_loops": [],
+    "binge_patterns": [
+      {
+        "start_time": "2025-08-13T17:27:28.534228",
+        "end_time": "2025-08-13T17:27:28.538412",
+        "video_count": 20,
+        "mean_interval": 3.670175438596492e-06,
+        "std_interval": 5.425391297358673e-06,
+        "confidence": 0.4999999694152047
+      }
+    ],
+    "anomalous_sessions": [
+      {
+        "start_time": "2025-08-13T17:27:28.534228",
+        "end_time": "2025-08-13T17:27:28.538412",
+        "video_count": 20,
+        "metrics": {
+          "duration": 6.973333333333333e-05,
+          "mean_interval": 3.670175438596492e-06,
+          "std_interval": 5.425391297358673e-06,
+          "video_count": 20
+        },
+        "confidence": 0.2
+      }
+    ],
+    "suspicious_sequences": [],
+    "behavior_chains": [],
+    "geographic_anomalies": [],
+    "engagement_patterns": [],
+    "language_switches": [
+      {
+        "timestamp": "2025-08-13T17:27:28.537590",
+        "from_language": "unknown",
+        "to_language": "en",
+        "confidence": 0.6
+      },
+      {
+        "timestamp": "2025-08-13T17:27:28.538069",
+        "from_language": "es",
+        "to_language": "unknown",
+        "confidence": 0.6
+      },
+      {
+        "timestamp": "2025-08-13T17:27:28.538181",
+        "from_language": "unknown",
+        "to_language": "en",
+        "confidence": 0.8
+      }
+    ],
+    "topic_shifts": [
+      {
+        "timestamp": "2025-08-13T17:27:28.536434",
+        "previous_topic": "educational",
+        "new_topic": "other",
+        "shift_magnitude": 0.22252770967785457,
+        "confidence": 0.8781634272893822
+      },
+      {
+        "timestamp": "2025-08-13T17:27:28.536596",
+        "previous_topic": "other",
+        "new_topic": "other",
+        "shift_magnitude": 0.18868138659562392,
+        "confidence": 0.8352861553764053
+      },
+      {
+        "timestamp": "2025-08-13T17:27:28.536718",
+        "previous_topic": "other",
+        "new_topic": "other",
+        "shift_magnitude": 0.19670999104823433,
+        "confidence": 0.858390210196375
+      },
+      {
+        "timestamp": "2025-08-13T17:27:28.536955",
+        "previous_topic": "other",
+        "new_topic": "other",
+        "shift_magnitude": 0.15132583807953393,
+        "confidence": 0.6603458078821344
+      },
+      {
+        "timestamp": "2025-08-13T17:27:28.537070",
+        "previous_topic": "other",
+        "new_topic": "educational",
+        "shift_magnitude": 0.21237838244159118,
+        "confidence": 0.8612084390307351
+      },
+      {
+        "timestamp": "2025-08-13T17:27:28.537299",
+        "previous_topic": "educational",
+        "new_topic": "educational",
+        "shift_magnitude": 0.1961458350179234,
+        "confidence": 0.8605804800374353
+      },
+      {
+        "timestamp": "2025-08-13T17:27:28.537590",
+        "previous_topic": "educational",
+        "new_topic": "educational",
+        "shift_magnitude": 0.15226422050424265,
+        "confidence": 0.6743839509185379
+      },
+      {
+        "timestamp": "2025-08-13T17:27:28.537720",
+        "previous_topic": "educational",
+        "new_topic": "other",
+        "shift_magnitude": 0.2150254247746779,
+        "confidence": 0.8856872197281839
+      },
+      {
+        "timestamp": "2025-08-13T17:27:28.537836",
+        "previous_topic": "other",
+        "new_topic": "other",
+        "shift_magnitude": 0.2103000951317672,
+        "confidence": 0.8796943384880539
+      },
+      {
+        "timestamp": "2025-08-13T17:27:28.537957",
+        "previous_topic": "other",
+        "new_topic": "other",
+        "shift_magnitude": 0.20944417922311365,
+        "confidence": 0.8734388487755883
+      },
+      {
+        "timestamp": "2025-08-13T17:27:28.538069",
+        "previous_topic": "other",
+        "new_topic": "other",
+        "shift_magnitude": 0.1508515737215109,
+        "confidence": 0.6758044593272264
+      },
+      {
+        "timestamp": "2025-08-13T17:27:28.538181",
+        "previous_topic": "other",
+        "new_topic": "other",
+        "shift_magnitude": 0.20638624110287188,
+        "confidence": 0.8569676656170618
+      },
+      {
+        "timestamp": "2025-08-13T17:27:28.538298",
+        "previous_topic": "other",
+        "new_topic": "other",
+        "shift_magnitude": 0.21670611545554957,
+        "confidence": 0.8955662265393183
+      },
+      {
+        "timestamp": "2025-08-13T17:27:28.538412",
+        "previous_topic": "other",
+        "new_topic": "other",
+        "shift_magnitude": 0.2065570486637253,
+        "confidence": 0.8544758609497505
+      }
+    ]
+  },
+  "entropy_analysis": {
+    "content_entropy": 5.210834882056651,
+    "channel_entropy": 4.321928094887363
+  },
+  "temporal_analysis": {
+    "hourly_distribution": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "weekly_distribution": [
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "regularity_score": 0.0
+  },
+  "similarity_stats": {
+    "mean": 0.0928705001957928,
+    "std": 0.21492494921076813,
+    "max": 1.0000000000000004
+  }
+}

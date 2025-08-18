@@ -1,0 +1,68 @@
+{
+  "validation_timestamp": "2025-08-13T17:20:08.210333",
+  "validation_summary": {
+    "overall_status": "passed",
+    "files_validated": 16,
+    "schema_validation_passed": 2,
+    "schema_validation_failed": 0
+  },
+  "entity_statistics": {
+    "total_entities": 6,
+    "relationship_counts": {
+      "module_to_functions": 3,
+      "functions_to_data_types": 2,
+      "commands_to_implementations": 2,
+      "tests_to_features": 2,
+      "documentation_to_code": 2
+    },
+    "coverage_percentages": {
+      "documentation_coverage": 0.14732679409142016,
+      "api_coverage": 100.0,
+      "cross_reference_validity": 97.65533411488863
+    },
+    "file_counts": {
+      "core_architecture": 3,
+      "analysis_engines": 4,
+      "user_interfaces": 2,
+      "security_framework": 2,
+      "performance_optimization": 2,
+      "testing_infrastructure": 3
+    },
+    "data_quality_metrics": {},
+    "total_nodes": 847,
+    "total_relationships": 1241,
+    "project_files": 25793,
+    "project_size": "641.7MB"
+  },
+  "cross_reference_analysis": {
+    "valid_references": 833,
+    "invalid_references": 20,
+    "validity_percentage": 97.65533411488863
+  },
+  "completeness_metrics": {
+    "required_files_percentage": 100.0,
+    "chunk_files_available": 5,
+    "missing_files_count": 0
+  },
+  "data_integrity_metrics": {
+    "integrity_issues_count": 1,
+    "data_quality_status": "issues_detected"
+  },
+  "export_metadata": {
+    "export_format": "json_with_markdown_chunks",
+    "validation_version": "1.0.0",
+    "validation_coverage": "comprehensive"
+  },
+  "parsing_test_results": {
+    "tests_run": 5,
+    "tests_passed": 5,
+    "tests_failed": 0,
+    "success_rate_percentage": 100.0,
+    "json_files_tested": 17,
+    "json_parsing_success_rate": 100.0,
+    "data_reconstruction_successful": true,
+    "chunk_files_accessible": 5,
+    "total_export_size_kb": 473.5,
+    "no_data_loss_detected": true
+  }
+}

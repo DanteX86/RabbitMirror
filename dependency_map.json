@@ -1,0 +1,736 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "generated_date": "2025-01-27T16:00:00Z",
+    "description": "Dependency mapping for RabbitMirror - Advanced YouTube Watch History Analysis Tool",
+    "python_version_support": ["3.9", "3.10", "3.11", "3.12", "3.13"]
+  },
+  "core_dependencies": {
+    "data_processing": {
+      "pandas": {
+        "version": "latest",
+        "purpose": "Data manipulation and analysis",
+        "functionality": [
+          "DataFrame operations for watch history data",
+          "CSV/Excel export functionality",
+          "Data aggregation and filtering",
+          "Time series analysis"
+        ],
+        "used_in": [
+          "rabbitmirror/export_formatter.py",
+          "rabbitmirror/trend_analyzer.py",
+          "Data export operations"
+        ]
+      },
+      "numpy": {
+        "version": "latest",
+        "purpose": "Numerical computing",
+        "functionality": [
+          "Mathematical operations for clustering",
+          "Statistical calculations",
+          "Array operations"
+        ],
+        "used_in": [
+          "Machine learning algorithms",
+          "Clustering operations",
+          "Statistical analysis"
+        ]
+      },
+      "scipy": {
+        "version": "latest",
+        "purpose": "Scientific computing",
+        "functionality": [
+          "Advanced statistical functions",
+          "Optimization algorithms",
+          "Signal processing"
+        ],
+        "used_in": [
+          "Advanced analytics",
+          "Pattern detection algorithms"
+        ]
+      }
+    },
+    "machine_learning": {
+      "scikit-learn": {
+        "version": "latest",
+        "purpose": "Machine learning algorithms",
+        "functionality": [
+          "DBSCAN clustering algorithm",
+          "TF-IDF vectorization",
+          "Feature extraction",
+          "Pattern recognition"
+        ],
+        "used_in": [
+          "rabbitmirror/cluster_engine.py",
+          "Video clustering functionality",
+          "Content similarity analysis"
+        ]
+      }
+    },
+    "web_parsing": {
+      "beautifulsoup4": {
+        "version": "latest",
+        "purpose": "HTML parsing",
+        "functionality": [
+          "YouTube watch history HTML parsing",
+          "Web content extraction",
+          "DOM navigation"
+        ],
+        "used_in": [
+          "rabbitmirror/parser.py",
+          "rabbitmirror/parsers/youtube_parser.py",
+          "HTML file processing"
+        ]
+      },
+      "lxml": {
+        "version": "latest",
+        "purpose": "XML/HTML processing",
+        "functionality": [
+          "Fast XML parsing",
+          "HTML processing backend",
+          "XPath support"
+        ],
+        "used_in": [
+          "BeautifulSoup backend",
+          "XML data processing"
+        ]
+      }
+    },
+    "cli_framework": {
+      "click": {
+        "version": ">=8.0.0",
+        "purpose": "Command-line interface framework",
+        "functionality": [
+          "CLI command structure",
+          "Argument parsing",
+          "Option handling",
+          "Command grouping"
+        ],
+        "used_in": [
+          "rabbitmirror/cli.py",
+          "Main command-line interface",
+          "All CLI commands"
+        ]
+      },
+      "click-aliases": {
+        "version": ">=1.0.4",
+        "purpose": "Command aliases for Click",
+        "functionality": [
+          "Command shortcuts",
+          "Alias management"
+        ],
+        "used_in": [
+          "rabbitmirror/cli.py",
+          "CLI command aliases"
+        ]
+      }
+    },
+    "user_interface": {
+      "textual": {
+        "version": "latest",
+        "purpose": "Terminal User Interface framework",
+        "functionality": [
+          "Interactive TUI",
+          "Rich terminal applications",
+          "Event handling"
+        ],
+        "used_in": [
+          "rabbitmirror/tui.py",
+          "Terminal interface"
+        ]
+      },
+      "rich": {
+        "version": "latest",
+        "purpose": "Rich text and beautiful formatting",
+        "functionality": [
+          "Colored output",
+          "Progress bars",
+          "Tables and layouts",
+          "Syntax highlighting"
+        ],
+        "used_in": [
+          "CLI output formatting",
+          "Progress indication",
+          "Error reporting"
+        ]
+      }
+    },
+    "web_framework": {
+      "flask": {
+        "version": "latest",
+        "purpose": "Web application framework",
+        "functionality": [
+          "HTTP server",
+          "Request handling",
+          "Template rendering",
+          "Session management"
+        ],
+        "used_in": [
+          "rabbitmirror/web/app.py",
+          "Web interface",
+          "File upload handling"
+        ]
+      },
+      "flask-wtf": {
+        "version": "latest",
+        "purpose": "Flask web forms",
+        "functionality": [
+          "Form validation",
+          "CSRF protection",
+          "File uploads"
+        ],
+        "used_in": [
+          "Web forms",
+          "Security features"
+        ]
+      },
+      "flask-login": {
+        "version": ">=0.6.0",
+        "purpose": "User session management",
+        "functionality": [
+          "User authentication",
+          "Session handling",
+          "Login management"
+        ],
+        "used_in": [
+          "Authentication system",
+          "User sessions"
+        ]
+      },
+      "flask-jwt-extended": {
+        "version": ">=4.4.0",
+        "purpose": "JWT token handling",
+        "functionality": [
+          "JWT creation and validation",
+          "Token-based authentication",
+          "API security"
+        ],
+        "used_in": [
+          "API authentication",
+          "Token management"
+        ]
+      }
+    },
+    "database": {
+      "sqlalchemy": {
+        "version": ">=2.0.0",
+        "purpose": "Database ORM",
+        "functionality": [
+          "Database abstraction",
+          "ORM mapping",
+          "Query building",
+          "Connection pooling"
+        ],
+        "used_in": [
+          "rabbitmirror/database/",
+          "Database models",
+          "Data persistence"
+        ]
+      },
+      "alembic": {
+        "version": ">=1.10.0",
+        "purpose": "Database migrations",
+        "functionality": [
+          "Schema versioning",
+          "Database upgrades",
+          "Migration management"
+        ],
+        "used_in": [
+          "migrations/",
+          "Database schema evolution"
+        ]
+      },
+      "psycopg2-binary": {
+        "version": ">=2.9.0",
+        "purpose": "PostgreSQL adapter",
+        "functionality": [
+          "PostgreSQL connectivity",
+          "Database driver"
+        ],
+        "used_in": [
+          "PostgreSQL database connections"
+        ]
+      },
+      "sqlalchemy-utils": {
+        "version": ">=0.41.0",
+        "purpose": "SQLAlchemy utilities",
+        "functionality": [
+          "Database utilities",
+          "Data types",
+          "Helper functions"
+        ],
+        "used_in": [
+          "Database operations",
+          "Utility functions"
+        ]
+      }
+    },
+    "caching": {
+      "redis": {
+        "version": ">=4.5.0",
+        "purpose": "Caching and session storage",
+        "functionality": [
+          "In-memory data structure store",
+          "Session caching",
+          "Performance optimization"
+        ],
+        "used_in": [
+          "rabbitmirror/database/cache.py",
+          "Caching layer",
+          "Session storage"
+        ]
+      }
+    },
+    "security": {
+      "bcrypt": {
+        "version": ">=4.0.0",
+        "purpose": "Password hashing",
+        "functionality": [
+          "Secure password hashing",
+          "Salt generation",
+          "Password verification"
+        ],
+        "used_in": [
+          "rabbitmirror/security.py",
+          "Password management",
+          "Authentication"
+        ]
+      }
+    },
+    "data_formats": {
+      "pyyaml": {
+        "version": "latest",
+        "purpose": "YAML parsing and generation",
+        "functionality": [
+          "Configuration file parsing",
+          "Data serialization",
+          "Export functionality"
+        ],
+        "used_in": [
+          "rabbitmirror/export_formatter.py",
+          "Configuration handling",
+          "Data export"
+        ]
+      },
+      "openpyxl": {
+        "version": "latest",
+        "purpose": "Excel file handling",
+        "functionality": [
+          "Excel file reading/writing",
+          "Spreadsheet operations",
+          "Data export"
+        ],
+        "used_in": [
+          "rabbitmirror/export_formatter.py",
+          "Excel export functionality"
+        ]
+      },
+      "jsonschema": {
+        "version": "latest",
+        "purpose": "JSON schema validation",
+        "functionality": [
+          "Data validation",
+          "Schema enforcement",
+          "Input verification"
+        ],
+        "used_in": [
+          "rabbitmirror/schema_validator.py",
+          "rabbitmirror/cli.py",
+          "Data validation"
+        ]
+      }
+    },
+    "visualization": {
+      "plotly": {
+        "version": "latest",
+        "purpose": "Interactive plotting",
+        "functionality": [
+          "Data visualization",
+          "Interactive charts",
+          "Dashboard components"
+        ],
+        "used_in": [
+          "rabbitmirror/dashboard_generator.py",
+          "Data visualization",
+          "Report generation"
+        ]
+      }
+    },
+    "templating": {
+      "jinja2": {
+        "version": "latest",
+        "purpose": "Template engine",
+        "functionality": [
+          "HTML template rendering",
+          "Report generation",
+          "Dynamic content"
+        ],
+        "used_in": [
+          "rabbitmirror/report_generator.py",
+          "Web templates",
+          "Report formatting"
+        ]
+      },
+      "markdown": {
+        "version": "latest",
+        "purpose": "Markdown processing",
+        "functionality": [
+          "Markdown to HTML conversion",
+          "Documentation processing",
+          "Report formatting"
+        ],
+        "used_in": [
+          "Documentation generation",
+          "Report formatting"
+        ]
+      }
+    },
+    "utilities": {
+      "qrcode[pil]": {
+        "version": "latest",
+        "purpose": "QR code generation",
+        "functionality": [
+          "QR code creation",
+          "Image generation",
+          "Data encoding"
+        ],
+        "used_in": [
+          "rabbitmirror/qr_generator.py",
+          "QR code utilities"
+        ]
+      },
+      "loguru": {
+        "version": "latest",
+        "purpose": "Advanced logging",
+        "functionality": [
+          "Structured logging",
+          "Log formatting",
+          "Error tracking"
+        ],
+        "used_in": [
+          "rabbitmirror/symbolic_logger.py",
+          "Error handling",
+          "Application logging"
+        ]
+      }
+    }
+  },
+  "development_dependencies": {
+    "testing": {
+      "pytest": {
+        "version": ">=7.0.0",
+        "purpose": "Testing framework",
+        "functionality": [
+          "Unit testing",
+          "Test discovery",
+          "Fixtures",
+          "Parameterized tests"
+        ]
+      },
+      "pytest-cov": {
+        "version": ">=4.0.0",
+        "purpose": "Coverage reporting",
+        "functionality": [
+          "Code coverage analysis",
+          "Coverage reports",
+          "Test quality metrics"
+        ]
+      },
+      "pytest-mock": {
+        "version": ">=3.10.0",
+        "purpose": "Mocking for tests",
+        "functionality": [
+          "Test mocking",
+          "Dependency isolation",
+          "Behavior testing"
+        ]
+      },
+      "pytest-benchmark": {
+        "version": ">=4.0.0",
+        "purpose": "Performance testing",
+        "functionality": [
+          "Performance benchmarking",
+          "Speed testing",
+          "Performance regression detection"
+        ]
+      },
+      "pytest-xdist": {
+        "version": ">=3.0.0",
+        "purpose": "Parallel test execution",
+        "functionality": [
+          "Distributed testing",
+          "Parallel execution",
+          "Test speed optimization"
+        ]
+      }
+    },
+    "code_quality": {
+      "black": {
+        "version": ">=23.0.0",
+        "purpose": "Code formatting",
+        "functionality": [
+          "Automatic code formatting",
+          "Style enforcement",
+          "PEP 8 compliance"
+        ]
+      },
+      "isort": {
+        "version": ">=5.12.0",
+        "purpose": "Import sorting",
+        "functionality": [
+          "Import organization",
+          "Import grouping",
+          "Style consistency"
+        ]
+      },
+      "flake8": {
+        "version": ">=6.0.0",
+        "purpose": "Linting",
+        "functionality": [
+          "Code linting",
+          "Style checking",
+          "Error detection"
+        ]
+      },
+      "mypy": {
+        "version": ">=1.8.0",
+        "purpose": "Static type checking",
+        "functionality": [
+          "Type validation",
+          "Static analysis",
+          "Type safety"
+        ]
+      },
+      "bandit": {
+        "version": ">=1.7.0",
+        "purpose": "Security linting",
+        "functionality": [
+          "Security vulnerability detection",
+          "Code security analysis",
+          "Security best practices"
+        ]
+      },
+      "safety": {
+        "version": ">=2.0.0",
+        "purpose": "Dependency security",
+        "functionality": [
+          "Vulnerability scanning",
+          "Dependency security analysis",
+          "Security monitoring"
+        ]
+      },
+      "pre-commit": {
+        "version": ">=3.0.0",
+        "purpose": "Git hook management",
+        "functionality": [
+          "Pre-commit hooks",
+          "Code quality enforcement",
+          "Automated checks"
+        ]
+      }
+    },
+    "documentation": {
+      "sphinx": {
+        "version": ">=5.0.0",
+        "purpose": "Documentation generation",
+        "functionality": [
+          "API documentation",
+          "Documentation building",
+          "Cross-referencing"
+        ]
+      },
+      "sphinx-rtd-theme": {
+        "version": ">=1.2.0",
+        "purpose": "Sphinx theme",
+        "functionality": [
+          "Documentation styling",
+          "Responsive design",
+          "Navigation"
+        ]
+      },
+      "sphinx-autodoc-typehints": {
+        "version": ">=1.19.0",
+        "purpose": "Type hint documentation",
+        "functionality": [
+          "Automatic type hint documentation",
+          "API documentation enhancement"
+        ]
+      },
+      "myst-parser": {
+        "version": ">=1.0.0",
+        "purpose": "Markdown support for Sphinx",
+        "functionality": [
+          "Markdown parsing in Sphinx",
+          "Extended markdown features"
+        ]
+      }
+    },
+    "type_stubs": {
+      "types-qrcode": {
+        "version": "latest",
+        "purpose": "Type stubs for qrcode library"
+      },
+      "pandas-stubs": {
+        "version": "latest",
+        "purpose": "Type stubs for pandas library"
+      },
+      "types-jsonschema": {
+        "version": "latest",
+        "purpose": "Type stubs for jsonschema library"
+      },
+      "types-PyYAML": {
+        "version": "latest",
+        "purpose": "Type stubs for PyYAML library"
+      },
+      "types-click-completion": {
+        "version": "latest",
+        "purpose": "Type stubs for click completion"
+      },
+      "types-requests": {
+        "version": ">=2.28.0",
+        "purpose": "Type stubs for requests library"
+      },
+      "types-beautifulsoup4": {
+        "version": ">=4.11.0",
+        "purpose": "Type stubs for beautifulsoup4 library"
+      }
+    },
+    "build_tools": {
+      "build": {
+        "version": ">=0.10.0",
+        "purpose": "Python build system",
+        "functionality": [
+          "Package building",
+          "Distribution creation"
+        ]
+      },
+      "twine": {
+        "version": ">=4.0.0",
+        "purpose": "Package uploading",
+        "functionality": [
+          "PyPI package uploading",
+          "Package distribution"
+        ]
+      },
+      "setuptools": {
+        "version": ">=45.0.0",
+        "purpose": "Package setup tools",
+        "functionality": [
+          "Package configuration",
+          "Build system backend"
+        ]
+      },
+      "wheel": {
+        "version": ">=0.38.0",
+        "purpose": "Wheel package format",
+        "functionality": [
+          "Binary distribution format",
+          "Faster installation"
+        ]
+      }
+    }
+  },
+  "optional_dependencies": {
+    "web": {
+      "gunicorn": {
+        "version": ">=21.0.0",
+        "purpose": "WSGI HTTP server",
+        "functionality": [
+          "Production web server",
+          "Process management",
+          "Load balancing"
+        ]
+      },
+      "celery": {
+        "version": ">=5.0.0",
+        "purpose": "Distributed task queue",
+        "functionality": [
+          "Background task processing",
+          "Distributed computing",
+          "Task scheduling"
+        ]
+      }
+    }
+  },
+  "external_libraries_usage": {
+    "data_science_stack": {
+      "libraries": ["pandas", "numpy", "scipy", "scikit-learn"],
+      "primary_use_cases": [
+        "Data manipulation and analysis",
+        "Statistical computing",
+        "Machine learning algorithms",
+        "Clustering and pattern recognition"
+      ]
+    },
+    "web_stack": {
+      "libraries": ["flask", "flask-wtf", "flask-login", "jinja2"],
+      "primary_use_cases": [
+        "Web interface development",
+        "User authentication",
+        "Form handling",
+        "Template rendering"
+      ]
+    },
+    "cli_stack": {
+      "libraries": ["click", "click-aliases", "rich", "textual"],
+      "primary_use_cases": [
+        "Command-line interface",
+        "Terminal user interface",
+        "Interactive applications",
+        "Rich console output"
+      ]
+    },
+    "database_stack": {
+      "libraries": ["sqlalchemy", "alembic", "psycopg2-binary", "redis"],
+      "primary_use_cases": [
+        "Database abstraction",
+        "Schema migrations",
+        "Connection management",
+        "Caching and sessions"
+      ]
+    },
+    "security_stack": {
+      "libraries": ["bcrypt", "flask-jwt-extended", "bandit", "safety"],
+      "primary_use_cases": [
+        "Password security",
+        "Token-based authentication",
+        "Security analysis",
+        "Vulnerability scanning"
+      ]
+    }
+  },
+  "import_analysis": {
+    "most_imported_modules": [
+      "json",
+      "pathlib.Path",
+      "typing",
+      "datetime",
+      "os",
+      "sys"
+    ],
+    "external_library_imports": {
+      "pandas": ["DataFrame operations", "CSV/Excel handling"],
+      "click": ["CLI framework", "Command decoration"],
+      "flask": ["Web framework", "Request handling"],
+      "sqlalchemy": ["ORM operations", "Database models"],
+      "beautifulsoup4": ["HTML parsing", "Web scraping"],
+      "sklearn": ["Machine learning", "Clustering algorithms"]
+    }
+  },
+  "dependency_conflicts": {
+    "potential_issues": [
+      {
+        "libraries": ["flask", "werkzeug"],
+        "issue": "Version compatibility for security features",
+        "resolution": "Pin compatible versions"
+      }
+    ],
+    "compatibility_matrix": {
+      "python_3.9": "All dependencies supported",
+      "python_3.10": "All dependencies supported",
+      "python_3.11": "All dependencies supported",
+      "python_3.12": "All dependencies supported",
+      "python_3.13": "All dependencies supported"
+    }
+  }
+}

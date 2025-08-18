@@ -156,8 +156,11 @@ class TrendAnalyzer:
             # Video count
             metrics["video_count"].append(len(entries))
 
-            # Total duration
-            total_duration = sum(entry.get("duration", 0) for entry in entries)
+            # Total duration - handle both duration_seconds and duration fields
+            total_duration = 0
+            for entry in entries:
+                duration = entry.get("duration_seconds", 0) or entry.get("duration", 0)
+                total_duration += int(duration) if duration else 0
             metrics["total_duration"].append(total_duration)
 
             # Average duration

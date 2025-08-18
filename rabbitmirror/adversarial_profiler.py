@@ -2214,7 +2214,9 @@ class AdversarialProfiler:
         interactions = []
 
         for entry in session:
-            durations.append(float(entry.get("duration", 0)))
+            # Handle both duration_seconds and duration fields
+            duration = entry.get("duration_seconds", 0) or entry.get("duration", 0)
+            durations.append(float(duration))
             interactions.append(float(entry.get("interaction_count", 0)))
 
         return {

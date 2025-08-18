@@ -1,0 +1,252 @@
+{
+  "eps_0.1_min_samples_3": {
+    "eps": 0.1,
+    "min_samples": 3,
+    "avg_time": 0.08571052551269531,
+    "std_time": 0.0039009682943852244,
+    "avg_memory": 2682694314.6666665,
+    "peak_memory": "2682699776",
+    "avg_clusters": 0.0,
+    "std_clusters": 0.0
+  },
+  "eps_0.1_min_samples_5": {
+    "eps": 0.1,
+    "min_samples": 5,
+    "avg_time": 0.0845504601796468,
+    "std_time": 0.0009152197555685485,
+    "avg_memory": 2682710698.6666665,
+    "peak_memory": "2682732544",
+    "avg_clusters": 0.0,
+    "std_clusters": 0.0
+  },
+  "eps_0.1_min_samples_10": {
+    "eps": 0.1,
+    "min_samples": 10,
+    "avg_time": 0.08516240119934082,
+    "std_time": 0.0007860674895201258,
+    "avg_memory": 2683109376.0,
+    "peak_memory": "2683109376",
+    "avg_clusters": 0.0,
+    "std_clusters": 0.0
+  },
+  "eps_0.1_min_samples_15": {
+    "eps": 0.1,
+    "min_samples": 15,
+    "avg_time": 0.08471075693766277,
+    "std_time": 0.0014145665347315597,
+    "avg_memory": 2683972266.6666665,
+    "peak_memory": "2684403712",
+    "avg_clusters": 0.0,
+    "std_clusters": 0.0
+  },
+  "eps_0.1_min_samples_20": {
+    "eps": 0.1,
+    "min_samples": 20,
+    "avg_time": 0.08089232444763184,
+    "std_time": 0.0012020051365694627,
+    "avg_memory": 2684403712.0,
+    "peak_memory": "2684403712",
+    "avg_clusters": 0.0,
+    "std_clusters": 0.0
+  },
+  "eps_0.3_min_samples_3": {
+    "eps": 0.3,
+    "min_samples": 3,
+    "avg_time": 0.09380634625752766,
+    "std_time": 0.005062036290053408,
+    "avg_memory": 2684403712.0,
+    "peak_memory": "2684403712",
+    "avg_clusters": 0.0,
+    "std_clusters": 0.0
+  },
+  "eps_0.3_min_samples_5": {
+    "eps": 0.3,
+    "min_samples": 5,
+    "avg_time": 0.08565553029378255,
+    "std_time": 0.0013959068849290408,
+    "avg_memory": 2684403712.0,
+    "peak_memory": "2684403712",
+    "avg_clusters": 0.0,
+    "std_clusters": 0.0
+  },
+  "eps_0.3_min_samples_10": {
+    "eps": 0.3,
+    "min_samples": 10,
+    "avg_time": 0.0869302749633789,
+    "std_time": 0.0011763551109220973,
+    "avg_memory": 2684403712.0,
+    "peak_memory": "2684403712",
+    "avg_clusters": 0.0,
+    "std_clusters": 0.0
+  },
+  "eps_0.3_min_samples_15": {
+    "eps": 0.3,
+    "min_samples": 15,
+    "avg_time": 0.08881036440531413,
+    "std_time": 0.004684760728746097,
+    "avg_memory": 2684403712.0,
+    "peak_memory": "2684403712",
+    "avg_clusters": 0.0,
+    "std_clusters": 0.0
+  },
+  "eps_0.3_min_samples_20": {
+    "eps": 0.3,
+    "min_samples": 20,
+    "avg_time": 0.08632564544677734,
+    "std_time": 0.0006714380524167241,
+    "avg_memory": 2684540245.3333335,
+    "peak_memory": "2684600320",
+    "avg_clusters": 0.0,
+    "std_clusters": 0.0
+  },
+  "eps_0.5_min_samples_3": {
+    "eps": 0.5,
+    "min_samples": 3,
+    "avg_time": 0.08501839637756348,
+    "std_time": 0.002876706666666196,
+    "avg_memory": 2684600320.0,
+    "peak_memory": "2684600320",
+    "avg_clusters": 0.0,
+    "std_clusters": 0.0
+  },
+  "eps_0.5_min_samples_5": {
+    "eps": 0.5,
+    "min_samples": 5,
+    "avg_time": 0.08442044258117676,
+    "std_time": 0.001164349688259029,
+    "avg_memory": 2684600320.0,
+    "peak_memory": "2684600320",
+    "avg_clusters": 0.0,
+    "std_clusters": 0.0
+  },
+  "eps_0.5_min_samples_10": {
+    "eps": 0.5,
+    "min_samples": 10,
+    "avg_time": 0.08226561546325684,
+    "std_time": 0.0014626054040160924,
+    "avg_memory": 2684622165.3333335,
+    "peak_memory": "2684649472",
+    "avg_clusters": 0.0,
+    "std_clusters": 0.0
+  },
+  "eps_0.5_min_samples_15": {
+    "eps": 0.5,
+    "min_samples": 15,
+    "avg_time": 0.08981132507324219,
+    "std_time": 0.006140214635701706,
+    "avg_memory": 2673169749.3333335,
+    "peak_memory": "2678882304",
+    "avg_clusters": 0.0,
+    "std_clusters": 0.0
+  },
+  "eps_0.5_min_samples_20": {
+    "eps": 0.5,
+    "min_samples": 20,
+    "avg_time": 0.08194788297017415,
+    "std_time": 0.000993065258984692,
+    "avg_memory": 2669576192.0,
+    "peak_memory": "2669576192",
+    "avg_clusters": 0.0,
+    "std_clusters": 0.0
+  },
+  "eps_0.7_min_samples_3": {
+    "eps": 0.7,
+    "min_samples": 3,
+    "avg_time": 0.08098030090332031,
+    "std_time": 0.0008557663733166872,
+    "avg_memory": 2669619882.6666665,
+    "peak_memory": "2669641728",
+    "avg_clusters": 0.0,
+    "std_clusters": 0.0
+  },
+  "eps_0.7_min_samples_5": {
+    "eps": 0.7,
+    "min_samples": 5,
+    "avg_time": 0.08404358228047688,
+    "std_time": 0.0012609901374199097,
+    "avg_memory": 2669647189.3333335,
+    "peak_memory": "2669674496",
+    "avg_clusters": 0.0,
+    "std_clusters": 0.0
+  },
+  "eps_0.7_min_samples_10": {
+    "eps": 0.7,
+    "min_samples": 10,
+    "avg_time": 0.08262594540913899,
+    "std_time": 0.0007695308293357132,
+    "avg_memory": 2669619882.6666665,
+    "peak_memory": "2669625344",
+    "avg_clusters": 0.0,
+    "std_clusters": 0.0
+  },
+  "eps_0.7_min_samples_15": {
+    "eps": 0.7,
+    "min_samples": 15,
+    "avg_time": 0.08721566200256348,
+    "std_time": 0.0010215136325266456,
+    "avg_memory": 2669619882.6666665,
+    "peak_memory": "2669641728",
+    "avg_clusters": 0.0,
+    "std_clusters": 0.0
+  },
+  "eps_0.7_min_samples_20": {
+    "eps": 0.7,
+    "min_samples": 20,
+    "avg_time": 0.08668184280395508,
+    "std_time": 0.0033159035013245403,
+    "avg_memory": 2669576192.0,
+    "peak_memory": "2669576192",
+    "avg_clusters": 0.0,
+    "std_clusters": 0.0
+  },
+  "eps_0.9_min_samples_3": {
+    "eps": 0.9,
+    "min_samples": 3,
+    "avg_time": 0.08458749453226726,
+    "std_time": 0.0008485994884771571,
+    "avg_memory": 2669576192.0,
+    "peak_memory": "2669576192",
+    "avg_clusters": 0.0,
+    "std_clusters": 0.0
+  },
+  "eps_0.9_min_samples_5": {
+    "eps": 0.9,
+    "min_samples": 5,
+    "avg_time": 0.08411327997843425,
+    "std_time": 0.0017846187301008589,
+    "avg_memory": 2669576192.0,
+    "peak_memory": "2669576192",
+    "avg_clusters": 0.0,
+    "std_clusters": 0.0
+  },
+  "eps_0.9_min_samples_10": {
+    "eps": 0.9,
+    "min_samples": 10,
+    "avg_time": 0.09255599975585938,
+    "std_time": 0.012969144347515183,
+    "avg_memory": 971238058.6666666,
+    "peak_memory": "971259904",
+    "avg_clusters": 0.0,
+    "std_clusters": 0.0
+  },
+  "eps_0.9_min_samples_15": {
+    "eps": 0.9,
+    "min_samples": 15,
+    "avg_time": 0.08416962623596191,
+    "std_time": 0.0012747350723701244,
+    "avg_memory": 971238058.6666666,
+    "peak_memory": "971259904",
+    "avg_clusters": 0.0,
+    "std_clusters": 0.0
+  },
+  "eps_0.9_min_samples_20": {
+    "eps": 0.9,
+    "min_samples": 20,
+    "avg_time": 0.08644294738769531,
+    "std_time": 0.003612826396357103,
+    "avg_memory": 971227136.0,
+    "peak_memory": "971227136",
+    "avg_clusters": 0.0,
+    "std_clusters": 0.0
+  }
+}

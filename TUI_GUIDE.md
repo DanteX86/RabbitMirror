@@ -298,5 +298,5 @@ The TUI makes RabbitMirror more accessible while maintaining all the powerful an
 
 ---
 
-*For CLI documentation, see [README.md](README.md)*  
+*For CLI documentation, see [README.md](README.md)*
 *For development setup, see [CONTRIBUTING.md](CONTRIBUTING.md)*

@@ -1,0 +1,307 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "generated_date": "2025-01-27T16:00:00Z",
+    "description": "Configuration schema for RabbitMirror - Advanced YouTube Watch History Analysis Tool"
+  },
+  "configuration_files": {
+    "pyproject.toml": {
+      "type": "TOML",
+      "purpose": "Modern Python packaging and build configuration",
+      "sections": {
+        "build-system": {
+          "requires": ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"],
+          "build-backend": "setuptools.build_meta"
+        },
+        "project": {
+          "name": "rabbitmirror",
+          "version": "1.0.0",
+          "description": "Advanced YouTube Watch History Analysis Tool",
+          "readme": "README.md",
+          "license": {"text": "MIT"},
+          "requires-python": ">=3.9",
+          "keywords": ["youtube", "data-analysis", "privacy", "watch-history", "clustering", "profiling"],
+          "classifiers": [
+            "Development Status :: 5 - Production/Stable",
+            "Intended Audience :: Developers",
+            "Intended Audience :: Science/Research",
+            "License :: OSI Approved :: MIT License",
+            "Operating System :: OS Independent",
+            "Programming Language :: Python :: 3"
+          ]
+        },
+        "project.optional-dependencies": {
+          "dev": "Development tools including testing, linting, and security",
+          "docs": "Documentation building tools",
+          "web": "Web interface dependencies",
+          "all": "All optional dependencies"
+        },
+        "project.scripts": {
+          "rabbitmirror": "rabbitmirror.cli:main"
+        },
+        "tool.black": {
+          "line-length": 88,
+          "target-version": ["py39"]
+        },
+        "tool.isort": {
+          "profile": "black",
+          "line_length": 88
+        },
+        "tool.mypy": {
+          "python_version": "3.9",
+          "strict_mode": true
+        },
+        "tool.pytest.ini_options": {
+          "minversion": "7.0",
+          "testpaths": ["tests"],
+          "markers": ["slow", "integration", "unit", "benchmark"]
+        },
+        "tool.coverage": {
+          "source": ["rabbitmirror"],
+          "fail_under": 80
+        },
+        "tool.bandit": {
+          "exclude_dirs": ["tests", "venv", ".venv"],
+          "skips": ["B101", "B601"]
+        }
+      }
+    },
+    "setup.py": {
+      "type": "Python",
+      "purpose": "Legacy Python packaging configuration for compatibility",
+      "key_settings": {
+        "name": "rabbitmirror",
+        "version": "1.0.0",
+        "python_requires": ">=3.9",
+        "install_requires": "Loaded from requirements.txt",
+        "entry_points": {
+          "console_scripts": ["rabbitmirror=rabbitmirror.cli:main"]
+        }
+      }
+    },
+    "alembic.ini": {
+      "type": "INI",
+      "purpose": "Database migration configuration",
+      "sections": {
+        "alembic": {
+          "script_location": "migrations",
+          "file_template": "%%(year)d_%%(month).2d_%%(day).2d_%%(hour).2d%%(minute).2d-%%(rev)s_%%(slug)s",
+          "prepend_sys_path": ".",
+          "sqlalchemy.url": "driver://user:pass@localhost/dbname"
+        },
+        "loggers": {
+          "keys": ["root", "sqlalchemy", "alembic"]
+        },
+        "handlers": {
+          "keys": ["console"]
+        },
+        "formatters": {
+          "keys": ["generic"]
+        }
+      }
+    },
+    ".rabbitmirror_config.json": {
+      "type": "JSON",
+      "purpose": "Application-specific configuration",
+      "schema": {
+        "api_key": {
+          "type": "string",
+          "description": "API key for external services",
+          "default": null,
+          "required": false
+        },
+        "default_theme": {
+          "type": "string",
+          "description": "Default UI theme",
+          "default": "dark",
+          "options": ["dark", "light"]
+        },
+        "max_retries": {
+          "type": "integer",
+          "description": "Maximum retry attempts for operations",
+          "default": 5
+        }
+      }
+    },
+    ".pre-commit-config.yaml": {
+      "type": "YAML",
+      "purpose": "Pre-commit hooks configuration",
+      "hooks": [
+        {
+          "repo": "https://github.com/pre-commit/pre-commit-hooks",
+          "hooks": ["trailing-whitespace", "end-of-file-fixer", "check-yaml", "check-added-large-files"]
+        },
+        {
+          "repo": "https://github.com/psf/black",
+          "hooks": ["black"]
+        },
+        {
+          "repo": "https://github.com/pycqa/isort",
+          "hooks": ["isort"]
+        },
+        {
+          "repo": "https://github.com/pycqa/flake8",
+          "hooks": ["flake8"]
+        },
+        {
+          "repo": "https://github.com/pycqa/pylint",
+          "hooks": ["pylint"]
+        },
+        {
+          "repo": "https://github.com/PyCQA/bandit",
+          "hooks": ["bandit"]
+        },
+        {
+          "repo": "local",
+          "hooks": ["pytest"]
+        }
+      ]
+    },
+    "github_workflows": {
+      "type": "YAML",
+      "purpose": "CI/CD pipeline configuration",
+      "files": {
+        ".github/workflows/ci.yml": {
+          "triggers": ["push", "pull_request"],
+          "jobs": ["test", "build"],
+          "python_versions": ["3.9", "3.10", "3.11", "3.12"]
+        },
+        ".github/workflows/test.yml": {
+          "triggers": ["push", "pull_request", "workflow_dispatch"],
+          "jobs": ["test", "integration-test"]
+        }
+      }
+    },
+    "docs/source/conf.py": {
+      "type": "Python",
+      "purpose": "Sphinx documentation configuration",
+      "key_settings": {
+        "project": "RabbitMirror",
+        "version": "1.0.0",
+        "html_theme": "sphinx_rtd_theme",
+        "extensions": [
+          "sphinx.ext.autodoc",
+          "sphinx.ext.autosummary",
+          "sphinx.ext.viewcode",
+          "sphinx.ext.napoleon",
+          "sphinx_autodoc_typehints",
+          "myst_parser"
+        ]
+      }
+    }
+  },
+  "environment_variables": {
+    "database_config": {
+      "DATABASE_URL": {
+        "description": "Database connection URL",
+        "default": "sqlite:///rabbitmirror.db",
+        "required": false
+      },
+      "DATABASE_ECHO": {
+        "description": "Enable SQLAlchemy query logging",
+        "default": "false",
+        "type": "boolean"
+      },
+      "DATABASE_POOL_SIZE": {
+        "description": "Database connection pool size",
+        "default": "10",
+        "type": "integer"
+      },
+      "DATABASE_MAX_OVERFLOW": {
+        "description": "Maximum database connection overflow",
+        "default": "20",
+        "type": "integer"
+      },
+      "DATABASE_POOL_TIMEOUT": {
+        "description": "Database connection pool timeout",
+        "default": "30",
+        "type": "integer"
+      },
+      "DATABASE_POOL_RECYCLE": {
+        "description": "Database connection recycle time",
+        "default": "3600",
+        "type": "integer"
+      },
+      "REDIS_URL": {
+        "description": "Redis connection URL for caching",
+        "default": "redis://localhost:6379/0",
+        "required": false
+      },
+      "CACHE_TTL": {
+        "description": "Cache time-to-live in seconds",
+        "default": "3600",
+        "type": "integer"
+      },
+      "SESSION_LIFETIME": {
+        "description": "Session lifetime in seconds",
+        "default": "86400",
+        "type": "integer"
+      },
+      "CLEANUP_INTERVAL": {
+        "description": "Database cleanup interval in seconds",
+        "default": "3600",
+        "type": "integer"
+      }
+    },
+    "web_config": {
+      "SECRET_KEY": {
+        "description": "Flask secret key for sessions",
+        "required": true,
+        "type": "string",
+        "security": true
+      },
+      "FLASK_DEBUG": {
+        "description": "Enable Flask debug mode",
+        "default": "False",
+        "type": "boolean"
+      }
+    }
+  },
+  "configuration_classes": {
+    "DatabaseConfig": {
+      "file": "rabbitmirror/database/config.py",
+      "purpose": "Database connection and pool configuration",
+      "fields": {
+        "database_url": "string",
+        "echo": "boolean",
+        "pool_size": "integer",
+        "max_overflow": "integer",
+        "pool_timeout": "integer",
+        "pool_recycle": "integer",
+        "redis_url": "string",
+        "cache_ttl": "integer",
+        "session_lifetime": "integer",
+        "cleanup_interval": "integer"
+      }
+    },
+    "SecurityConfig": {
+      "file": "rabbitmirror/security.py",
+      "purpose": "Security settings and validation rules",
+      "includes": ["max_file_size", "security_headers", "rate_limits"]
+    },
+    "ParserConfig": {
+      "file": "rabbitmirror/parsers/base_parser.py",
+      "purpose": "Parser configuration for different platforms"
+    }
+  },
+  "defaults": {
+    "clustering": {
+      "eps": 0.3,
+      "min_samples": 5
+    },
+    "web": {
+      "upload_folder": "static/uploads",
+      "max_content_length": "100MB",
+      "host": "127.0.0.1",
+      "port": 5001
+    },
+    "export": {
+      "output_dir": "exports",
+      "default_format": "json"
+    },
+    "security": {
+      "max_file_size": 104857600,
+      "rate_limit_per_minute": 60
+    }
+  }
+}

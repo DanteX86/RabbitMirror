@@ -1,0 +1,17 @@
+{
+  "sequential_parsing": {
+    "total_time": 0.7043120861053467,
+    "peak_memory": 449298432,
+    "avg_cpu": 0.0,
+    "files_processed": 5,
+    "total_entries": 5000
+  },
+  "concurrent_parsing": {
+    "total_time": 0.9596097469329834,
+    "peak_memory": 452771840,
+    "avg_cpu": 0.0,
+    "files_processed": 5,
+    "total_entries": 5000,
+    "speedup": 0.7339567864503298
+  }
+}

@@ -16,8 +16,18 @@ jinja2
 jsonschema
 flask
 flask-wtf
+flask-login>=0.6.0
+flask-jwt-extended>=4.4.0
+bcrypt>=4.0.0
 textual
 rich
+
+# Database and persistence
+sqlalchemy>=2.0.0
+psycopg2-binary>=2.9.0
+redis>=4.5.0
+alembic>=1.10.0
+sqlalchemy-utils>=0.41.0
 
 # Testing dependencies
 pytest>=7.0.0

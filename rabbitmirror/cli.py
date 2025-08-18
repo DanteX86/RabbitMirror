@@ -39,42 +39,69 @@ class AliasedGroup(click_aliases.ClickAliasedGroup):
         return click.Group.get_command(self, ctx, cmd_name)
 
 
-@click.group(cls=AliasedGroup)
-def cli():
+@click.group(cls=AliasedGroup, invoke_without_command=True)
+@click.version_option(version="1.0.0", prog_name="RabbitMirror")
+@click.pass_context
+def cli(ctx):
     """RabbitMirror - Advanced YouTube Watch History Analysis Tool
 
     Analyze and understand your YouTube watch history patterns.
     """
+    # If no subcommand is provided, show help and exit 0 (not an error)
+    if ctx.invoked_subcommand is None:
+        click.echo(ctx.get_help())
+        ctx.exit(0)
 
 
 # Data Processing Commands Group
-@cli.group("process", help="Commands for data processing")
-def process_group():
-    pass
+@cli.group("process", help="Commands for data processing", invoke_without_command=True)
+@click.pass_context
+def process_group(ctx):
+    if ctx.invoked_subcommand is None:
+        click.echo(ctx.get_help())
+        ctx.exit(0)
 
 
 # Analysis Commands Group
-@cli.group("analyze", help="Commands for data analysis")
-def analyze_group():
-    pass
+@cli.group("analyze", help="Commands for data analysis", invoke_without_command=True)
+@click.pass_context
+def analyze_group(ctx):
+    if ctx.invoked_subcommand is None:
+        click.echo(ctx.get_help())
+        ctx.exit(0)
 
 
 # Report Commands Group
-@cli.group("report", help="Commands for report generation")
-def report_group():
-    pass
+@cli.group("report", help="Commands for report generation", invoke_without_command=True)
+@click.pass_context
+def report_group(ctx):
+    if ctx.invoked_subcommand is None:
+        click.echo(ctx.get_help())
+        ctx.exit(0)
 
 
 # Utility Commands Group
-@cli.group("utils", help="Utility commands")
-def utils_group():
-    pass
+@cli.group("utils", help="Utility commands", invoke_without_command=True)
+@click.pass_context
+def utils_group(ctx):
+    if ctx.invoked_subcommand is None:
+        click.echo(ctx.get_help())
+        ctx.exit(0)
 
 
 # Configuration Commands Group
-@cli.group("config", help="Configuration commands")
-def config_group():
-    pass
+@cli.group("config", help="Configuration commands", invoke_without_command=True)
+@click.option("--config", type=click.Path(), help="Path to custom config file")
+@click.pass_context
+def config_group(ctx, config: Optional[str]):
+    """Configuration commands with optional config file path."""
+    # Store config path in context for child commands
+    ctx.ensure_object(dict)
+    ctx.obj["config_path"] = config
+    # If invoked without a subcommand, show help and exit 0
+    if ctx.invoked_subcommand is None:
+        click.echo(ctx.get_help())
+        ctx.exit(0)
 
 
 # TUI Command
@@ -719,11 +746,13 @@ def export_dashboard(
 @click.option(
     "--global/--local", "global_", default=False, help="Store in global or local config"
 )
-def set_config(key: str, value: str, global_: bool):
+@click.pass_context
+def set_config(ctx, key: str, value: str, global_: bool):
     """Set a configuration value."""
     try:
-        config = ConfigManager(use_global=global_)
-        config.set(key, value)
+        config_path = ctx.obj.get("config_path") if ctx.obj else None
+        config_manager = ConfigManager(config_path=config_path, use_global=global_)
+        config_manager.set(key, value)
         click.echo(
             f"✅ Set {key} = {value} in {'global' if global_ else 'local'} config"
         )
@@ -733,18 +762,23 @@ def set_config(key: str, value: str, global_: bool):
 
 
 @config_group.command(name="get")
-@click.argument("key", type=str)
+@click.argument("key", type=str, required=False)
 @click.option(
     "--global/--local",
     "is_global",
     default=False,
     help="Read from global or local config",
 )
-def get_config(key: str, is_global: bool):
-    """Get a configuration value."""
+@click.pass_context
+def get_config(ctx, key: Optional[str], is_global: bool):
+    """Get a configuration value. If no KEY is provided, show help."""
     try:
-        config = ConfigManager(use_global=is_global)
-        value = config.get(key)
+        if key is None:
+            click.echo(ctx.get_help())
+            ctx.exit(0)
+        config_path = ctx.obj.get("config_path") if ctx.obj else None
+        config_manager = ConfigManager(config_path=config_path, use_global=is_global)
+        value = config_manager.get(key)
         if value is not None:
             click.echo(f"{key} = {value}")
         else:
@@ -765,11 +799,13 @@ def get_config(key: str, is_global: bool):
     type=click.Choice(["text", "json", "yaml"]),
     default="text",
 )
-def list_config(is_global: bool, output_format: str):
+@click.pass_context
+def list_config(ctx, is_global: bool, output_format: str):
     """List all configuration values."""
     try:
-        config = ConfigManager(use_global=is_global)
-        config_list = config.list(as_json=output_format == "json")
+        config_path = ctx.obj.get("config_path") if ctx.obj else None
+        config_manager = ConfigManager(config_path=config_path, use_global=is_global)
+        config_list = config_manager.list(as_json=output_format == "json")
         click.echo(config_list)
     except (FileNotFoundError, ValueError, OSError) as e:
         symbolic_logger.log_error("config_list_error", e)

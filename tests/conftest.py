@@ -2,7 +2,8 @@ from pathlib import Path
 
 import pytest
 
-from rabbitmirror.parser import HistoryParser
+# Avoid importing heavy modules at collection time to prevent optional dependency issues.
+# We'll import HistoryParser lazily inside fixtures when needed.
 
 
 @pytest.fixture
@@ -14,6 +15,10 @@ def sample_history_file():
 @pytest.fixture
 def sample_parser(sample_history_file):
     """Fixture providing a HistoryParser instance with sample data."""
+    from rabbitmirror.parser import (  # local import to avoid heavy imports at collection
+        HistoryParser,
+    )
+
     return HistoryParser(str(sample_history_file), "youtube")
 
 

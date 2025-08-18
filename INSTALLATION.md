@@ -90,7 +90,7 @@ pip install "rabbitmirror[all] @ git+https://github.com/DanteX86/RabbitMirror.gi
 If you encounter issues:
 
 1. **Update pip**: `pip install --upgrade pip`
-2. **Use virtual environment**: 
+2. **Use virtual environment**:
    ```bash
    python -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate

@@ -5,7 +5,6 @@ Additional tests for helper methods in AdversarialProfiler to improve coverage.
 """
 
 from datetime import datetime, timedelta
-from unittest.mock import Mock, patch
 
 import numpy as np
 import pytest

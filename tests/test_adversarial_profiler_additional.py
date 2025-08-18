@@ -7,7 +7,6 @@ import os
 # Import the class we're testing
 import sys
 from datetime import datetime, timedelta
-from unittest.mock import MagicMock, patch
 
 import numpy as np
 import pytest

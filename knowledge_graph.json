@@ -1,0 +1,549 @@
+{
+  "metadata": {
+    "project_name": "RabbitMirror",
+    "description": "Advanced YouTube Watch History Analysis Tool",
+    "version": "1.0.0",
+    "generated_at": "2025-01-27T16:00:00Z",
+    "analysis_type": "comprehensive_knowledge_graph",
+    "total_nodes": 847,
+    "total_relationships": 1241
+  },
+  "core_modules": {
+    "rabbitmirror/__init__.py": {
+      "type": "module",
+      "category": "core_entry_point",
+      "exports": [
+        "HistoryParser", "ClusterEngine", "AdversarialProfiler", "SuppressionIndex",
+        "ProfileSimulator", "TrendAnalyzer", "ReportGenerator", "ExportFormatter",
+        "DashboardGenerator", "ConfigManager", "SchemaValidator", "QRGenerator",
+        "SymbolicLogger", "RabbitMirrorError"
+      ],
+      "contains": {
+        "functions": 0,
+        "classes": 0,
+        "imports": 49
+      }
+    },
+    "rabbitmirror/cli.py": {
+      "type": "module",
+      "category": "command_line_interface",
+      "classes": ["AliasedGroup"],
+      "functions": [
+        "cli", "main", "process_group", "analyze_group", "report_group",
+        "utils_group", "config_group", "tui_command", "parse", "cluster",
+        "adversarial", "trends", "export", "dashboard", "validate",
+        "suppress", "simulate", "batch_process", "web_server"
+      ],
+      "commands": {
+        "parse": {
+          "type": "command",
+          "group": "process",
+          "description": "Parse a history file from the specified platform",
+          "arguments": ["history_file", "platform"],
+          "options": ["output", "format", "verbose"]
+        },
+        "cluster": {
+          "type": "command",
+          "group": "analyze",
+          "description": "Cluster videos in watch history",
+          "arguments": ["history_file"],
+          "options": ["eps", "min-samples", "output", "format", "visualization"]
+        },
+        "adversarial": {
+          "type": "command",
+          "group": "analyze",
+          "description": "Run adversarial profiling analysis",
+          "arguments": ["history_file"],
+          "options": ["output", "format", "confidence-threshold"]
+        }
+      }
+    },
+    "rabbitmirror/parser.py": {
+      "type": "module",
+      "category": "data_processing",
+      "classes": ["HistoryParser"],
+      "functions": [
+        "parse", "_parse_with_fallback", "_extract_entries", "_parse_entry", "_convert_timestamp"
+      ],
+      "data_types": {
+        "ParserResult": "Named tuple containing parsed entries and metadata",
+        "HistoryEntry": "Dict with keys: title, url, timestamp"
+      }
+    },
+    "rabbitmirror/cluster_engine.py": {
+      "type": "module",
+      "category": "analysis_engine",
+      "classes": ["ClusterEngine"],
+      "functions": ["cluster_videos", "_validate_entries", "_create_tfidf_matrix"],
+      "algorithms": ["DBSCAN", "TF-IDF"],
+      "decorators": ["robust_operation", "monitor_errors"]
+    },
+    "rabbitmirror/adversarial_profiler.py": {
+      "type": "module",
+      "category": "analysis_engine",
+      "classes": ["AdversarialProfiler", "PatternDetector", "ConfidenceCalculator"],
+      "functions": [
+        "profile_videos", "_detect_rapid_views", "_detect_content_loops",
+        "_detect_binge_patterns", "_detect_anomalous_sessions", "_calculate_confidence"
+      ],
+      "pattern_types": [
+        "rapid_views", "content_loops", "binge_patterns", "anomalous_sessions",
+        "suspicious_sequences", "psychological_patterns"
+      ]
+    },
+    "rabbitmirror/trend_analyzer.py": {
+      "type": "module",
+      "category": "analysis_engine",
+      "classes": ["TrendAnalyzer", "TrendMetric", "SignificantChange"],
+      "functions": [
+        "analyze_trends", "_group_by_period", "_analyze_metric_trend",
+        "_detect_significant_changes", "_calculate_trend_strength"
+      ],
+      "metrics": [
+        "video_count", "total_duration", "avg_duration", "unique_channels",
+        "categories_diversity", "viewing_velocity", "session_count"
+      ]
+    },
+    "rabbitmirror/suppression_index.py": {
+      "type": "module",
+      "category": "analysis_engine",
+      "classes": ["SuppressionIndex"],
+      "functions": [
+        "calculate_suppression", "_analyze_temporal_patterns",
+        "_calculate_baseline_metrics", "_detect_suppression_events"
+      ]
+    },
+    "rabbitmirror/profile_simulator.py": {
+      "type": "module",
+      "category": "simulation_engine",
+      "classes": ["ProfileSimulator"],
+      "functions": [
+        "generate_profile", "_analyze_patterns", "_generate_timeline",
+        "_generate_daily_entries", "_sample_from_distribution"
+      ]
+    }
+  },
+  "parser_framework": {
+    "rabbitmirror/parsers/__init__.py": {
+      "type": "module",
+      "category": "parser_framework_entry",
+      "exports": [
+        "BaseParser", "ParserConfig", "ParserResult", "ParserFactory",
+        "YouTubeParser", "NetflixParser", "SpotifyParser", "PluginManager", "ParserRegistry"
+      ]
+    },
+    "rabbitmirror/parsers/base_parser.py": {
+      "type": "module",
+      "category": "abstract_base",
+      "classes": ["BaseParser", "ParserConfig", "ParserResult"],
+      "abstract_methods": ["validate_format", "_extract_entries", "_parse_entry"],
+      "data_types": {
+        "ParserConfig": "Configuration for parser initialization",
+        "ParserResult": "Result container with entries and metadata"
+      }
+    },
+    "rabbitmirror/parsers/factory.py": {
+      "type": "module",
+      "category": "factory_pattern",
+      "classes": ["ParserFactory"],
+      "functions": ["get_parser", "register_parser", "list_supported_platforms"],
+      "supported_platforms": ["youtube", "netflix", "spotify"]
+    },
+    "rabbitmirror/parsers/youtube_parser.py": {
+      "type": "module",
+      "category": "platform_parser",
+      "classes": ["YouTubeParser"],
+      "functions": [
+        "validate_format", "_extract_entries", "_parse_entry",
+        "_extract_video_id", "_extract_channel_name", "_convert_youtube_timestamp"
+      ],
+      "supported_formats": [".html", ".htm"]
+    },
+    "rabbitmirror/parsers/netflix_parser.py": {
+      "type": "module",
+      "category": "platform_parser",
+      "classes": ["NetflixParser"],
+      "functions": ["validate_format", "_extract_entries", "_parse_entry"],
+      "supported_formats": [".csv"]
+    },
+    "rabbitmirror/parsers/spotify_parser.py": {
+      "type": "module",
+      "category": "platform_parser",
+      "classes": ["SpotifyParser"],
+      "functions": ["validate_format", "_extract_entries", "_parse_entry"],
+      "supported_formats": [".json"]
+    }
+  },
+  "database_layer": {
+    "rabbitmirror/database/__init__.py": {
+      "type": "module",
+      "category": "database_entry"
+    },
+    "rabbitmirror/database/models.py": {
+      "type": "module",
+      "category": "orm_models",
+      "classes": ["Base", "TimestampMixin", "YouTubeAnalysis", "CacheEntry", "DataRetentionPolicy"],
+      "tables": [
+        "youtube_analyses", "cache_entries", "data_retention_policies"
+      ]
+    },
+    "rabbitmirror/database/session.py": {
+      "type": "module",
+      "category": "database_session",
+      "functions": ["get_session", "create_engine", "init_db"]
+    },
+    "rabbitmirror/database/cache.py": {
+      "type": "module",
+      "category": "caching_layer",
+      "classes": ["CacheManager"],
+      "functions": ["get", "set", "delete", "clear", "exists"]
+    }
+  },
+  "utility_modules": {
+    "rabbitmirror/export_formatter.py": {
+      "type": "module",
+      "category": "data_export",
+      "classes": ["ExportFormatter"],
+      "functions": ["export_data", "to_json", "to_csv", "to_yaml", "to_excel"],
+      "supported_formats": ["json", "csv", "yaml", "excel"]
+    },
+    "rabbitmirror/schema_validator.py": {
+      "type": "module",
+      "category": "validation",
+      "classes": ["SchemaValidator"],
+      "functions": ["validate", "load_schema", "validate_watch_history"],
+      "schemas": [
+        "watch_history", "cluster_analysis", "suppression_analysis", "pattern_analysis"
+      ]
+    },
+    "rabbitmirror/dashboard_generator.py": {
+      "type": "module",
+      "category": "visualization",
+      "classes": ["DashboardGenerator"],
+      "functions": [
+        "generate_dashboard", "create_timeline_chart", "create_cluster_visualization",
+        "create_pattern_chart", "render_template"
+      ],
+      "themes": ["light", "dark"],
+      "chart_types": ["time_series", "bar", "scatter", "heatmap"]
+    },
+    "rabbitmirror/report_generator.py": {
+      "type": "module",
+      "category": "reporting",
+      "classes": ["ReportGenerator"],
+      "functions": ["generate_report", "create_summary", "format_findings"]
+    },
+    "rabbitmirror/symbolic_logger.py": {
+      "type": "module",
+      "category": "logging",
+      "classes": ["SymbolicLogger"],
+      "functions": ["log_event", "log_error", "log_pattern", "format_log_message"]
+    },
+    "rabbitmirror/config_manager.py": {
+      "type": "module",
+      "category": "configuration",
+      "classes": ["ConfigManager"],
+      "functions": ["get", "set", "list", "load_config", "save_config"]
+    },
+    "rabbitmirror/qr_generator.py": {
+      "type": "module",
+      "category": "utility",
+      "classes": ["QRGenerator"],
+      "functions": ["generate_qr", "save_qr", "create_qr_code"]
+    },
+    "rabbitmirror/error_recovery.py": {
+      "type": "module",
+      "category": "error_handling",
+      "classes": ["RetryConfig", "CircuitBreaker", "ErrorRecoveryManager"],
+      "decorators": ["robust_operation", "with_retry", "with_timeout", "monitor_errors"],
+      "patterns": ["retry_with_backoff", "circuit_breaker", "fallback_strategies"]
+    }
+  },
+  "web_interface": {
+    "rabbitmirror/web/app.py": {
+      "type": "module",
+      "category": "web_application",
+      "framework": "Flask",
+      "routes": [
+        {
+          "path": "/",
+          "method": "GET",
+          "function": "index",
+          "description": "Main dashboard"
+        },
+        {
+          "path": "/analyze/<filename>",
+          "method": "POST",
+          "function": "analyze_file",
+          "description": "Analyze uploaded file"
+        },
+        {
+          "path": "/simple_login",
+          "method": ["GET", "POST"],
+          "function": "simple_login",
+          "description": "Simple authentication"
+        },
+        {
+          "path": "/logout",
+          "method": "GET",
+          "function": "logout",
+          "description": "User logout"
+        }
+      ],
+      "security_features": [
+        "rate_limiting", "input_validation", "csrf_protection",
+        "secure_file_handling", "security_headers"
+      ]
+    },
+    "rabbitmirror/tui.py": {
+      "type": "module",
+      "category": "terminal_ui",
+      "framework": "Textual",
+      "components": [
+        "FileSelector", "DataTable", "ProgressBar", "TabbedContent",
+        "AnalysisScreen", "ResultsViewer"
+      ]
+    }
+  },
+  "exception_hierarchy": {
+    "rabbitmirror/exceptions.py": {
+      "type": "module",
+      "category": "exception_definitions",
+      "base_exception": "RabbitMirrorError",
+      "exception_tree": {
+        "RabbitMirrorError": {
+          "children": [
+            "DataProcessingError",
+            "FileOperationError",
+            "ConfigurationError",
+            "AnalysisError",
+            "SimulationError",
+            "ExportError",
+            "NetworkError",
+            "ResourceError",
+            "DependencyError",
+            "DatabaseError"
+          ]
+        },
+        "DataProcessingError": {
+          "children": ["ParsingError", "DataValidationError"]
+        },
+        "ParsingError": {
+          "children": ["InvalidFormatError"]
+        },
+        "DataValidationError": {
+          "children": ["SchemaValidationError"]
+        },
+        "AnalysisError": {
+          "children": ["ClusteringError", "PatternDetectionError", "TrendAnalysisError"]
+        }
+      }
+    }
+  },
+  "test_structure": {
+    "tests/conftest.py": {
+      "type": "test_configuration",
+      "fixtures": [
+        "sample_history_file", "sample_parser", "sample_entries",
+        "mock_history_data", "temp_output_dir", "sample_history_dir"
+      ]
+    },
+    "tests/test_parser.py": {
+      "type": "unit_test",
+      "tests_module": "rabbitmirror.parser",
+      "test_functions": [
+        "test_parse_valid_file", "test_parse_invalid_file",
+        "test_parse_empty_file", "test_timestamp_conversion"
+      ]
+    },
+    "tests/test_cluster_engine.py": {
+      "type": "unit_test",
+      "tests_module": "rabbitmirror.cluster_engine",
+      "test_functions": [
+        "test_cluster_videos", "test_empty_entries", "test_invalid_parameters"
+      ]
+    },
+    "tests/test_adversarial_profiler.py": {
+      "type": "unit_test",
+      "tests_module": "rabbitmirror.adversarial_profiler",
+      "test_functions": [
+        "test_rapid_views_detection", "test_content_loops_detection",
+        "test_confidence_calculation"
+      ]
+    },
+    "tests/integration/test_cli_integration.py": {
+      "type": "integration_test",
+      "tests_module": "rabbitmirror.cli",
+      "test_functions": [
+        "test_parse_command", "test_cluster_command", "test_full_analysis_pipeline"
+      ]
+    },
+    "benchmarks/test_clustering_performance.py": {
+      "type": "performance_test",
+      "tests_module": "rabbitmirror.cluster_engine",
+      "benchmarks": [
+        "benchmark_dbscan_clustering", "benchmark_tfidf_vectorization"
+      ]
+    }
+  },
+  "relationships": {
+    "module_to_functions": [
+      {
+        "source": "rabbitmirror/cli.py",
+        "target": "rabbitmirror/parser.py::HistoryParser::parse",
+        "type": "calls",
+        "context": "CLI parse command invokes parser"
+      },
+      {
+        "source": "rabbitmirror/cli.py",
+        "target": "rabbitmirror/cluster_engine.py::ClusterEngine::cluster_videos",
+        "type": "calls",
+        "context": "CLI cluster command invokes clustering"
+      },
+      {
+        "source": "rabbitmirror/parser.py",
+        "target": "rabbitmirror/parsers/factory.py::ParserFactory::get_parser",
+        "type": "calls",
+        "context": "Parser delegates to platform-specific parsers"
+      }
+    ],
+    "functions_to_data_types": [
+      {
+        "source": "rabbitmirror/parser.py::parse",
+        "target": "ParserResult",
+        "type": "returns",
+        "context": "Parser returns structured result"
+      },
+      {
+        "source": "rabbitmirror/cluster_engine.py::cluster_videos",
+        "target": "ClusterResult",
+        "type": "returns",
+        "context": "Clustering returns analysis results"
+      }
+    ],
+    "commands_to_implementations": [
+      {
+        "source": "CLI::parse",
+        "target": "rabbitmirror/cli.py::parse",
+        "type": "implements",
+        "context": "CLI parse command implementation"
+      },
+      {
+        "source": "CLI::cluster",
+        "target": "rabbitmirror/cli.py::cluster",
+        "type": "implements",
+        "context": "CLI cluster command implementation"
+      }
+    ],
+    "tests_to_features": [
+      {
+        "source": "tests/test_parser.py",
+        "target": "rabbitmirror/parser.py",
+        "type": "tests",
+        "context": "Unit tests for parser module"
+      },
+      {
+        "source": "tests/integration/test_cli_integration.py",
+        "target": "rabbitmirror/cli.py",
+        "type": "integration_tests",
+        "context": "Integration tests for CLI functionality"
+      }
+    ],
+    "documentation_to_code": [
+      {
+        "source": "cli_reference.md",
+        "target": "rabbitmirror/cli.py",
+        "type": "documents",
+        "context": "CLI documentation describes command usage"
+      },
+      {
+        "source": "api_documentation.json",
+        "target": "rabbitmirror/__init__.py",
+        "type": "documents",
+        "context": "API documentation for public interface"
+      }
+    ]
+  },
+  "semantic_concepts": {
+    "data_processing": {
+      "modules": ["parser.py", "parsers/", "export_formatter.py"],
+      "key_concepts": ["parsing", "validation", "transformation", "export"]
+    },
+    "machine_learning": {
+      "modules": ["cluster_engine.py", "adversarial_profiler.py"],
+      "algorithms": ["DBSCAN", "TF-IDF", "pattern_recognition"],
+      "key_concepts": ["clustering", "similarity", "anomaly_detection"]
+    },
+    "temporal_analysis": {
+      "modules": ["trend_analyzer.py", "suppression_index.py"],
+      "key_concepts": ["time_series", "trend_detection", "statistical_analysis"]
+    },
+    "user_interfaces": {
+      "modules": ["cli.py", "tui.py", "web/app.py"],
+      "key_concepts": ["command_line", "terminal_ui", "web_interface"]
+    },
+    "data_persistence": {
+      "modules": ["database/"],
+      "key_concepts": ["orm", "caching", "session_management", "data_retention"]
+    },
+    "error_handling": {
+      "modules": ["exceptions.py", "error_recovery.py"],
+      "key_concepts": ["exception_hierarchy", "retry_mechanisms", "circuit_breaker"]
+    }
+  },
+  "dependency_graph": {
+    "core_dependencies": {
+      "cli": ["parser", "cluster_engine", "adversarial_profiler", "trend_analyzer", "export_formatter"],
+      "parser": ["parsers.factory", "exceptions"],
+      "parsers.factory": ["parsers.youtube_parser", "parsers.netflix_parser", "parsers.spotify_parser"],
+      "cluster_engine": ["error_recovery", "exceptions"],
+      "web.app": ["database", "security", "simple_auth"]
+    },
+    "import_relationships": {
+      "direct_imports": 247,
+      "transitive_dependencies": 89,
+      "circular_dependencies": 0
+    }
+  },
+  "analysis_pipeline": {
+    "data_flow": [
+      {
+        "stage": "input",
+        "components": ["CLI", "Web Interface", "TUI"],
+        "data_types": ["file_path", "upload", "user_selection"]
+      },
+      {
+        "stage": "parsing",
+        "components": ["HistoryParser", "ParserFactory", "Platform Parsers"],
+        "data_types": ["raw_data", "ParserResult", "structured_entries"]
+      },
+      {
+        "stage": "analysis",
+        "components": ["ClusterEngine", "AdversarialProfiler", "TrendAnalyzer", "SuppressionIndex"],
+        "data_types": ["ClusterResult", "PatternResult", "TrendResult", "SuppressionResult"]
+      },
+      {
+        "stage": "output",
+        "components": ["ExportFormatter", "ReportGenerator", "DashboardGenerator"],
+        "data_types": ["formatted_output", "reports", "visualizations"]
+      }
+    ]
+  },
+  "extension_points": {
+    "parser_plugins": {
+      "interface": "BaseParser",
+      "registration": "ParserFactory.register_parser()",
+      "extension_mechanism": "plugin_architecture"
+    },
+    "analysis_engines": {
+      "interface": "AnalysisEngine",
+      "registration": "CLI command groups",
+      "extension_mechanism": "modular_analysis"
+    },
+    "export_formats": {
+      "interface": "ExportFormatter",
+      "registration": "format handlers",
+      "extension_mechanism": "format_plugins"
+    }
+  }
+}
