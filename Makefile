@@ -202,3 +202,37 @@ demo-workflow: ## Run end-to-end demo (parse, analyze, patterns, report)
 	@$(_demo_python) -m rabbitmirror.cli report generate-report exports/demo_data.json templates/demo_report.html report_output/demo_report.html -f html
 	@echo "\n✅ Demo workflow complete. View report_output/demo_report.html"
 	@echo "REPORT_PATH=report_output/demo_report.html"
+
+# Next.js server management
+.PHONY: next-start next-stop
+NEXT_HOST ?= 0.0.0.0
+NEXT_PORT ?= 3000
+NEXT_LOG  ?= /tmp/next_rabbitmirror.log
+NEXT_PID  ?= /tmp/next_rabbitmirror.pid
+
+next-start: ## Start Next.js server on $(NEXT_HOST):$(NEXT_PORT) in background (logs: $(NEXT_LOG))
+	@echo "Starting Next.js on $(NEXT_HOST):$(NEXT_PORT)..."
+	@if [ -f "$(NEXT_PID)" ] && ps -p "$$(cat $(NEXT_PID))" > /dev/null 2>&1; then \
+		echo "Already running (PID $$(cat $(NEXT_PID))). Stop it with 'make next-stop'."; \
+		exit 0; \
+	fi
+	@nohup npm run start -- --port $(NEXT_PORT) --hostname $(NEXT_HOST) > "$(NEXT_LOG)" 2>&1 & echo $$! > "$(NEXT_PID)"
+	@sleep 1
+	@lsof -nP -iTCP:$(NEXT_PORT) -sTCP:LISTEN | awk 'NR>1 {print "Listening:", $$0}' || (echo "Failed to start. See $(NEXT_LOG)"; exit 1)
+	@echo "PID $$(cat $(NEXT_PID)). Logs: $(NEXT_LOG)"
+
+next-stop: ## Stop Next.js server if running
+	@PID=""; if [ -f "$(NEXT_PID)" ]; then PID=$$(cat "$(NEXT_PID)"); fi; \
+	if [ -n "$$PID" ] && ps -p $$PID > /dev/null 2>&1; then \
+		echo "Stopping PID $$PID..."; \
+		kill $$PID || true; \
+		for i in 1 2 3 4 5; do if ps -p $$PID > /dev/null 2>&1; then sleep 0.5; else break; fi; done; \
+		if ps -p $$PID > /dev/null 2>&1; then echo "Force killing PID $$PID"; kill -9 $$PID || true; fi; \
+	fi; \
+	rm -f "$(NEXT_PID)"; \
+	if lsof -nP -iTCP:$(NEXT_PORT) -sTCP:LISTEN > /dev/null; then \
+		DET_PID=$$(lsof -nP -iTCP:$(NEXT_PORT) -sTCP:LISTEN -t | head -n1); \
+		if [ -n "$$DET_PID" ]; then echo "Stopping detected listener PID $$DET_PID on port $(NEXT_PORT)..."; kill $$DET_PID || true; fi; \
+	fi; \
+	echo "Ensuring port $(NEXT_PORT) free..."; \
+	if lsof -nP -iTCP:$(NEXT_PORT) -sTCP:LISTEN > /dev/null; then lsof -nP -iTCP:$(NEXT_PORT) -sTCP:LISTEN; echo "Warning: something is still listening on $(NEXT_PORT)."; else echo "Port $(NEXT_PORT) is free."; fi
