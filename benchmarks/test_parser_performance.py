@@ -39,7 +39,7 @@ class TestParserPerformance:
         def parse_html_file(size):
             file_path = self.generator.generate_html_file(size)
             try:
-                parser = HistoryParser(file_path)
+                parser = HistoryParser(file_path, "youtube")
                 return parser.parse()
             finally:
                 os.unlink(file_path)
@@ -81,7 +81,7 @@ class TestParserPerformance:
 
                 for _ in range(5):
                     monitor.start()
-                    parser = HistoryParser(file_path)
+                    parser = HistoryParser(file_path, "youtube")
                     parser.parse()
                     metrics = monitor.stop()
                     times.append(metrics["total_time"])
@@ -170,7 +170,7 @@ class TestParserPerformance:
                 monitor = PerformanceMonitor()
                 monitor.start()
 
-                parser = HistoryParser(file_path)
+                parser = HistoryParser(file_path, "youtube")
                 monitor.record("parser_created")
 
                 data = parser.parse()
@@ -228,7 +228,7 @@ class TestParserPerformance:
 
             sequential_results = []
             for file_path in test_files:
-                parser = HistoryParser(file_path)
+                parser = HistoryParser(file_path, "youtube")
                 result = parser.parse()
                 sequential_results.append(result)
 
@@ -236,7 +236,7 @@ class TestParserPerformance:
 
             # Concurrent parsing
             def parse_file(file_path):
-                parser = HistoryParser(file_path)
+                parser = HistoryParser(file_path, "youtube")
                 return parser.parse()
 
             monitor = PerformanceMonitor()
@@ -247,26 +247,31 @@ class TestParserPerformance:
 
             concurrent_metrics = monitor.stop()
 
+            def _count_entries(result):
+                # Support ParserResult objects with .entries, dicts with 'entries', or raw lists
+                if hasattr(result, "entries"):
+                    return len(getattr(result, "entries"))
+                if isinstance(result, dict):
+                    return len(result.get("entries", []))
+                try:
+                    return len(result)
+                except Exception:
+                    return 0
+
             results = {
                 "sequential_parsing": {
                     "total_time": sequential_metrics["total_time"],
                     "peak_memory": sequential_metrics["peak_memory"],
                     "avg_cpu": sequential_metrics["avg_cpu"],
                     "files_processed": len(test_files),
-                    "total_entries": sum(
-                        len(r.get("entries", [])) if isinstance(r, dict) else len(r)
-                        for r in sequential_results
-                    ),
+                    "total_entries": sum(_count_entries(r) for r in sequential_results),
                 },
                 "concurrent_parsing": {
                     "total_time": concurrent_metrics["total_time"],
                     "peak_memory": concurrent_metrics["peak_memory"],
                     "avg_cpu": concurrent_metrics["avg_cpu"],
                     "files_processed": len(test_files),
-                    "total_entries": sum(
-                        len(r.get("entries", [])) if isinstance(r, dict) else len(r)
-                        for r in concurrent_results
-                    ),
+                    "total_entries": sum(_count_entries(r) for r in concurrent_results),
                     "speedup": sequential_metrics["total_time"]
                     / concurrent_metrics["total_time"],
                 },

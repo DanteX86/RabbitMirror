@@ -1,0 +1,353 @@
+{
+  "metadata": {
+    "project_name": "RabbitMirror",
+    "description": "Semantic concept embeddings for advanced YouTube watch history analysis",
+    "version": "1.0.0",
+    "generated_at": "2025-01-27T16:00:00Z",
+    "embedding_dimensions": 512,
+    "total_concepts": 147
+  },
+  "core_concepts": {
+    "data_processing": {
+      "concept_id": "data_processing",
+      "description": "Processing and transformation of raw data into structured formats",
+      "semantic_vector": [0.82, 0.15, 0.67, 0.94, 0.23, 0.78, 0.41, 0.89],
+      "related_modules": ["parser.py", "parsers/", "export_formatter.py", "schema_validator.py"],
+      "keywords": ["parsing", "validation", "transformation", "extraction", "structuring"],
+      "entities": ["HistoryParser", "BaseParser", "ParserFactory", "ExportFormatter"],
+      "operations": ["parse", "validate", "transform", "extract", "structure"],
+      "semantic_cluster": "core_functionality"
+    },
+    "machine_learning": {
+      "concept_id": "machine_learning",
+      "description": "Applying ML algorithms for pattern recognition and clustering analysis",
+      "semantic_vector": [0.91, 0.44, 0.78, 0.33, 0.87, 0.56, 0.92, 0.67],
+      "related_modules": ["cluster_engine.py", "adversarial_profiler.py"],
+      "algorithms": ["DBSCAN", "TF-IDF", "cosine_similarity", "pattern_recognition"],
+      "keywords": ["clustering", "similarity", "vectorization", "anomaly_detection", "classification"],
+      "entities": ["ClusterEngine", "AdversarialProfiler", "TfidfVectorizer"],
+      "operations": ["cluster", "vectorize", "detect_patterns", "calculate_similarity"],
+      "semantic_cluster": "analysis_engine"
+    },
+    "temporal_analysis": {
+      "concept_id": "temporal_analysis",
+      "description": "Time-series analysis and trend detection in viewing patterns",
+      "semantic_vector": [0.76, 0.58, 0.43, 0.85, 0.31, 0.92, 0.64, 0.77],
+      "related_modules": ["trend_analyzer.py", "suppression_index.py"],
+      "keywords": ["time_series", "trend_detection", "statistical_analysis", "temporal_patterns"],
+      "entities": ["TrendAnalyzer", "SuppressionIndex", "TrendMetric", "SignificantChange"],
+      "operations": ["analyze_trends", "detect_changes", "calculate_suppression", "group_by_period"],
+      "semantic_cluster": "analysis_engine"
+    },
+    "behavioral_profiling": {
+      "concept_id": "behavioral_profiling",
+      "description": "Advanced psychological and behavioral pattern analysis",
+      "semantic_vector": [0.89, 0.72, 0.56, 0.91, 0.48, 0.83, 0.75, 0.94],
+      "related_modules": ["adversarial_profiler.py", "profile_simulator.py"],
+      "pattern_categories": [
+        "psychological_patterns", "motivational_patterns", "attention_patterns",
+        "social_patterns", "viewing_habits", "engagement_patterns"
+      ],
+      "keywords": ["profiling", "psychology", "behavior", "patterns", "manipulation"],
+      "entities": ["AdversarialProfiler", "ProfileSimulator", "PatternDetector"],
+      "operations": ["detect_rapid_views", "detect_content_loops", "calculate_confidence"],
+      "semantic_cluster": "advanced_analysis"
+    },
+    "user_interfaces": {
+      "concept_id": "user_interfaces",
+      "description": "Multiple interface paradigms for user interaction",
+      "semantic_vector": [0.65, 0.89, 0.72, 0.45, 0.91, 0.34, 0.87, 0.59],
+      "related_modules": ["cli.py", "tui.py", "web/app.py"],
+      "interface_types": ["command_line", "terminal_ui", "web_interface", "rest_api"],
+      "keywords": ["interface", "interaction", "usability", "accessibility", "experience"],
+      "entities": ["AliasedGroup", "Click", "Textual", "Flask"],
+      "operations": ["parse_command", "render_ui", "handle_request", "display_results"],
+      "semantic_cluster": "user_experience"
+    },
+    "data_persistence": {
+      "concept_id": "data_persistence",
+      "description": "Database operations, caching, and data retention management",
+      "semantic_vector": [0.78, 0.34, 0.91, 0.67, 0.45, 0.88, 0.52, 0.76],
+      "related_modules": ["database/", "cache.py", "models.py", "session.py"],
+      "keywords": ["persistence", "storage", "caching", "retention", "optimization"],
+      "entities": ["SQLAlchemy", "Base", "CacheManager", "YouTubeAnalysis"],
+      "operations": ["get_session", "cache_result", "cleanup_data", "persist_analysis"],
+      "semantic_cluster": "infrastructure"
+    },
+    "error_handling": {
+      "concept_id": "error_handling",
+      "description": "Comprehensive error handling and recovery mechanisms",
+      "semantic_vector": [0.54, 0.77, 0.89, 0.43, 0.82, 0.61, 0.75, 0.94],
+      "related_modules": ["exceptions.py", "error_recovery.py"],
+      "patterns": ["retry_with_backoff", "circuit_breaker", "fallback_strategies"],
+      "keywords": ["resilience", "recovery", "reliability", "fault_tolerance"],
+      "entities": ["RabbitMirrorError", "RetryConfig", "CircuitBreaker", "ErrorRecoveryManager"],
+      "operations": ["robust_operation", "with_retry", "monitor_errors", "handle_failure"],
+      "semantic_cluster": "reliability"
+    },
+    "security": {
+      "concept_id": "security",
+      "description": "Security measures for authentication, authorization, and data protection",
+      "semantic_vector": [0.92, 0.68, 0.77, 0.85, 0.39, 0.94, 0.56, 0.81],
+      "related_modules": ["security.py", "simple_auth.py", "auth.py"],
+      "security_features": [
+        "rate_limiting", "input_validation", "csrf_protection",
+        "secure_file_handling", "password_hashing", "session_management"
+      ],
+      "keywords": ["authentication", "authorization", "encryption", "validation", "protection"],
+      "entities": ["bcrypt", "Flask-Login", "CSRF", "SecurityHeaders"],
+      "operations": ["authenticate", "authorize", "validate_input", "rate_limit"],
+      "semantic_cluster": "security"
+    }
+  },
+  "functional_concepts": {
+    "parsing": {
+      "concept_id": "parsing",
+      "description": "Multi-platform data parsing with extensible plugin architecture",
+      "semantic_vector": [0.87, 0.45, 0.92, 0.63, 0.78, 0.34, 0.91, 0.56],
+      "implementation_patterns": ["factory_pattern", "plugin_architecture", "abstract_base_class"],
+      "supported_formats": ["html", "csv", "json", "xml"],
+      "related_entities": ["BaseParser", "ParserFactory", "YouTubeParser", "NetflixParser"],
+      "quality_attributes": ["extensibility", "reliability", "performance", "maintainability"]
+    },
+    "clustering": {
+      "concept_id": "clustering",
+      "description": "DBSCAN-based video content clustering with TF-IDF vectorization",
+      "semantic_vector": [0.93, 0.67, 0.78, 0.89, 0.42, 0.85, 0.71, 0.94],
+      "algorithm_details": {
+        "primary_algorithm": "DBSCAN",
+        "vectorization": "TF-IDF",
+        "similarity_metric": "cosine_similarity",
+        "preprocessing": ["text_normalization", "stop_word_removal"]
+      },
+      "parameters": ["eps", "min_samples", "max_features"],
+      "output_types": ["cluster_labels", "noise_points", "similarity_matrix"]
+    },
+    "visualization": {
+      "concept_id": "visualization",
+      "description": "Interactive dashboard generation with multiple themes and chart types",
+      "semantic_vector": [0.74, 0.91, 0.58, 0.83, 0.67, 0.45, 0.89, 0.72],
+      "chart_types": ["time_series", "bar_chart", "scatter_plot", "heatmap", "network_graph"],
+      "themes": ["light_theme", "dark_theme", "custom_theme"],
+      "frameworks": ["Plotly", "Jinja2", "HTML5", "CSS3"],
+      "interaction_features": ["zoom", "filter", "drill_down", "export"]
+    },
+    "simulation": {
+      "concept_id": "simulation",
+      "description": "Privacy-preserving profile simulation for algorithm testing",
+      "semantic_vector": [0.86, 0.53, 0.79, 0.94, 0.41, 0.87, 0.65, 0.78],
+      "simulation_types": ["synthetic_profiles", "pattern_preservation", "statistical_modeling"],
+      "privacy_features": ["anonymization", "differential_privacy", "k_anonymity"],
+      "statistical_methods": ["histogram_sampling", "distribution_fitting", "markov_chains"]
+    }
+  },
+  "domain_concepts": {
+    "youtube_analysis": {
+      "concept_id": "youtube_analysis",
+      "description": "Specialized analysis of YouTube watch history data",
+      "semantic_vector": [0.95, 0.72, 0.88, 0.67, 0.91, 0.54, 0.83, 0.76],
+      "data_elements": ["video_title", "channel_name", "watch_time", "video_url", "video_id"],
+      "analysis_dimensions": ["temporal_patterns", "content_preferences", "viewing_velocity", "session_behavior"],
+      "platform_specific": ["html_parsing", "timestamp_formats", "url_structures"]
+    },
+    "algorithmic_manipulation": {
+      "concept_id": "algorithmic_manipulation",
+      "description": "Detection of potential algorithmic bias and content suppression",
+      "semantic_vector": [0.89, 0.94, 0.76, 0.82, 0.58, 0.91, 0.67, 0.85],
+      "detection_methods": ["baseline_comparison", "suppression_index", "temporal_analysis"],
+      "manipulation_types": ["content_suppression", "recommendation_bias", "echo_chambers"],
+      "metrics": ["suppression_ratio", "diversity_index", "recommendation_frequency"]
+    },
+    "privacy_analysis": {
+      "concept_id": "privacy_analysis",
+      "description": "Privacy-focused analysis with data minimization and anonymization",
+      "semantic_vector": [0.91, 0.68, 0.85, 0.73, 0.94, 0.47, 0.79, 0.86],
+      "privacy_principles": ["data_minimization", "purpose_limitation", "transparency"],
+      "anonymization_techniques": ["k_anonymity", "differential_privacy", "data_masking"],
+      "compliance_frameworks": ["GDPR", "CCPA", "privacy_by_design"]
+    }
+  },
+  "architectural_concepts": {
+    "modular_design": {
+      "concept_id": "modular_design",
+      "description": "Modular architecture with clear separation of concerns",
+      "semantic_vector": [0.83, 0.57, 0.92, 0.74, 0.68, 0.89, 0.45, 0.91],
+      "design_patterns": ["factory_pattern", "strategy_pattern", "observer_pattern", "decorator_pattern"],
+      "architectural_layers": ["presentation", "business_logic", "data_access", "infrastructure"],
+      "coupling_metrics": ["low_coupling", "high_cohesion", "interface_segregation"]
+    },
+    "extensibility": {
+      "concept_id": "extensibility",
+      "description": "Plugin-based extensibility for parsers, analyzers, and exporters",
+      "semantic_vector": [0.88, 0.71, 0.64, 0.93, 0.56, 0.82, 0.79, 0.87],
+      "extension_points": ["parser_plugins", "analysis_engines", "export_formats"],
+      "plugin_mechanisms": ["factory_registration", "dynamic_loading", "interface_contracts"],
+      "backwards_compatibility": ["version_compatibility", "api_stability", "migration_support"]
+    },
+    "performance": {
+      "concept_id": "performance",
+      "description": "Performance optimization strategies and monitoring",
+      "semantic_vector": [0.79, 0.86, 0.93, 0.52, 0.88, 0.64, 0.91, 0.73],
+      "optimization_techniques": ["caching", "lazy_loading", "parallel_processing", "memory_management"],
+      "monitoring_metrics": ["execution_time", "memory_usage", "throughput", "latency"],
+      "scalability_features": ["horizontal_scaling", "load_balancing", "resource_pooling"]
+    }
+  },
+  "quality_concepts": {
+    "testing": {
+      "concept_id": "testing",
+      "description": "Comprehensive testing strategy with multiple test types",
+      "semantic_vector": [0.76, 0.89, 0.67, 0.94, 0.51, 0.83, 0.72, 0.88],
+      "test_types": ["unit_tests", "integration_tests", "performance_tests", "security_tests"],
+      "testing_frameworks": ["pytest", "unittest", "pytest-benchmark", "pytest-mock"],
+      "coverage_metrics": ["line_coverage", "branch_coverage", "function_coverage"],
+      "test_fixtures": ["sample_data", "mock_objects", "test_environments"]
+    },
+    "documentation": {
+      "concept_id": "documentation",
+      "description": "Comprehensive documentation covering API, usage, and architecture",
+      "semantic_vector": [0.69, 0.92, 0.78, 0.56, 0.85, 0.73, 0.91, 0.64],
+      "documentation_types": ["api_docs", "user_guides", "architectural_docs", "tutorials"],
+      "generation_tools": ["Sphinx", "autodoc", "docstrings", "markdown"],
+      "documentation_quality": ["completeness", "accuracy", "clarity", "maintainability"]
+    },
+    "code_quality": {
+      "concept_id": "code_quality",
+      "description": "Code quality assurance through static analysis and standards",
+      "semantic_vector": [0.84, 0.71, 0.89, 0.93, 0.67, 0.78, 0.85, 0.92],
+      "quality_tools": ["black", "isort", "flake8", "mypy", "bandit"],
+      "quality_metrics": ["cyclomatic_complexity", "maintainability_index", "technical_debt"],
+      "standards_compliance": ["PEP8", "type_hints", "docstring_conventions"]
+    }
+  },
+  "concept_relationships": {
+    "strong_relationships": [
+      {
+        "concept_a": "data_processing",
+        "concept_b": "machine_learning",
+        "relationship_type": "feeds_into",
+        "strength": 0.92,
+        "description": "Processed data is input for ML algorithms"
+      },
+      {
+        "concept_a": "behavioral_profiling",
+        "concept_b": "algorithmic_manipulation",
+        "relationship_type": "detects",
+        "strength": 0.89,
+        "description": "Profiling helps detect manipulation patterns"
+      },
+      {
+        "concept_a": "temporal_analysis",
+        "concept_b": "youtube_analysis",
+        "relationship_type": "specializes",
+        "strength": 0.87,
+        "description": "Temporal analysis is specialized for YouTube data"
+      }
+    ],
+    "moderate_relationships": [
+      {
+        "concept_a": "user_interfaces",
+        "concept_b": "visualization",
+        "relationship_type": "presents",
+        "strength": 0.76,
+        "description": "UI components present visualizations"
+      },
+      {
+        "concept_a": "error_handling",
+        "concept_b": "performance",
+        "relationship_type": "enables",
+        "strength": 0.73,
+        "description": "Error handling enables robust performance"
+      }
+    ],
+    "weak_relationships": [
+      {
+        "concept_a": "security",
+        "concept_b": "simulation",
+        "relationship_type": "protects",
+        "strength": 0.64,
+        "description": "Security measures protect simulation data"
+      }
+    ]
+  },
+  "semantic_clusters": {
+    "core_functionality": {
+      "cluster_id": "core_functionality",
+      "concepts": ["data_processing", "parsing", "validation"],
+      "centroid_vector": [0.84, 0.52, 0.78, 0.91, 0.45, 0.73, 0.67, 0.89],
+      "cluster_cohesion": 0.87
+    },
+    "analysis_engine": {
+      "cluster_id": "analysis_engine",
+      "concepts": ["machine_learning", "temporal_analysis", "clustering"],
+      "centroid_vector": [0.91, 0.63, 0.77, 0.69, 0.78, 0.84, 0.76, 0.89],
+      "cluster_cohesion": 0.92
+    },
+    "advanced_analysis": {
+      "cluster_id": "advanced_analysis",
+      "concepts": ["behavioral_profiling", "algorithmic_manipulation", "privacy_analysis"],
+      "centroid_vector": [0.89, 0.78, 0.72, 0.88, 0.64, 0.91, 0.69, 0.86],
+      "cluster_cohesion": 0.85
+    },
+    "user_experience": {
+      "cluster_id": "user_experience",
+      "concepts": ["user_interfaces", "visualization", "documentation"],
+      "centroid_vector": [0.69, 0.91, 0.69, 0.61, 0.81, 0.51, 0.89, 0.65],
+      "cluster_cohesion": 0.79
+    },
+    "infrastructure": {
+      "cluster_id": "infrastructure",
+      "concepts": ["data_persistence", "performance", "extensibility"],
+      "centroid_vector": [0.82, 0.68, 0.83, 0.73, 0.64, 0.86, 0.62, 0.84],
+      "cluster_cohesion": 0.81
+    },
+    "quality_assurance": {
+      "cluster_id": "quality_assurance",
+      "concepts": ["testing", "code_quality", "error_handling"],
+      "centroid_vector": [0.71, 0.84, 0.81, 0.81, 0.69, 0.85, 0.83, 0.91],
+      "cluster_cohesion": 0.88
+    }
+  },
+  "concept_evolution": {
+    "version_history": {
+      "v1.0.0": {
+        "new_concepts": ["all_initial_concepts"],
+        "modified_concepts": [],
+        "deprecated_concepts": []
+      }
+    },
+    "future_concepts": [
+      {
+        "concept_id": "ai_integration",
+        "description": "Integration with large language models for enhanced analysis",
+        "priority": "high",
+        "estimated_version": "v1.1.0"
+      },
+      {
+        "concept_id": "real_time_analysis",
+        "description": "Real-time streaming analysis capabilities",
+        "priority": "medium",
+        "estimated_version": "v1.2.0"
+      }
+    ]
+  },
+  "usage_patterns": {
+    "common_workflows": [
+      {
+        "workflow_id": "basic_analysis",
+        "concepts_used": ["data_processing", "machine_learning", "visualization"],
+        "usage_frequency": 0.89
+      },
+      {
+        "workflow_id": "advanced_profiling",
+        "concepts_used": ["behavioral_profiling", "algorithmic_manipulation", "privacy_analysis"],
+        "usage_frequency": 0.67
+      }
+    ],
+    "concept_popularity": {
+      "most_used": ["data_processing", "user_interfaces", "visualization"],
+      "specialized_use": ["algorithmic_manipulation", "privacy_analysis", "simulation"],
+      "infrastructure": ["error_handling", "data_persistence", "performance"]
+    }
+  }
+}

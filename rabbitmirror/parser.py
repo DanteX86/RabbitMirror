@@ -120,7 +120,7 @@ class HistoryParser:
             }
         except (AttributeError, ValueError, TypeError) as e:
             # Log but don't fail - return None to skip this entry
-            logging.warning("Failed to parse entry: %s", e)
+            logging.getLogger().warning("Failed to parse entry: %s", e)
             return None
 
     def _convert_timestamp(self, timestamp_str: str) -> str:

@@ -1,0 +1,240 @@
+{
+  "timestamp": "2025-07-27T04:11:44.214809",
+  "tests": {
+    "static_analysis": {
+      "bandit": {
+        "status": "passed",
+        "issues": 0,
+        "details": []
+      },
+      "safety": {
+        "status": "passed",
+        "vulnerable_packages": 0
+      },
+      "semgrep": {
+        "status": "skipped",
+        "reason": "Semgrep not available"
+      }
+    },
+    "input_validation": {
+      "passed": 13,
+      "failed": 0,
+      "total": 13,
+      "details": [
+        {
+          "test": "XSS script tag",
+          "status": "passed"
+        },
+        {
+          "test": "JavaScript URL",
+          "status": "passed"
+        },
+        {
+          "test": "Data URL XSS",
+          "status": "passed"
+        },
+        {
+          "test": "Path traversal",
+          "status": "passed"
+        },
+        {
+          "test": "Windows path traversal",
+          "status": "passed"
+        },
+        {
+          "test": "Command injection semicolon",
+          "status": "passed"
+        },
+        {
+          "test": "Command injection pipe",
+          "status": "passed"
+        },
+        {
+          "test": "Command injection AND",
+          "status": "passed"
+        },
+        {
+          "test": "Command injection backticks",
+          "status": "passed"
+        },
+        {
+          "test": "Eval injection",
+          "status": "passed"
+        },
+        {
+          "test": "Exec injection",
+          "status": "passed"
+        },
+        {
+          "test": "Import injection",
+          "status": "passed"
+        },
+        {
+          "test": "Oversized string",
+          "status": "passed"
+        }
+      ]
+    },
+    "file_security": {
+      "passed": 8,
+      "failed": 2,
+      "total": 10,
+      "details": [
+        {
+          "test": "Executable file",
+          "filename": "malware.exe",
+          "status": "passed"
+        },
+        {
+          "test": "JavaScript file",
+          "filename": "script.js",
+          "status": "passed"
+        },
+        {
+          "test": "Shell script",
+          "filename": "shell.sh",
+          "status": "passed"
+        },
+        {
+          "test": "Batch file",
+          "filename": "virus.bat",
+          "status": "passed"
+        },
+        {
+          "test": "Path traversal filename",
+          "filename": "../../../passwd.txt",
+          "status": "failed",
+          "reason": "Dangerous file not blocked"
+        },
+        {
+          "test": "Windows path traversal",
+          "filename": "..\\..\\system32.dll",
+          "status": "passed"
+        },
+        {
+          "test": "Oversized filename",
+          "filename": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.json",
+          "status": "failed",
+          "reason": "Dangerous file not blocked"
+        },
+        {
+          "test": "Valid JSON file",
+          "filename": "document.json",
+          "status": "passed",
+          "sanitized": "document.json"
+        },
+        {
+          "test": "Valid CSV file",
+          "filename": "data.csv",
+          "status": "passed",
+          "sanitized": "data.csv"
+        },
+        {
+          "test": "Valid HTML file",
+          "filename": "history.html",
+          "status": "passed",
+          "sanitized": "history.html"
+        }
+      ]
+    },
+    "rate_limiting": {
+      "total_tests": 2,
+      "details": [
+        {
+          "test": "Rate limit enforcement",
+          "status": "passed",
+          "details": "Correctly limited to 5 requests"
+        },
+        {
+          "test": "Multiple user isolation",
+          "status": "passed",
+          "details": "Different users have separate rate limits"
+        }
+      ]
+    },
+    "authentication": {
+      "total_tests": 3,
+      "details": [
+        {
+          "test": "Secret key generation",
+          "status": "passed",
+          "details": "Generated key of length 43"
+        },
+        {
+          "test": "Weak key detection",
+          "status": "passed",
+          "details": "Correctly rejected 4 weak keys"
+        },
+        {
+          "test": "Password hashing",
+          "status": "passed",
+          "details": "Hash/verify cycle working correctly"
+        }
+      ]
+    },
+    "error_handling": {
+      "total_tests": 2,
+      "details": [
+        {
+          "test": "Error information disclosure",
+          "status": "passed",
+          "details": "Custom exceptions used for controlled error messages"
+        },
+        {
+          "test": "Error logging",
+          "status": "passed",
+          "details": "Security auditor logs security events"
+        }
+      ]
+    },
+    "configuration": {
+      "total_tests": 4,
+      "details": [
+        {
+          "test": "Environment variable SECRET_KEY",
+          "status": "warning",
+          "details": "SECRET_KEY not set in environment, using default"
+        },
+        {
+          "test": "Environment variable FLASK_DEBUG",
+          "status": "warning",
+          "details": "FLASK_DEBUG not set in environment, using default"
+        },
+        {
+          "test": "Environment variable RATE_LIMIT_REQUESTS",
+          "status": "warning",
+          "details": "RATE_LIMIT_REQUESTS not set in environment, using default"
+        },
+        {
+          "test": "Debug mode",
+          "status": "passed",
+          "details": "Debug mode is disabled"
+        }
+      ]
+    },
+    "dependencies": {
+      "total_tests": 2,
+      "details": [
+        {
+          "test": "Requirements file",
+          "status": "passed",
+          "details": "requirements.txt exists for dependency tracking"
+        },
+        {
+          "test": "Version pinning",
+          "status": "warning",
+          "details": "Only 0/23 dependencies are pinned"
+        }
+      ]
+    }
+  },
+  "vulnerabilities": [],
+  "recommendations": [],
+  "score": 33.3,
+  "test_summary": {
+    "total_tests": 36,
+    "passed_tests": 30,
+    "vulnerabilities": 2,
+    "recommendations": 1
+  }
+}

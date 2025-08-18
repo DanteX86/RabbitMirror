@@ -30,6 +30,20 @@ class RabbitMirrorError(Exception):
         self.error_code = error_code or "UNKNOWN_ERROR"
         self.details = details or {}
 
+    def __str__(self) -> str:
+        """Return a user-friendly error message.
+
+        By default, only return the message. If an explicit error_code is set
+        (and is not the generic UNKNOWN_ERROR), prefix it for additional context.
+        """
+        try:
+            code = (self.error_code or "UNKNOWN_ERROR").strip()
+            if code and code != "UNKNOWN_ERROR":
+                return f"[{code}] {self.message}"
+            return self.message
+        except Exception:
+            return self.message
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert exception to dictionary for logging/serialization."""
         return {
@@ -249,6 +263,60 @@ class InternalError(RabbitMirrorError):
         self.component = component
         if component:
             self.details["component"] = component
+
+
+class SecurityError(RabbitMirrorError):
+    """Raised when security validation fails."""
+
+    pass
+
+
+class CacheError(RabbitMirrorError):
+    """Raised when cache operations fail."""
+
+    pass
+
+
+class RetentionError(RabbitMirrorError):
+    """Raised when data retention operations fail."""
+
+    def __init__(
+        self,
+        message: str,
+        violation_type: str = None,
+        risk_level: str = None,
+        error_code: str = None,
+        **kwargs,
+    ):
+        super().__init__(message, error_code=error_code, **kwargs)
+        self.violation_type = violation_type
+        self.risk_level = risk_level
+        if violation_type:
+            self.details["violation_type"] = violation_type
+        if risk_level:
+            self.details["risk_level"] = risk_level
+
+
+class ValidationError(RabbitMirrorError):
+    """Raised when input validation fails."""
+
+    def __init__(
+        self,
+        message: str,
+        field_name: str = None,
+        invalid_value: Any = None,
+        expected_format: str = None,
+        error_code: str = None,
+        **kwargs,
+    ):
+        super().__init__(message, error_code=error_code, **kwargs)
+        self.field_name = field_name
+        self.invalid_value = invalid_value
+        self.expected_format = expected_format
+        if field_name:
+            self.details["field_name"] = field_name
+        if expected_format:
+            self.details["expected_format"] = expected_format
 
 
 # Error handling utilities

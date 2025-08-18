@@ -6,75 +6,113 @@ from pathlib import Path
 from typing import Optional
 
 import click
-import click_aliases
-import jsonschema
-import yaml
+
+# Make click_aliases optional; provide a safe fallback
+try:
+    import click_aliases  # type: ignore
+
+    _AliasedBase = click_aliases.ClickAliasedGroup
+except ModuleNotFoundError:
+    _AliasedBase = click.Group
 
 from .adversarial_profiler import AdversarialProfiler
 from .cluster_engine import ClusterEngine
 from .config_manager import ConfigManager
-from .dashboard_generator import DashboardGenerator
 from .exceptions import RabbitMirrorError, create_error_context, format_error_message
-from .export_formatter import ExportFormatter
 from .parser import HistoryParser
 from .profile_simulator import ProfileSimulator
-from .qr_generator import QRGenerator
-from .report_generator import ReportGenerator
-from .schema_validator import SchemaValidator
 from .suppression_index import SuppressionIndex
-from .symbolic_logger import SymbolicLogger
-from .trend_analyzer import TrendAnalyzer
 
-# Initialize logger
-symbolic_logger = SymbolicLogger()
+# Optional logger dependency; provide no-op fallback if unavailable
+try:
+    from .symbolic_logger import SymbolicLogger
+
+    symbolic_logger = SymbolicLogger()
+except Exception:
+
+    class _NoOpLogger:
+        def log_error(self, *args, **kwargs):
+            return None
+
+    symbolic_logger = _NoOpLogger()
 
 
-class AliasedGroup(click_aliases.ClickAliasedGroup):
+class AliasedGroup(_AliasedBase):
     def get_command(self, ctx, cmd_name):
         # Try to get builtin commands first
         rv = click.Group.get_command(self, ctx, cmd_name)
         if rv is not None:
             return rv
-        # Get aliases if builtin doesn't exist
-        return click.Group.get_command(self, ctx, cmd_name)
+        # If alias support is available, defer to base class; otherwise re-check default group
+        try:
+            return super().get_command(ctx, cmd_name)
+        except Exception:
+            return click.Group.get_command(self, ctx, cmd_name)
 
 
-@click.group(cls=AliasedGroup)
-def cli():
+@click.group(cls=AliasedGroup, invoke_without_command=True)
+@click.version_option(version="1.0.0", prog_name="RabbitMirror")
+@click.pass_context
+def cli(ctx):
     """RabbitMirror - Advanced YouTube Watch History Analysis Tool
 
     Analyze and understand your YouTube watch history patterns.
     """
+    # If no subcommand is provided, show help and exit 0 (not an error)
+    if ctx.invoked_subcommand is None:
+        click.echo(ctx.get_help())
+        ctx.exit(0)
 
 
 # Data Processing Commands Group
-@cli.group("process", help="Commands for data processing")
-def process_group():
-    pass
+@cli.group("process", help="Commands for data processing", invoke_without_command=True)
+@click.pass_context
+def process_group(ctx):
+    if ctx.invoked_subcommand is None:
+        click.echo(ctx.get_help())
+        ctx.exit(0)
 
 
 # Analysis Commands Group
-@cli.group("analyze", help="Commands for data analysis")
-def analyze_group():
-    pass
+@cli.group("analyze", help="Commands for data analysis", invoke_without_command=True)
+@click.pass_context
+def analyze_group(ctx):
+    if ctx.invoked_subcommand is None:
+        click.echo(ctx.get_help())
+        ctx.exit(0)
 
 
 # Report Commands Group
-@cli.group("report", help="Commands for report generation")
-def report_group():
-    pass
+@cli.group("report", help="Commands for report generation", invoke_without_command=True)
+@click.pass_context
+def report_group(ctx):
+    if ctx.invoked_subcommand is None:
+        click.echo(ctx.get_help())
+        ctx.exit(0)
 
 
 # Utility Commands Group
-@cli.group("utils", help="Utility commands")
-def utils_group():
-    pass
+@cli.group("utils", help="Utility commands", invoke_without_command=True)
+@click.pass_context
+def utils_group(ctx):
+    if ctx.invoked_subcommand is None:
+        click.echo(ctx.get_help())
+        ctx.exit(0)
 
 
 # Configuration Commands Group
-@cli.group("config", help="Configuration commands")
-def config_group():
-    pass
+@cli.group("config", help="Configuration commands", invoke_without_command=True)
+@click.option("--config", type=click.Path(), help="Path to custom config file")
+@click.pass_context
+def config_group(ctx, config: Optional[str]):
+    """Configuration commands with optional config file path."""
+    # Store config path in context for child commands
+    ctx.ensure_object(dict)
+    ctx.obj["config_path"] = config
+    # If invoked without a subcommand, show help and exit 0
+    if ctx.invoked_subcommand is None:
+        click.echo(ctx.get_help())
+        ctx.exit(0)
 
 
 # TUI Command
@@ -130,6 +168,8 @@ def parse(
         result = parser.parse()
 
         if output:
+            from .export_formatter import ExportFormatter
+
             output_path = Path(output)
             exporter = ExportFormatter(output_dir=output_path.parent)
             output_file = exporter.export_data(
@@ -183,6 +223,8 @@ def cluster(
         clusters = engine.cluster_videos(entries)
 
         if output:
+            from .export_formatter import ExportFormatter
+
             output_path = Path(output)
             exporter = ExportFormatter(output_dir=output_path.parent)
             output_file = exporter.export_data(
@@ -240,6 +282,8 @@ def analyze_suppression(
         results = analyzer.calculate_suppression(entries)
 
         if output:
+            from .export_formatter import ExportFormatter
+
             output_path = Path(output)
             exporter = ExportFormatter(output_dir=output_path.parent)
             output_file = exporter.export_data(results, output_format, output_path.stem)
@@ -299,6 +343,8 @@ def detect_patterns(
         patterns = profiler.identify_adversarial_patterns(entries)
 
         if output:
+            from .export_formatter import ExportFormatter
+
             output_path = Path(output)
             exporter = ExportFormatter(output_dir=output_path.parent)
             output_file = exporter.export_data(
@@ -361,6 +407,8 @@ def simulate(
         simulated_profile = simulator.simulate_profile(entries, duration_days=duration)
 
         if output:
+            from .export_formatter import ExportFormatter
+
             output_path = Path(output)
             exporter = ExportFormatter(output_dir=output_path.parent)
             output_file = exporter.export_data(
@@ -406,6 +454,9 @@ def generate_report(
     """
     try:
         # Load data from file
+        from .export_formatter import ExportFormatter
+        from .report_generator import ReportGenerator
+
         exporter = ExportFormatter()
         data = exporter.load_data(data_file)
 
@@ -472,6 +523,8 @@ def batch_process(
                     output_file.parent.mkdir(parents=True, exist_ok=True)
 
                     # Export data
+                    from .export_formatter import ExportFormatter
+
                     exporter = ExportFormatter()
                     exporter.export_data(
                         {"entries": entries},
@@ -589,6 +642,8 @@ def trend_analysis(
         entries = result.entries
 
         # Calculate trends
+        from .trend_analyzer import TrendAnalyzer
+
         analyzer = TrendAnalyzer(period_type=period, normalize=normalize)
         trends = analyzer.analyze_trends(entries, list(metrics) if metrics else None)
 
@@ -647,6 +702,8 @@ def trend_analysis(
 
         # Export data if output specified
         if output:
+            from .export_formatter import ExportFormatter
+
             exporter = ExportFormatter()
             output_file = exporter.export_data(
                 {
@@ -695,6 +752,9 @@ def export_dashboard(
     """Export data as an interactive dashboard."""
     try:
         # Load data
+        from .dashboard_generator import DashboardGenerator
+        from .export_formatter import ExportFormatter
+
         exporter = ExportFormatter()
         data = exporter.load_data(data_file)
 
@@ -749,11 +809,13 @@ def export_dashboard(
 @click.option(
     "--global/--local", "global_", default=False, help="Store in global or local config"
 )
-def set_config(key: str, value: str, global_: bool):
+@click.pass_context
+def set_config(ctx, key: str, value: str, global_: bool):
     """Set a configuration value."""
     try:
-        config = ConfigManager(use_global=global_)
-        config.set(key, value)
+        config_path = ctx.obj.get("config_path") if ctx.obj else None
+        config_manager = ConfigManager(config_path=config_path, use_global=global_)
+        config_manager.set(key, value)
         click.echo(
             f"✅ Set {key} = {value} in {'global' if global_ else 'local'} config"
         )
@@ -763,18 +825,23 @@ def set_config(key: str, value: str, global_: bool):
 
 
 @config_group.command(name="get")
-@click.argument("key", type=str)
+@click.argument("key", type=str, required=False)
 @click.option(
     "--global/--local",
     "is_global",
     default=False,
     help="Read from global or local config",
 )
-def get_config(key: str, is_global: bool):
-    """Get a configuration value."""
+@click.pass_context
+def get_config(ctx, key: Optional[str], is_global: bool):
+    """Get a configuration value. If no KEY is provided, show help."""
     try:
-        config = ConfigManager(use_global=is_global)
-        value = config.get(key)
+        if key is None:
+            click.echo(ctx.get_help())
+            ctx.exit(0)
+        config_path = ctx.obj.get("config_path") if ctx.obj else None
+        config_manager = ConfigManager(config_path=config_path, use_global=is_global)
+        value = config_manager.get(key)
         if value is not None:
             click.echo(f"{key} = {value}")
         else:
@@ -795,11 +862,13 @@ def get_config(key: str, is_global: bool):
     type=click.Choice(["text", "json", "yaml"]),
     default="text",
 )
-def list_config(is_global: bool, output_format: str):
+@click.pass_context
+def list_config(ctx, is_global: bool, output_format: str):
     """List all configuration values."""
     try:
-        config = ConfigManager(use_global=is_global)
-        config_list = config.list(as_json=output_format == "json")
+        config_path = ctx.obj.get("config_path") if ctx.obj else None
+        config_manager = ConfigManager(config_path=config_path, use_global=is_global)
+        config_list = config_manager.list(as_json=output_format == "json")
         click.echo(config_list)
     except (FileNotFoundError, ValueError, OSError) as e:
         symbolic_logger.log_error("config_list_error", e)
@@ -826,30 +895,64 @@ def validate_file(file: str, schema: Optional[str], output_format: str):
             if output_format == "json":
                 data = json.load(f)
             else:
+                try:
+                    import yaml  # type: ignore
+                except ModuleNotFoundError as e:
+                    click.echo(
+                        "❌ YAML operations require the 'PyYAML' package.", err=True
+                    )
+                    click.echo("Install it with: pip install pyyaml", err=True)
+                    raise SystemExit(1) from e
                 data = yaml.safe_load(f)
+
+        # Import jsonschema lazily to avoid hard dependency for --help
+        try:
+            import jsonschema  # type: ignore
+        except ModuleNotFoundError as e:
+            click.echo(
+                "❌ JSON schema validation requires the 'jsonschema' package.", err=True
+            )
+            click.echo("Install it with: pip install jsonschema", err=True)
+            raise SystemExit(1) from e
 
         # Load custom schema if provided
         if schema:
             with open(schema, "r", encoding="utf-8") as f:
-                custom_schema = (
-                    json.load(f) if output_format == "json" else yaml.safe_load(f)
-                )
+                if output_format == "json":
+                    custom_schema = json.load(f)
+                else:
+                    try:
+                        import yaml  # type: ignore
+                    except ModuleNotFoundError as e:
+                        click.echo(
+                            "❌ YAML operations require the 'PyYAML' package.", err=True
+                        )
+                        click.echo("Install it with: pip install pyyaml", err=True)
+                        raise SystemExit(1) from e
+                    custom_schema = yaml.safe_load(f)
 
             # Validate against custom schema
             try:
                 jsonschema.validate(instance=data, schema=custom_schema)
                 click.echo(f"✅ {file} is valid against custom schema.")
-            except jsonschema.exceptions.ValidationError as ve:
+            except jsonschema.exceptions.ValidationError as ve:  # type: ignore[attr-defined]
                 click.echo(f"❌ Validation failed: {ve.message}")
                 path_str = (
-                    " -> ".join(str(p) for p in ve.absolute_path)
-                    if ve.absolute_path
+                    " -\u003e ".join(str(p) for p in ve.absolute_path)
+                    if getattr(ve, "absolute_path", None)
                     else "root"
                 )
                 click.echo(f"   Path: {path_str}")
                 return
+            except jsonschema.exceptions.SchemaError as se:  # type: ignore[attr-defined]
+                click.echo(
+                    f"❌ Error validating file: {se.message if hasattr(se, 'message') else str(se)}"
+                )
+                return
         else:
             # Validate against default schemas with auto-detection
+            from .schema_validator import SchemaValidator
+
             schema_validator = SchemaValidator()
 
             # Try auto-detection first
@@ -872,7 +975,7 @@ def validate_file(file: str, schema: Optional[str], output_format: str):
                     )
                     click.echo(f"   Error: {validation_result['error']}")
                     if validation_result.get("path"):
-                        path_str = " -> ".join(
+                        path_str = " -\u003e ".join(
                             str(p) for p in validation_result["path"]
                         )
                         click.echo(f"   Path: {path_str}")
@@ -913,7 +1016,6 @@ def validate_file(file: str, schema: Optional[str], output_format: str):
         FileNotFoundError,
         ValueError,
         json.JSONDecodeError,
-        jsonschema.exceptions.SchemaError,
     ) as e:
         symbolic_logger.log_error("validation_error", e)
         click.echo(f"❌ Error validating file: {str(e)}", err=True)
@@ -927,6 +1029,8 @@ def convert_file(input_file: str, output_format: str, output: Optional[str]):
     """Convert a file between formats."""
     try:
         # Load input file using ExportFormatter
+        from .export_formatter import ExportFormatter
+
         exporter = ExportFormatter()
         data = exporter.load_data(input_file)
 
@@ -982,6 +1086,8 @@ def generate_qr(
 ):
     """Generate a QR code for the given data."""
     try:
+        from .qr_generator import QRGenerator
+
         generator = QRGenerator(
             size=size, error_correction=error_correction, color=color
         )

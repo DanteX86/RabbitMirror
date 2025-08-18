@@ -232,6 +232,12 @@ tramp
 # Project-specific ignores
 # ======================
 
+# Do not track generated artifacts or caches
+rabbitmirror/__pycache__/
+*.pyc
+clusters.json
+parsed_history.json
+
 # Node/Next.js artifacts
 node_modules/
 .next/

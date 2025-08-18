@@ -1,0 +1,476 @@
+{
+  "analysis_catalog": {
+    "metadata": {
+      "version": "1.0.0",
+      "generated_at": "2025-01-27",
+      "description": "Comprehensive catalog of RabbitMirror analysis capabilities and algorithms"
+    },
+    "analysis_types": {
+      "pattern_detection": {
+        "module": "adversarial_profiler.py",
+        "class": "AdversarialProfiler",
+        "description": "Detects potential algorithmic manipulation patterns",
+        "algorithms": {
+          "rapid_views_detection": {
+            "method": "_detect_rapid_views",
+            "parameters": {
+              "rapid_view_threshold": {
+                "type": "int",
+                "default": 5,
+                "unit": "minutes",
+                "description": "Maximum time interval between videos to be considered rapid viewing"
+              }
+            },
+            "thresholds": {
+              "confidence_calculation": "self._calculate_confidence(interval)"
+            }
+          },
+          "content_loops_detection": {
+            "method": "_detect_content_loops",
+            "parameters": {
+              "similarity_threshold": {
+                "type": "float",
+                "default": 0.7,
+                "range": "0.0-1.0",
+                "description": "Minimum cosine similarity to consider videos similar"
+              },
+              "repetition_threshold": {
+                "type": "int",
+                "default": 3,
+                "description": "Minimum number of similar videos to form a loop pattern"
+              }
+            },
+            "algorithm_details": "Uses TF-IDF vectorization and cosine similarity matrix analysis"
+          },
+          "binge_patterns_detection": {
+            "method": "_detect_binge_patterns",
+            "parameters": {
+              "session_gap": {
+                "type": "int",
+                "default": 30,
+                "unit": "minutes",
+                "description": "Gap between videos that defines session boundaries"
+              }
+            },
+            "thresholds": {
+              "minimum_session_length": 10,
+              "suspicious_interval_threshold": "std_dev < 1.0 minutes"
+            }
+          },
+          "anomalous_sessions_detection": {
+            "method": "_detect_anomalous_sessions",
+            "criteria": {
+              "std_interval": "< 1.0 minutes",
+              "video_count": "> 10 videos",
+              "mean_interval": "< 5.0 minutes"
+            }
+          },
+          "suspicious_sequences_detection": {
+            "method": "_detect_suspicious_sequences",
+            "sequence_length": 3,
+            "detection_criteria": [
+              "exact_title_repetition",
+              "high_similarity_threshold",
+              "numeric_progression",
+              "similar_structure"
+            ]
+          }
+        },
+        "behavioral_analysis": {
+          "psychological_patterns": {
+            "mood_indicators": {
+              "positive": ["uplifting", "happy", "funny", "inspiration"],
+              "negative": ["drama", "conflict", "controversy", "criticism"],
+              "neutral": ["educational", "informative", "documentary"]
+            },
+            "cognitive_patterns": {
+              "analytical": ["analysis", "review", "explanation", "tutorial"],
+              "creative": ["art", "design", "music", "creation"],
+              "practical": ["how-to", "guide", "tips", "solution"]
+            },
+            "emotional_triggers": {
+              "curiosity": ["mystery", "secret", "revealed", "hidden"],
+              "urgency": ["breaking", "urgent", "latest", "now"],
+              "controversy": ["vs", "debate", "fight", "drama"]
+            }
+          },
+          "interaction_signatures": {
+            "viewing_rhythm": {
+              "binge": {
+                "consecutive_hours": 3,
+                "videos_per_hour": 12
+              },
+              "paced": {
+                "break_interval": 30,
+                "session_limit": 120
+              },
+              "sporadic": {
+                "session_gap": 120,
+                "variance": 0.5
+              },
+              "cyclical": {
+                "period_hours": 24,
+                "consistency": 0.8
+              }
+            },
+            "engagement_depth": {
+              "passive": {
+                "interaction_rate": 0.1,
+                "comment_rate": 0.01,
+                "completion_rate": 0.3
+              },
+              "active": {
+                "interaction_rate": 0.3,
+                "comment_rate": 0.05,
+                "completion_rate": 0.7
+              },
+              "highly_engaged": {
+                "interaction_rate": 0.5,
+                "comment_rate": 0.1,
+                "completion_rate": 0.9
+              }
+            }
+          }
+        },
+        "confidence_scoring": {
+          "weights": {
+            "pattern_strength": 0.35,
+            "temporal_consistency": 0.25,
+            "contextual_relevance": 0.20,
+            "historical_precedent": 0.20
+          },
+          "pattern_modifiers": {
+            "exact_match": 1.0,
+            "high_similarity": 0.8,
+            "temporal_pattern": 0.7,
+            "structural_pattern": 0.6,
+            "weak_correlation": 0.4
+          },
+          "decay_rate": 0.1
+        }
+      },
+      "content_clustering": {
+        "module": "cluster_engine.py",
+        "class": "ClusterEngine",
+        "description": "Groups similar videos based on content similarity",
+        "algorithms": {
+          "dbscan_clustering": {
+            "algorithm": "DBSCAN",
+            "vectorization": "TF-IDF",
+            "parameters": {
+              "eps": {
+                "type": "float",
+                "default": 0.3,
+                "range": "0.0-1.0",
+                "description": "Maximum distance between two samples for clustering"
+              },
+              "min_samples": {
+                "type": "int",
+                "default": 5,
+                "minimum": 1,
+                "description": "Minimum samples required to form a dense region"
+              }
+            },
+            "preprocessing": {
+              "vectorizer": "TfidfVectorizer",
+              "stop_words": "english",
+              "text_normalization": true
+            },
+            "error_handling": {
+              "retry_config": {
+                "max_attempts": 3,
+                "base_delay": 1.0,
+                "timeout_seconds": 120.0
+              }
+            }
+          }
+        },
+        "features": [
+          "title_similarity",
+          "temporal_patterns",
+          "viewing_frequency",
+          "content_categories"
+        ],
+        "output_metrics": {
+          "total_clusters": "count of identified clusters",
+          "noise_points": "unclustered entries",
+          "cluster_sizes": "distribution of cluster sizes",
+          "vocabulary_size": "TF-IDF vocabulary size"
+        }
+      },
+      "suppression_analysis": {
+        "module": "suppression_index.py",
+        "class": "SuppressionIndex",
+        "description": "Detects content suppression by analyzing recommendation frequency changes",
+        "algorithms": {
+          "baseline_comparison": {
+            "method": "calculate_suppression",
+            "parameters": {
+              "baseline_period_days": {
+                "type": "int",
+                "default": 30,
+                "description": "Number of days for baseline period calculation"
+              }
+            },
+            "metrics": {
+              "overall_suppression": "1.0 - (analysis_views / baseline_views)",
+              "category_suppression": "per-category suppression indices",
+              "view_velocity": "views per unit time",
+              "channel_diversity": "unique channels analysis"
+            },
+            "analysis_periods": [
+              "baseline_period",
+              "analysis_period"
+            ]
+          },
+          "temporal_pattern_analysis": {
+            "method": "_analyze_temporal_patterns",
+            "description": "Analyzes how suppression varies over time",
+            "detection_criteria": [
+              "recommendation_frequency_changes",
+              "category_specific_suppression",
+              "temporal_suppression_patterns",
+              "baseline_deviation_metrics"
+            ]
+          }
+        },
+        "thresholds": {
+          "suppression_detection_threshold": {
+            "type": "float",
+            "default": 0.5,
+            "description": "Threshold for detecting significant suppression"
+          }
+        }
+      },
+      "profile_simulation": {
+        "module": "profile_simulator.py",
+        "class": "ProfileSimulator",
+        "description": "Generates synthetic profiles for algorithm testing and privacy-preserving analysis",
+        "algorithms": {
+          "pattern_extraction": {
+            "viewing_patterns": [
+              "time_distribution",
+              "content_distribution",
+              "interval_distribution",
+              "daily_counts",
+              "title_patterns"
+            ],
+            "methods": {
+              "time_analysis": "_analyze_time_distribution",
+              "content_analysis": "_analyze_content_distribution",
+              "interval_analysis": "_analyze_interval_distribution",
+              "daily_analysis": "_analyze_daily_counts",
+              "title_analysis": "_analyze_title_patterns"
+            }
+          },
+          "simulation_generation": {
+            "timeline_generation": "_generate_timeline",
+            "entry_generation": "_generate_daily_entries",
+            "title_generation": "_generate_title",
+            "parameters": {
+              "duration_days": {
+                "type": "int",
+                "default": 30,
+                "description": "Duration of simulated profile in days"
+              },
+              "time_bins": {
+                "type": "int",
+                "default": 24,
+                "description": "Number of time bins for hour analysis"
+              },
+              "interval_bins": {
+                "type": "int",
+                "default": 50,
+                "description": "Number of bins for interval distribution"
+              }
+            }
+          },
+          "pattern_recognition": {
+            "title_patterns": [
+              "CREATOR - CONTENT",
+              "SERIES_WITH_EPISODE",
+              "TITLE_WITH_PARENTHESES",
+              "TITLE_WITH_BRACKETS",
+              "SIMPLE_TITLE"
+            ],
+            "content_categories": [
+              "educational",
+              "music",
+              "gaming",
+              "vlog",
+              "other"
+            ]
+          }
+        },
+        "statistical_modeling": {
+          "distributions": {
+            "time_distribution": "histogram normalization",
+            "interval_distribution": "histogram with 24-hour limit",
+            "daily_counts": "normal distribution (mean, std)"
+          },
+          "sampling_methods": [
+            "_sample_from_distribution",
+            "_sample_from_dict",
+            "_sample_daily_count"
+          ]
+        }
+      },
+      "temporal_analysis": {
+        "module": "trend_analyzer.py",
+        "class": "TrendAnalyzer",
+        "description": "Analyzes trends and patterns in watch history data over time",
+        "algorithms": {
+          "trend_detection": {
+            "method": "_analyze_metric_trend",
+            "statistical_methods": [
+              "linear_regression",
+              "correlation_analysis",
+              "variance_analysis"
+            ],
+            "parameters": {
+              "period_type": {
+                "type": "string",
+                "options": ["daily", "weekly", "monthly"],
+                "default": "daily"
+              },
+              "normalize": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether to normalize trend values to 0-1 scale"
+              }
+            },
+            "metrics_analyzed": [
+              "video_count",
+              "total_duration",
+              "avg_duration",
+              "unique_channels",
+              "categories_diversity",
+              "viewing_velocity",
+              "session_count"
+            ]
+          },
+          "significant_change_detection": {
+            "method": "_detect_significant_changes",
+            "thresholds": {
+              "change_percentage_threshold": 50.0,
+              "minimum_data_points": 2
+            },
+            "trend_classification": [
+              "increasing",
+              "decreasing",
+              "stable"
+            ]
+          },
+          "session_analysis": {
+            "method": "_count_sessions",
+            "parameters": {
+              "gap_threshold": {
+                "type": "int",
+                "default": 30,
+                "unit": "minutes",
+                "description": "Gap between videos that defines session boundaries"
+              }
+            }
+          }
+        },
+        "statistical_measures": {
+          "trend_strength": "absolute correlation coefficient",
+          "statistical_significance": "min(1.0, strength * data_points / 10)",
+          "std_threshold": "std_dev * 0.1 or 0.01"
+        }
+      }
+    },
+    "data_pipelines": {
+      "preprocessing": {
+        "text_processing": {
+          "vectorization": "TfidfVectorizer with English stop words",
+          "normalization": "lowercase, tokenization",
+          "encoding": "UTF-8 with fallback encodings"
+        },
+        "temporal_processing": {
+          "timestamp_parsing": "ISO format parsing",
+          "session_splitting": "gap-based session detection",
+          "time_binning": "hourly, daily, weekly, monthly"
+        },
+        "data_validation": {
+          "required_fields": ["title", "timestamp"],
+          "type_checking": "dictionary validation",
+          "error_recovery": "robust operation with retry logic"
+        }
+      },
+      "analysis_workflow": {
+        "sequence": [
+          "data_preprocessing",
+          "pattern_extraction",
+          "similarity_calculation",
+          "clustering_analysis",
+          "anomaly_detection",
+          "trend_analysis",
+          "confidence_scoring",
+          "result_aggregation"
+        ],
+        "parallel_processing": {
+          "max_workers": 4,
+          "timeout_handling": "120 seconds for analysis operations",
+          "memory_management": "1GB default limit"
+        }
+      },
+      "output_processing": {
+        "formats": ["json", "csv", "yaml", "excel", "html"],
+        "compression": "optional",
+        "metadata_inclusion": "configurable",
+        "timestamp_formats": ["iso", "human"]
+      }
+    },
+    "configuration_parameters": {
+      "clustering": {
+        "algorithm": "DBSCAN",
+        "eps": 0.3,
+        "min_samples": 5,
+        "max_features": 1000,
+        "feature_weights": {
+          "title_similarity": 0.7,
+          "temporal_proximity": 0.3
+        }
+      },
+      "pattern_detection": {
+        "enabled": true,
+        "sensitivity": 0.7,
+        "min_confidence": 0.6,
+        "pattern_types": ["suppression", "manipulation", "echo_chamber"]
+      },
+      "suppression_analysis": {
+        "baseline_period": 30,
+        "detection_threshold": 0.5,
+        "categories": []
+      },
+      "trend_analysis": {
+        "enabled": true,
+        "window_size": 7,
+        "smoothing_factor": 0.3,
+        "seasonal_analysis": true
+      },
+      "performance": {
+        "max_workers": 4,
+        "max_memory_usage": "1GB",
+        "parallel_processing": true,
+        "cache_enabled": true,
+        "cache_size": "100MB"
+      },
+      "error_handling": {
+        "retry_attempts": 3,
+        "retry_delay": 1.0,
+        "circuit_breaker": {
+          "enabled": true,
+          "failure_threshold": 5,
+          "recovery_timeout": 30
+        },
+        "timeout_settings": {
+          "parse_timeout": 30,
+          "export_timeout": 60,
+          "analysis_timeout": 120
+        }
+      }
+    }
+  }
+}

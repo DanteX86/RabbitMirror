@@ -1,0 +1,312 @@
+{
+  "project_name": "RabbitMirror",
+  "version": "1.0.0",
+  "description": "Advanced YouTube Watch History Analysis Tool",
+  "architecture_analysis_timestamp": "2024-12-28T10:00:00Z",
+
+  "core_modules": {
+    "cli": {
+      "path": "rabbitmirror/cli.py",
+      "purpose": "Command-line interface entry point with Click-based commands",
+      "dependencies": ["click", "click_aliases", "jsonschema", "yaml"],
+      "key_classes": ["AliasedGroup"],
+      "key_functions": ["main", "parse", "cluster", "tui_command"],
+      "entry_point": "rabbitmirror.cli:main"
+    },
+    "parser": {
+      "path": "rabbitmirror/parser.py",
+      "purpose": "Main parsing controller that delegates to platform-specific parsers",
+      "dependencies": ["bs4", "datetime"],
+      "key_classes": ["HistoryParser"],
+      "key_functions": ["parse", "_parse_with_fallback", "_extract_entries", "_parse_entry"]
+    },
+    "config_manager": {
+      "path": "rabbitmirror/config_manager.py",
+      "purpose": "Configuration management with JSON-based storage",
+      "dependencies": ["json", "pathlib"],
+      "key_classes": ["ConfigManager"],
+      "key_functions": ["set", "get", "list"]
+    },
+    "exceptions": {
+      "path": "rabbitmirror/exceptions.py",
+      "purpose": "Custom exception hierarchy for structured error handling",
+      "dependencies": ["typing"],
+      "key_classes": ["RabbitMirrorError", "DataProcessingError", "ParsingError", "ClusteringError"],
+      "inheritance_tree": {
+        "RabbitMirrorError": {
+          "children": [
+            "DataProcessingError",
+            "FileOperationError",
+            "ConfigurationError",
+            "AnalysisError",
+            "SimulationError",
+            "ExportError",
+            "NetworkError",
+            "ResourceError",
+            "DependencyError"
+          ]
+        },
+        "DataProcessingError": {
+          "children": ["ParsingError", "DataValidationError"]
+        },
+        "ParsingError": {
+          "children": ["InvalidFormatError"]
+        },
+        "AnalysisError": {
+          "children": ["ClusteringError", "PatternDetectionError", "TrendAnalysisError"]
+        }
+      }
+    }
+  },
+
+  "analysis_engines": {
+    "cluster_engine": {
+      "path": "rabbitmirror/cluster_engine.py",
+      "purpose": "Video clustering using DBSCAN and TF-IDF vectorization",
+      "dependencies": ["sklearn.cluster", "sklearn.feature_extraction.text"],
+      "key_classes": ["ClusterEngine"],
+      "algorithms": ["DBSCAN", "TF-IDF"],
+      "key_functions": ["cluster_videos"],
+      "decorators": ["robust_operation", "monitor_errors"]
+    },
+    "adversarial_profiler": {
+      "path": "rabbitmirror/adversarial_profiler.py",
+      "purpose": "Advanced behavioral profiling and psychological pattern analysis",
+      "dependencies": ["numpy", "sklearn", "collections"],
+      "key_classes": ["AdversarialProfiler"],
+      "pattern_categories": [
+        "psychological_patterns",
+        "motivational_patterns",
+        "attention_patterns",
+        "social_patterns",
+        "genre_preferences",
+        "viewing_habits"
+      ],
+      "analysis_methods": ["confidence_scoring", "pattern_detection", "behavioral_modeling"]
+    },
+    "trend_analyzer": {
+      "path": "rabbitmirror/trend_analyzer.py",
+      "purpose": "Temporal trend analysis with statistical significance testing",
+      "dependencies": ["numpy", "collections", "datetime"],
+      "key_classes": ["TrendAnalyzer", "TrendMetric", "SignificantChange"],
+      "supported_periods": ["daily", "weekly", "monthly"],
+      "metrics": ["video_count", "total_duration", "avg_duration", "unique_channels", "categories_diversity"]
+    },
+    "suppression_index": {
+      "path": "rabbitmirror/suppression_index.py",
+      "purpose": "Content suppression detection and algorithmic bias analysis",
+      "key_classes": ["SuppressionIndex"],
+      "analysis_types": ["content_suppression", "recommendation_bias", "algorithmic_manipulation"]
+    }
+  },
+
+  "parsers_framework": {
+    "base_architecture": {
+      "path": "rabbitmirror/parsers/",
+      "purpose": "Extensible multi-platform parser framework",
+      "pattern": "Factory Pattern with Plugin Support"
+    },
+    "core_components": {
+      "base_parser": {
+        "path": "rabbitmirror/parsers/base_parser.py",
+        "purpose": "Abstract base class defining parser interface",
+        "key_classes": ["BaseParser", "ParserConfig", "ParserResult"],
+        "abstract_methods": ["validate_format", "_extract_entries", "_parse_entry"],
+        "decorators": ["with_retry", "monitor_errors"]
+      },
+      "factory": {
+        "path": "rabbitmirror/parsers/factory.py",
+        "purpose": "Parser factory for platform-specific parser creation",
+        "key_classes": ["ParserFactory"],
+        "supported_platforms": ["youtube", "netflix", "spotify"],
+        "pattern": "Factory Method"
+      },
+      "youtube_parser": {
+        "path": "rabbitmirror/parsers/youtube_parser.py",
+        "purpose": "YouTube HTML export parser with BeautifulSoup",
+        "key_classes": ["YouTubeParser"],
+        "supported_formats": [".html", ".htm"],
+        "parsing_methods": ["_extract_video_id", "_extract_channel_name", "_convert_youtube_timestamp"]
+      }
+    }
+  },
+
+  "database_layer": {
+    "purpose": "SQLAlchemy-based persistence layer for single-user mode",
+    "orm": "SQLAlchemy",
+    "models": {
+      "base": {
+        "path": "rabbitmirror/database/models.py",
+        "base_class": "Base",
+        "mixins": ["TimestampMixin"]
+      },
+      "youtube_analysis": {
+        "table": "youtube_analyses",
+        "purpose": "Store analysis results and metadata",
+        "key_fields": ["id", "filename", "analysis_type", "results", "status"]
+      },
+      "cache_entry": {
+        "table": "cache_entries",
+        "purpose": "Cache computed results for performance",
+        "key_fields": ["cache_key", "namespace", "data", "ttl", "expires_at"]
+      },
+      "data_retention_policy": {
+        "table": "data_retention_policies",
+        "purpose": "Manage data lifecycle and cleanup policies",
+        "key_fields": ["name", "target_table", "retention_days"]
+      }
+    }
+  },
+
+  "web_interface": {
+    "framework": "Flask",
+    "path": "rabbitmirror/web/app.py",
+    "purpose": "Web interface for file upload and analysis",
+    "security_features": [
+      "Rate limiting",
+      "Input validation",
+      "Secure file handling",
+      "CSRF protection",
+      "Security headers"
+    ],
+    "authentication": "Simple password-based auth for single-user mode",
+    "routes": [
+      "/",
+      "/analyze/<filename>",
+      "/simple_login",
+      "/logout"
+    ]
+  },
+
+  "tui_interface": {
+    "framework": "Textual",
+    "path": "rabbitmirror/tui.py",
+    "purpose": "Modern terminal user interface",
+    "components": [
+      "FileSelector",
+      "DataTable",
+      "ProgressBar",
+      "TabbedContent"
+    ],
+    "features": ["File browser", "Interactive analysis", "Real-time updates"]
+  },
+
+  "utility_modules": {
+    "export_formatter": {
+      "path": "rabbitmirror/export_formatter.py",
+      "purpose": "Multi-format data export (JSON, CSV, YAML, Excel)",
+      "dependencies": ["pandas", "yaml"],
+      "formats": ["json", "yaml", "csv", "excel"],
+      "decorators": ["robust_operation", "monitor_errors", "with_timeout"]
+    },
+    "schema_validator": {
+      "path": "rabbitmirror/schema_validator.py",
+      "purpose": "JSON Schema validation for data structures",
+      "dependencies": ["jsonschema"],
+      "schemas": ["watch_history", "cluster_analysis", "suppression_analysis", "pattern_analysis"]
+    },
+    "symbolic_logger": {
+      "path": "rabbitmirror/symbolic_logger.py",
+      "purpose": "Structured logging with Loguru",
+      "dependencies": ["loguru"],
+      "features": ["Event logging", "Error tracking", "JSON formatting"]
+    },
+    "dashboard_generator": {
+      "path": "rabbitmirror/dashboard_generator.py",
+      "purpose": "Interactive dashboard generation with Plotly",
+      "dependencies": ["plotly", "jinja2"],
+      "themes": ["light", "dark"],
+      "chart_types": ["time_series", "bar", "scatter"]
+    },
+    "error_recovery": {
+      "path": "rabbitmirror/error_recovery.py",
+      "purpose": "Advanced error handling with retry mechanisms",
+      "key_classes": ["RetryConfig", "CircuitBreaker", "ErrorRecoveryManager"],
+      "patterns": ["Retry with exponential backoff", "Circuit breaker", "Fallback strategies"]
+    }
+  },
+
+  "testing_structure": {
+    "framework": "pytest",
+    "fixtures": {
+      "conftest.py": {
+        "purpose": "Shared test fixtures and configuration",
+        "key_fixtures": ["sample_history_file", "sample_parser", "sample_entries", "mock_history_data"]
+      }
+    },
+    "test_categories": {
+      "unit_tests": [
+        "test_parser.py",
+        "test_cluster_engine.py",
+        "test_config_manager.py",
+        "test_adversarial_profiler.py",
+        "test_trend_analyzer.py"
+      ],
+      "integration_tests": [
+        "tests/integration/test_cli_integration.py",
+        "tests/integration/test_database_integration.py",
+        "tests/integration/test_web_endpoints.py"
+      ],
+      "performance_tests": [
+        "benchmarks/test_clustering_performance.py",
+        "benchmarks/test_parser_performance.py"
+      ]
+    }
+  },
+
+  "dependency_graph": {
+    "core_dependencies": {
+      "cli": ["parser", "cluster_engine", "adversarial_profiler", "trend_analyzer", "export_formatter"],
+      "parser": ["parsers.factory", "exceptions"],
+      "parsers.factory": ["parsers.youtube_parser", "parsers.netflix_parser", "parsers.spotify_parser"],
+      "cluster_engine": ["error_recovery", "exceptions"],
+      "web.app": ["database", "security", "simple_auth", "all_analysis_modules"]
+    },
+    "external_dependencies": {
+      "data_science": ["pandas", "numpy", "scikit-learn"],
+      "web": ["flask", "jinja2"],
+      "parsing": ["beautifulsoup4", "lxml"],
+      "cli": ["click", "click-aliases"],
+      "visualization": ["plotly"],
+      "database": ["sqlalchemy", "sqlalchemy-utils"],
+      "logging": ["loguru"],
+      "validation": ["jsonschema"],
+      "ui": ["textual", "rich"],
+      "serialization": ["pyyaml"]
+    }
+  },
+
+  "design_patterns": {
+    "factory_pattern": ["ParserFactory for platform-specific parsers"],
+    "decorator_pattern": ["Error recovery decorators", "Monitoring decorators"],
+    "strategy_pattern": ["Multiple analysis engines", "Export format strategies"],
+    "observer_pattern": ["Event logging", "Progress tracking"],
+    "template_method": ["BaseParser abstract methods"],
+    "singleton_pattern": ["ConfigManager", "SymbolicLogger"],
+    "builder_pattern": ["Dashboard generation", "Report building"]
+  },
+
+  "security_features": {
+    "input_validation": ["Filename sanitization", "Path validation", "Schema validation"],
+    "rate_limiting": ["Per-IP request limits", "Exponential backoff"],
+    "file_handling": ["Secure uploads", "Size limits", "Extension filtering"],
+    "authentication": ["Simple password auth", "Session management"],
+    "error_handling": ["Secure error messages", "Audit logging"]
+  },
+
+  "extensibility_points": {
+    "parser_plugins": "Add new platform parsers via ParserFactory.register_parser()",
+    "analysis_engines": "New analysis modules can be added to CLI command groups",
+    "export_formats": "ExportFormatter can be extended with new format handlers",
+    "dashboard_themes": "DashboardGenerator supports custom themes",
+    "error_recovery": "Custom recovery strategies via ErrorRecoveryManager"
+  },
+
+  "performance_considerations": {
+    "caching": ["Database-backed result caching", "In-memory computation caching"],
+    "lazy_loading": ["Large file processing", "Progressive parsing"],
+    "batch_processing": ["Bulk analysis operations", "Streaming data processing"],
+    "memory_management": ["Generator-based parsing", "Chunked file reading"],
+    "parallel_processing": ["Multi-threading for I/O", "Async operations where applicable"]
+  }
+}

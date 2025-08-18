@@ -1,0 +1,26 @@
+{
+  "encoding_utf-8": {
+    "avg_time": 0.19637517929077147,
+    "std_time": 0.012997542311804847,
+    "avg_memory": 457326592.0,
+    "peak_memory": "457326592"
+  },
+  "encoding_utf-8-sig": {
+    "avg_time": 0.19169440269470214,
+    "std_time": 0.0015296218428938672,
+    "avg_memory": 456294400.0,
+    "peak_memory": "456294400"
+  },
+  "encoding_latin-1": {
+    "avg_time": 0.19141020774841308,
+    "std_time": 0.0019699854950675118,
+    "avg_memory": 456294400.0,
+    "peak_memory": "456294400"
+  },
+  "encoding_cp1252": {
+    "avg_time": 0.1971789836883545,
+    "std_time": 0.0035516463257861284,
+    "avg_memory": 456294400.0,
+    "peak_memory": "456294400"
+  }
+}

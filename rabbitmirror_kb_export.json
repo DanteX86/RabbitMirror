@@ -1,0 +1,670 @@
+{
+  "metadata": {
+    "export_version": "1.0.0",
+    "export_timestamp": "2025-01-27T20:45:00Z",
+    "project_name": "RabbitMirror",
+    "project_version": "1.0.0",
+    "description": "Advanced YouTube Watch History Analysis Tool - Complete Knowledge Base Export",
+    "export_type": "gpt5_optimized",
+    "total_files_analyzed": 45,
+    "total_code_modules": 25,
+    "knowledge_base_sections": 8,
+    "query_optimization": true,
+    "hierarchical_structure": true,
+    "contextual_explanations": true
+  },
+
+  "executive_summary": {
+    "project_overview": "RabbitMirror is a sophisticated YouTube watch history analysis tool built in Python that provides deep insights into viewing behavior, detects algorithmic manipulation patterns, and offers comprehensive analysis through multiple interfaces (CLI, TUI, Web). The tool features advanced clustering algorithms, pattern detection, trend analysis, and security frameworks.",
+
+    "key_capabilities": {
+      "data_processing": {
+        "description": "Multi-platform parser framework supporting YouTube, Netflix, Spotify with robust error handling",
+        "features": ["HTML parsing", "Multi-encoding support", "Batch processing", "Format conversion"]
+      },
+      "analysis_engines": {
+        "description": "Advanced machine learning and statistical analysis capabilities",
+        "features": ["DBSCAN clustering", "Adversarial pattern detection", "Trend analysis", "Suppression detection"]
+      },
+      "user_interfaces": {
+        "description": "Multiple interface options for different user preferences and use cases",
+        "features": ["Command-line interface", "Terminal user interface", "Web application", "Interactive dashboards"]
+      },
+      "security_framework": {
+        "description": "Comprehensive security implementation with authentication and validation",
+        "features": ["Input validation", "Rate limiting", "Authentication", "Audit logging"]
+      }
+    },
+
+    "architecture_highlights": {
+      "modular_design": "Clean separation of concerns with well-organized modules",
+      "extensibility": "Plugin architecture for parsers and analysis engines",
+      "error_recovery": "Advanced error handling with retry mechanisms and circuit breakers",
+      "performance": "Optimized algorithms with caching and async processing capabilities",
+      "testing": "80% test coverage with comprehensive benchmark infrastructure"
+    },
+
+    "production_readiness": {
+      "status": "Development Complete - Production Enhancement Required",
+      "strengths": ["Solid architecture", "Comprehensive testing", "Good documentation", "Security framework"],
+      "critical_gaps": ["Authentication system", "Performance optimization", "Memory management", "Enterprise features"],
+      "deployment_timeline": "6-12 months for full production readiness"
+    }
+  },
+
+  "hierarchical_knowledge_base": {
+    "core_architecture": {
+      "description": "Foundational system architecture and design patterns",
+
+      "cli_framework": {
+        "module": "rabbitmirror/cli.py",
+        "purpose": "Command-line interface with Click framework",
+        "key_classes": ["AliasedGroup"],
+        "command_groups": {
+          "process": "Data processing commands (parse, batch-process)",
+          "analyze": "Analysis commands (cluster, detect-patterns, simulate, trend-analysis)",
+          "report": "Report generation (generate-report, export-dashboard)",
+          "utils": "Utilities (validate, convert, generate-qr)",
+          "config": "Configuration management (set, get, list)",
+          "db": "Database operations (init, migrate, cleanup)"
+        },
+        "design_patterns": ["Decorator pattern", "Command pattern"],
+        "error_handling": "Comprehensive with symbolic logging"
+      },
+
+      "parser_framework": {
+        "base_module": "rabbitmirror/parsers/base_parser.py",
+        "factory_module": "rabbitmirror/parsers/factory.py",
+        "architecture": "Factory pattern with plugin support",
+        "supported_platforms": ["youtube", "netflix", "spotify"],
+        "key_features": {
+          "multi_encoding": ["utf-8", "utf-8-sig", "latin-1", "cp1252"],
+          "error_recovery": "Multiple fallback strategies",
+          "extensibility": "Runtime parser registration",
+          "configuration": "ParserConfig dataclass with retry policies"
+        },
+        "performance_characteristics": {
+          "speed": "~0.055 seconds per file",
+          "memory_usage": "2.1GB (optimization needed)",
+          "success_rate": "Currently 0% (critical issue identified)"
+        }
+      },
+
+      "database_layer": {
+        "framework": "SQLAlchemy ORM with Alembic migrations",
+        "models": {
+          "YouTubeAnalysis": "Main analysis results storage",
+          "CacheEntry": "Caching with TTL and hit tracking",
+          "DataRetentionPolicy": "Automated data lifecycle management"
+        },
+        "features": ["UUID primary keys", "Automatic timestamps", "Data expiration", "Cache hit tracking"],
+        "configuration": "SQLite for single-user, PostgreSQL for production"
+      }
+    },
+
+    "analysis_engines": {
+      "description": "Advanced analytics and machine learning components",
+
+      "cluster_engine": {
+        "module": "rabbitmirror/cluster_engine.py",
+        "algorithm": "DBSCAN with TF-IDF vectorization",
+        "key_parameters": {
+          "eps": 0.3,
+          "min_samples": 5,
+          "vectorizer": "TF-IDF with cosine similarity"
+        },
+        "performance_issues": {
+          "memory_usage": "10-100x increase due to dense matrix conversion",
+          "optimization": "Remove .toarray() conversion for sparse matrices",
+          "effectiveness": "80% scenarios produce zero clusters"
+        },
+        "output_structure": {
+          "clusters": "Grouped video entries by similarity",
+          "cluster_info": "Statistics and metadata",
+          "metadata": "Algorithm parameters and vocabulary size"
+        }
+      },
+
+      "adversarial_profiler": {
+        "module": "rabbitmirror/adversarial_profiler.py",
+        "purpose": "Advanced behavioral profiling and psychological pattern analysis",
+        "pattern_categories": {
+          "psychological": ["mood indicators", "cognitive style", "emotional triggers"],
+          "motivational": ["aspiration indicators", "FOMO detection", "reward-seeking"],
+          "attention": ["focused vs divided attention", "sustained attention", "context switching"],
+          "social_dynamics": ["collaboration preferences", "support-seeking", "influence patterns"],
+          "viewing_habits": ["peak activity", "session patterns", "binge behavior"]
+        },
+        "configuration": "26 configurable parameters with confidence scoring",
+        "thresholds": {
+          "similarity": 0.7,
+          "session_gap": "30 minutes",
+          "chain_detection": "4+ videos"
+        }
+      },
+
+      "trend_analyzer": {
+        "module": "rabbitmirror/trend_analyzer.py",
+        "analysis_periods": ["daily", "weekly", "monthly"],
+        "metrics": {
+          "video_count": "Number of videos watched",
+          "total_duration": "Total watch time",
+          "avg_duration": "Average video length",
+          "unique_channels": "Channel diversity",
+          "categories_diversity": "Content category spread",
+          "viewing_velocity": "Videos per hour of content"
+        },
+        "statistical_methods": ["trend direction", "trend strength", "significance testing", "change point detection"]
+      },
+
+      "suppression_index": {
+        "module": "rabbitmirror/suppression_index.py",
+        "purpose": "Content suppression and algorithmic bias detection",
+        "detection_methods": ["baseline comparison", "distribution analysis", "category-specific scoring", "temporal anomaly detection"],
+        "metrics": ["suppression scores (0.0-1.0)", "confidence levels", "bias indicators", "consistency measures"]
+      }
+    },
+
+    "user_interfaces": {
+      "description": "Multiple interface options for different user preferences",
+
+      "web_interface": {
+        "module": "rabbitmirror/web/app.py",
+        "framework": "Flask with comprehensive security",
+        "security_features": {
+          "rate_limiting": "IP-based throttling",
+          "input_validation": "Path and filename sanitization",
+          "file_upload": "Secure with size limits and extension filtering",
+          "csrf_protection": "Built-in CSRF tokens",
+          "security_headers": "CSP, HSTS implementation",
+          "authentication": "Simple password-based for single-user mode"
+        },
+        "routes": {
+          "/": "File upload interface",
+          "/analyze/<filename>": "Analysis results display",
+          "/simple_login": "Authentication endpoint",
+          "/logout": "Session termination"
+        },
+        "performance_issues": {
+          "synchronous_operations": "File processing blocks entire thread (10-60 seconds)",
+          "ui_freezing": "Web interface unresponsive during analysis",
+          "recommendation": "Implement async processing with progress tracking"
+        }
+      },
+
+      "terminal_ui": {
+        "module": "rabbitmirror/tui.py",
+        "framework": "Textual (modern Python TUI)",
+        "components": {
+          "FileSelector": "Interactive file browser with directory navigation",
+          "DataTable": "Results display with sorting and filtering",
+          "ProgressBar": "Real-time analysis progress",
+          "TabbedContent": "Multiple analysis views",
+          "Log": "Real-time application logging"
+        },
+        "features": ["vim-like keybindings", "mouse support", "theme support", "context-sensitive help"]
+      }
+    },
+
+    "security_framework": {
+      "description": "Comprehensive security implementation",
+
+      "authentication_system": {
+        "current_state": "Basic framework exists but not integrated",
+        "modules": ["rabbitmirror/auth.py", "rabbitmirror/security.py"],
+        "critical_gaps": {
+          "missing_endpoints": "No user registration/login endpoints",
+          "password_hashing": "Utilities exist but unused",
+          "session_management": "No integration with web framework",
+          "middleware": "No authentication decorators implemented"
+        },
+        "security_features": {
+          "input_validation": "Comprehensive with multiple validation levels",
+          "rate_limiting": "Per-IP throttling with exponential backoff",
+          "audit_logging": "Comprehensive security event logging",
+          "secret_management": "Secure key generation and storage"
+        }
+      },
+
+      "data_protection": {
+        "file_handling": "Secure uploads with extension filtering and size limits",
+        "temporary_files": "Automatic cleanup policies needed",
+        "encryption": "Basic cryptographic utilities available",
+        "data_retention": "Policies defined but enforcement needed"
+      }
+    },
+
+    "performance_optimization": {
+      "description": "Performance analysis and optimization recommendations",
+
+      "critical_issues": {
+        "memory_inefficiency": {
+          "cluster_engine": "TF-IDF dense matrix conversion causes 10-100x memory increase",
+          "parser": "2.1GB memory usage for small files",
+          "dashboard_generator": "Memory accumulation in visualization objects"
+        },
+        "synchronous_operations": {
+          "web_processing": "File processing blocks request threads",
+          "dashboard_generation": "CPU-intensive visualization blocking",
+          "file_upload": "Synchronous validation causes UI freezes"
+        },
+        "caching_absence": {
+          "parser_results": "No caching leads to redundant processing",
+          "tfidf_vectorizer": "Repeated vectorizer training",
+          "dashboard_components": "Charts regenerated on every request",
+          "configuration": "Config files read repeatedly"
+        }
+      },
+
+      "optimization_recommendations": {
+        "immediate": [
+          "Remove .toarray() in cluster_engine.py (10-100x memory reduction)",
+          "Implement parser result caching (10-50x speed improvement)",
+          "Add explicit cleanup for BeautifulSoup objects"
+        ],
+        "high_priority": [
+          "Implement async web operations",
+          "Add bounded data structures with size limits",
+          "Optimize dashboard data processing (single pass vs multiple)"
+        ],
+        "medium_priority": [
+          "Intelligent encoding detection for parser",
+          "Configuration caching layer",
+          "Dashboard component caching"
+        ]
+      }
+    },
+
+    "testing_infrastructure": {
+      "description": "Comprehensive testing and benchmarking framework",
+
+      "test_coverage": {
+        "overall": "80%",
+        "unit_tests": "tests/ directory with pytest framework",
+        "integration_tests": "tests/integration/ for cross-module testing",
+        "performance_tests": "benchmarks/ with pytest-benchmark"
+      },
+
+      "benchmark_results": {
+        "parser_performance": {
+          "speed": "0.055-0.058 seconds per file",
+          "memory": "2,119 MB (concerning)",
+          "success_rate": "0% (critical failure)",
+          "issues": "All parsing scenarios fail with consistent errors"
+        },
+        "clustering_performance": {
+          "speed": "0.078-0.084 seconds per operation",
+          "effectiveness": "Only 20% of scenarios produce clusters",
+          "memory": "2,117 MB (consistent with parser)",
+          "issues": "Most clustering scenarios produce zero results"
+        }
+      },
+
+      "test_infrastructure": {
+        "fixtures": "Comprehensive test data in tests/conftest.py",
+        "scenarios": "Multiple error conditions and edge cases covered",
+        "automation": "CI/CD integration with GitHub Actions"
+      }
+    }
+  },
+
+  "code_snippets_with_context": {
+    "parser_implementation": {
+      "description": "Core parsing logic with multi-platform support",
+      "file": "rabbitmirror/parser.py",
+      "key_methods": {
+        "parse": {
+          "purpose": "Main parsing entry point with platform detection",
+          "code_snippet": "def parse(self) -> Dict[str, Any]:\n    \"\"\"Parse the history file and return structured data.\"\"\"\n    try:\n        return self._parse_with_fallback()\n    except Exception as e:\n        self.logger.error(f\"Parsing failed: {e}\")\n        raise ParsingError(f\"Failed to parse {self.file_path}\") from e",
+          "context": "Implements error handling and delegates to platform-specific parsing",
+          "performance_notes": "Currently failing in benchmarks - requires investigation"
+        },
+        "_parse_with_fallback": {
+          "purpose": "Multi-encoding parsing with fallback strategies",
+          "optimization_needed": "Sequential encoding attempts are inefficient O(n×m) complexity",
+          "improvement": "Implement intelligent encoding detection"
+        }
+      }
+    },
+
+    "clustering_algorithm": {
+      "description": "DBSCAN clustering with TF-IDF vectorization",
+      "file": "rabbitmirror/cluster_engine.py",
+      "critical_issue": {
+        "problem": "Unnecessary dense matrix conversion causing memory bloat",
+        "current_code": "labels = self.clustering.fit_predict(tfidf_matrix.toarray())",
+        "fix": "labels = self.clustering.fit_predict(tfidf_matrix)",
+        "impact": "10-100x memory reduction"
+      },
+      "key_method": {
+        "cluster_videos": {
+          "purpose": "Main clustering implementation with error recovery",
+          "parameters": ["eps=0.3", "min_samples=5"],
+          "output": "Dictionary with clusters, statistics, and metadata",
+          "decorators": ["@robust_operation for retry logic", "@monitor_errors for tracking"]
+        }
+      }
+    },
+
+    "web_security_implementation": {
+      "description": "Flask web application with security features",
+      "file": "rabbitmirror/web/app.py",
+      "security_components": {
+        "rate_limiting": {
+          "implementation": "IP-based throttling with configurable limits",
+          "code_pattern": "@limiter.limit('60 per minute')"
+        },
+        "input_validation": {
+          "file_uploads": "Extension filtering and size limits",
+          "path_validation": "Secure filename handling and path traversal protection"
+        },
+        "authentication": {
+          "current_state": "Simple password-based for single-user",
+          "enhancement_needed": "Multi-user authentication system"
+        }
+      },
+      "performance_bottleneck": {
+        "issue": "Synchronous file processing blocks request threads",
+        "impact": "10-60 second request times for large files",
+        "solution": "Implement async processing with progress tracking"
+      }
+    },
+
+    "error_recovery_system": {
+      "description": "Advanced error handling with retry mechanisms",
+      "file": "rabbitmirror/error_recovery.py",
+      "key_components": {
+        "RetryConfig": {
+          "purpose": "Configurable retry policies with exponential backoff",
+          "parameters": ["max_attempts", "base_delay", "exponential_base", "jitter"]
+        },
+        "CircuitBreaker": {
+          "purpose": "Failure threshold management and recovery",
+          "states": ["CLOSED", "OPEN", "HALF_OPEN"],
+          "functionality": "Prevents cascade failures in distributed operations"
+        },
+        "decorators": {
+          "@with_retry": "Automatic retry with configurable policies",
+          "@robust_operation": "Combined retry + timeout + monitoring",
+          "@monitor_errors": "Error tracking and logging"
+        }
+      }
+    },
+
+    "configuration_management": {
+      "description": "JSON-based configuration with local/global support",
+      "file": "rabbitmirror/config_manager.py",
+      "features": {
+        "storage_locations": {
+          "local": "./rabbitmirror_config.json",
+          "global": "~/.rabbitmirror_config.json"
+        },
+        "key_methods": ["set(key, value)", "get(key)", "list()"],
+        "corruption_resistance": "Automatic backup and recovery"
+      },
+      "optimization_opportunity": "Configuration caching to reduce file I/O"
+    }
+  },
+
+  "query_optimized_index": {
+    "description": "Fast lookup index for common queries and use cases",
+
+    "by_functionality": {
+      "parsing": {
+        "primary_modules": ["rabbitmirror/parser.py", "rabbitmirror/parsers/"],
+        "key_classes": ["HistoryParser", "YouTubeParser", "ParserFactory"],
+        "use_cases": ["HTML file parsing", "Multi-platform support", "Error recovery"],
+        "performance_issues": ["Memory usage", "Success rate", "Encoding detection"]
+      },
+
+      "clustering": {
+        "primary_modules": ["rabbitmirror/cluster_engine.py"],
+        "key_classes": ["ClusterEngine"],
+        "algorithms": ["DBSCAN", "TF-IDF", "Cosine similarity"],
+        "critical_fixes": ["Remove dense matrix conversion", "Optimize vectorizer caching"]
+      },
+
+      "web_interface": {
+        "primary_modules": ["rabbitmirror/web/app.py"],
+        "security_features": ["Rate limiting", "Input validation", "CSRF protection"],
+        "performance_needs": ["Async processing", "Progress tracking", "Memory optimization"]
+      },
+
+      "authentication": {
+        "modules": ["rabbitmirror/auth.py", "rabbitmirror/security.py"],
+        "status": "Framework exists but not integrated",
+        "missing_components": ["User registration", "Login endpoints", "Session management"]
+      }
+    },
+
+    "by_performance": {
+      "memory_issues": {
+        "cluster_engine": "TF-IDF dense conversion (CRITICAL)",
+        "parser": "2.1GB usage for small files (HIGH)",
+        "dashboard_generator": "Visualization object accumulation (MEDIUM)"
+      },
+
+      "speed_optimizations": {
+        "parser_caching": "10-50x improvement possible",
+        "async_web": "Eliminate UI blocking",
+        "configuration_cache": "2-3x improvement"
+      },
+
+      "scalability_limits": {
+        "synchronous_processing": "Single-threaded bottlenecks",
+        "memory_growth": "Unbounded data structures",
+        "session_storage": "In-memory only"
+      }
+    },
+
+    "by_security": {
+      "implemented": {
+        "input_validation": "Comprehensive validation framework",
+        "rate_limiting": "IP-based throttling",
+        "audit_logging": "Security event tracking",
+        "file_upload_security": "Size limits and extension filtering"
+      },
+
+      "missing": {
+        "user_authentication": "No registration/login system",
+        "session_management": "Basic session handling only",
+        "authorization": "No role-based access control",
+        "data_encryption": "Basic utilities not integrated"
+      }
+    },
+
+    "by_component": {
+      "cli": {
+        "entry_point": "rabbitmirror/cli.py",
+        "command_groups": ["process", "analyze", "report", "utils", "config", "db"],
+        "framework": "Click with aliases",
+        "documentation": "cli_reference.md"
+      },
+
+      "tui": {
+        "entry_point": "rabbitmirror/tui.py",
+        "framework": "Textual",
+        "components": ["FileSelector", "DataTable", "ProgressBar"],
+        "documentation": "TUI_GUIDE.md"
+      },
+
+      "database": {
+        "framework": "SQLAlchemy + Alembic",
+        "models": ["YouTubeAnalysis", "CacheEntry", "DataRetentionPolicy"],
+        "features": ["UUID keys", "TTL support", "Automatic cleanup"]
+      }
+    },
+
+    "by_analysis_type": {
+      "clustering": {
+        "algorithm": "DBSCAN with TF-IDF",
+        "module": "rabbitmirror/cluster_engine.py",
+        "parameters": "eps=0.3, min_samples=5",
+        "issues": "80% scenarios produce zero clusters"
+      },
+
+      "pattern_detection": {
+        "module": "rabbitmirror/adversarial_profiler.py",
+        "categories": ["psychological", "motivational", "attention", "social", "viewing_habits"],
+        "parameters": "26 configurable thresholds"
+      },
+
+      "trend_analysis": {
+        "module": "rabbitmirror/trend_analyzer.py",
+        "periods": ["daily", "weekly", "monthly"],
+        "metrics": ["video_count", "duration", "channels", "categories"]
+      }
+    }
+  },
+
+  "gap_analysis_summary": {
+    "description": "Critical gaps preventing production readiness",
+
+    "security_gaps": {
+      "authentication_system": {
+        "priority": "CRITICAL",
+        "impact": "Anyone can access all features",
+        "timeline": "Week 1-2",
+        "components_needed": ["Registration/login endpoints", "Password hashing integration", "Session management"]
+      },
+
+      "authorization_framework": {
+        "priority": "HIGH",
+        "impact": "No access control or data segregation",
+        "timeline": "Week 3-4",
+        "components_needed": ["RBAC implementation", "Resource permissions", "Data ownership validation"]
+      }
+    },
+
+    "performance_gaps": {
+      "memory_optimization": {
+        "priority": "CRITICAL",
+        "impact": "2.1GB usage for small operations",
+        "timeline": "Week 1",
+        "fixes": ["Remove TF-IDF .toarray() conversion", "Implement object cleanup", "Add memory profiling"]
+      },
+
+      "async_processing": {
+        "priority": "HIGH",
+        "impact": "Web interface freezes during analysis",
+        "timeline": "Week 2-3",
+        "components": ["Background job processing", "Progress tracking", "Non-blocking operations"]
+      }
+    },
+
+    "operational_gaps": {
+      "monitoring": {
+        "priority": "MEDIUM",
+        "missing": ["APM integration", "Health checks", "Real-time alerting"],
+        "timeline": "Month 1"
+      },
+
+      "deployment": {
+        "priority": "MEDIUM",
+        "missing": ["Containerization", "Orchestration", "Auto-scaling"],
+        "timeline": "Month 1-2"
+      }
+    }
+  },
+
+  "implementation_roadmap": {
+    "phase_1_critical": {
+      "timeline": "Week 1-2",
+      "priority": "CRITICAL",
+      "tasks": {
+        "fix_parser_failures": {
+          "description": "Debug 100% parser failure rate",
+          "effort": "High",
+          "impact": "System functionality restored"
+        },
+        "optimize_memory_usage": {
+          "description": "Fix TF-IDF memory bloat and parser memory issues",
+          "effort": "Medium",
+          "impact": "10-100x memory reduction"
+        },
+        "implement_core_auth": {
+          "description": "Basic user authentication system",
+          "effort": "High",
+          "impact": "Security foundation established"
+        }
+      }
+    },
+
+    "phase_2_security": {
+      "timeline": "Week 3-4",
+      "priority": "HIGH",
+      "tasks": {
+        "session_management": {
+          "description": "Persistent session storage and security",
+          "effort": "Medium",
+          "impact": "Secure user sessions"
+        },
+        "authorization_framework": {
+          "description": "Role-based access control implementation",
+          "effort": "High",
+          "impact": "Data segregation and access control"
+        },
+        "async_processing": {
+          "description": "Non-blocking web operations",
+          "effort": "High",
+          "impact": "Improved user experience"
+        }
+      }
+    },
+
+    "phase_3_optimization": {
+      "timeline": "Month 2",
+      "priority": "MEDIUM",
+      "tasks": {
+        "caching_layer": {
+          "description": "Comprehensive caching for parser and analysis results",
+          "effort": "Medium",
+          "impact": "10-50x performance improvement"
+        },
+        "monitoring_integration": {
+          "description": "APM and health monitoring",
+          "effort": "Medium",
+          "impact": "Operational visibility"
+        },
+        "clustering_optimization": {
+          "description": "Fix clustering effectiveness issues",
+          "effort": "Medium",
+          "impact": "Improved analysis quality"
+        }
+      }
+    }
+  },
+
+  "version_metadata": {
+    "export_timestamp": "2025-01-27T20:45:00Z",
+    "data_sources": {
+      "project_structure": "project_structure.json",
+      "analysis_catalog": "analysis_catalog.json",
+      "knowledge_graph": "knowledge_graph.json",
+      "api_documentation": "api_documentation.json",
+      "code_architecture": "code_architecture.json",
+      "configuration_schema": "configuration_schema.json",
+      "dependency_map": "dependency_map.json",
+      "documentation_index": "documentation_index.json",
+      "performance_analysis": "PERFORMANCE_ANALYSIS_REPORT.md",
+      "gap_analysis": "COMPREHENSIVE_GAP_ANALYSIS_REPORT.md",
+      "compiled_docs": "compiled_docs.md",
+      "module_summaries": "module_summaries.md",
+      "cli_reference": "cli_reference.md",
+      "benchmark_summary": "benchmark_summary.md"
+    },
+    "file_count": {
+      "total_project_files": 25793,
+      "python_modules": 68,
+      "documentation_files": 45,
+      "configuration_files": 15,
+      "test_files": 38
+    },
+    "analysis_scope": {
+      "directories_analyzed": 102,
+      "total_size": "641.7MB",
+      "code_coverage": "80%",
+      "documentation_coverage": "High"
+    }
+  }
+}

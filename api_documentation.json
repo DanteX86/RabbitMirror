@@ -1,0 +1,1080 @@
+{
+  "rabbitmirror_api": {
+    "version": "1.0.0",
+    "description": "RabbitMirror - Advanced YouTube Watch History Analysis Tool",
+    "entry_points": {
+      "console_script": "rabbitmirror=rabbitmirror.cli:main",
+      "python_module": "python -m rabbitmirror.cli",
+      "run_script": "python run.py"
+    },
+    "command_groups": {
+      "process": {
+        "description": "Commands for data processing",
+        "help": "Commands for data processing",
+        "commands": {
+          "parse": {
+            "description": "Parse a history file from the specified platform",
+            "usage": "rabbitmirror process parse HISTORY_FILE PLATFORM [OPTIONS]",
+            "arguments": [
+              {
+                "name": "history_file",
+                "type": "path",
+                "required": true,
+                "description": "Path to the history file (must exist)",
+                "validation": "File must exist"
+              },
+              {
+                "name": "platform",
+                "type": "string",
+                "required": true,
+                "description": "Platform name (e.g., 'youtube')",
+                "validation": "String value"
+              }
+            ],
+            "options": [
+              {
+                "name": "--output",
+                "short": "-o",
+                "type": "path",
+                "description": "Output file for parsed data",
+                "required": false
+              },
+              {
+                "name": "--format",
+                "short": "-f",
+                "type": "choice",
+                "choices": ["json", "csv", "yaml", "excel"],
+                "default": "json",
+                "description": "Output format",
+                "required": false
+              },
+              {
+                "name": "--verbose",
+                "short": "-v",
+                "type": "flag",
+                "description": "Enable verbose output",
+                "required": false
+              }
+            ],
+            "examples": [
+              "rabbitmirror process parse watch-history.html youtube",
+              "rabbitmirror process parse watch-history.html youtube -o output.json -f json",
+              "rabbitmirror process parse data.html youtube --verbose --output results.csv --format csv"
+            ],
+            "input_formats": ["HTML (YouTube Takeout format)"],
+            "output_formats": ["JSON", "CSV", "YAML", "Excel"],
+            "related_config": ["output_dir", "default_format"]
+          },
+          "batch-process": {
+            "description": "Process multiple history files in a directory",
+            "usage": "rabbitmirror process batch-process INPUT_DIR [OPTIONS]",
+            "arguments": [
+              {
+                "name": "input_dir",
+                "type": "path",
+                "required": true,
+                "description": "Directory containing history files",
+                "validation": "Directory must exist"
+              }
+            ],
+            "options": [
+              {
+                "name": "--output-dir",
+                "short": "-o",
+                "type": "path",
+                "description": "Output directory",
+                "required": false,
+                "default": "processed_output"
+              },
+              {
+                "name": "--format",
+                "short": "-f",
+                "type": "choice",
+                "choices": ["json", "csv", "yaml", "excel"],
+                "default": "json",
+                "description": "Output format",
+                "required": false
+              },
+              {
+                "name": "--recursive",
+                "short": "-r",
+                "type": "flag",
+                "description": "Process directories recursively",
+                "required": false
+              }
+            ],
+            "examples": [
+              "rabbitmirror process batch-process ./history_files/",
+              "rabbitmirror process batch-process ./data/ -o ./output/ -f csv -r"
+            ],
+            "input_formats": ["HTML files (*.html)"],
+            "output_formats": ["JSON", "CSV", "YAML", "Excel"],
+            "related_config": ["output_dir", "default_format"]
+          }
+        }
+      },
+      "analyze": {
+        "description": "Commands for data analysis",
+        "help": "Commands for data analysis",
+        "commands": {
+          "cluster": {
+            "description": "Cluster videos in watch history",
+            "usage": "rabbitmirror analyze cluster HISTORY_FILE [OPTIONS]",
+            "arguments": [
+              {
+                "name": "history_file",
+                "type": "path",
+                "required": true,
+                "description": "Path to the history file",
+                "validation": "File must exist"
+              }
+            ],
+            "options": [
+              {
+                "name": "--eps",
+                "type": "float",
+                "default": 0.3,
+                "description": "DBSCAN eps parameter",
+                "required": false
+              },
+              {
+                "name": "--min-samples",
+                "type": "integer",
+                "default": 5,
+                "description": "DBSCAN min_samples parameter",
+                "required": false
+              },
+              {
+                "name": "--output",
+                "short": "-o",
+                "type": "path",
+                "description": "Output file for cluster data",
+                "required": false
+              },
+              {
+                "name": "--format",
+                "short": "-f",
+                "type": "choice",
+                "choices": ["json", "csv", "yaml", "excel"],
+                "default": "json",
+                "description": "Output format",
+                "required": false
+              },
+              {
+                "name": "--visualization",
+                "short": "-viz",
+                "type": "flag",
+                "description": "Generate cluster visualization",
+                "required": false
+              }
+            ],
+            "examples": [
+              "rabbitmirror analyze cluster data.html",
+              "rabbitmirror analyze cluster data.html --eps 0.5 --min-samples 3 -o clusters.json",
+              "rabbitmirror analyze cluster data.html --visualization --format csv"
+            ],
+            "input_formats": ["HTML (parsed history data)"],
+            "output_formats": ["JSON", "CSV", "YAML", "Excel"],
+            "related_config": ["default_threshold", "output_dir"]
+          },
+          "analyze-suppression": {
+            "description": "Analyze content suppression patterns",
+            "usage": "rabbitmirror analyze analyze-suppression HISTORY_FILE [OPTIONS]",
+            "arguments": [
+              {
+                "name": "history_file",
+                "type": "path",
+                "required": true,
+                "description": "Path to the history file",
+                "validation": "File must exist"
+              }
+            ],
+            "options": [
+              {
+                "name": "--period",
+                "type": "integer",
+                "default": 30,
+                "description": "Baseline period in days",
+                "required": false
+              },
+              {
+                "name": "--output",
+                "short": "-o",
+                "type": "path",
+                "description": "Output file for suppression data",
+                "required": false
+              },
+              {
+                "name": "--format",
+                "short": "-f",
+                "type": "choice",
+                "choices": ["json", "csv", "yaml", "excel"],
+                "default": "json",
+                "description": "Output format",
+                "required": false
+              },
+              {
+                "name": "--threshold",
+                "short": "-t",
+                "type": "float",
+                "default": 0.5,
+                "description": "Suppression threshold",
+                "required": false
+              },
+              {
+                "name": "--category-filter",
+                "short": "-cf",
+                "type": "multiple",
+                "description": "Filter specific categories",
+                "required": false
+              }
+            ],
+            "examples": [
+              "rabbitmirror analyze analyze-suppression data.html",
+              "rabbitmirror analyze analyze-suppression data.html --period 14 --threshold 0.7",
+              "rabbitmirror analyze analyze-suppression data.html --category-filter news --category-filter politics"
+            ],
+            "input_formats": ["HTML (parsed history data)"],
+            "output_formats": ["JSON", "CSV", "YAML", "Excel"],
+            "related_config": ["default_threshold", "output_dir"]
+          },
+          "detect-patterns": {
+            "description": "Detect potential adversarial patterns",
+            "usage": "rabbitmirror analyze detect-patterns HISTORY_FILE [OPTIONS]",
+            "arguments": [
+              {
+                "name": "history_file",
+                "type": "path",
+                "required": true,
+                "description": "Path to the history file",
+                "validation": "File must exist"
+              }
+            ],
+            "options": [
+              {
+                "name": "--threshold",
+                "type": "float",
+                "default": 0.7,
+                "description": "Similarity threshold",
+                "required": false
+              },
+              {
+                "name": "--output",
+                "short": "-o",
+                "type": "path",
+                "description": "Output file for adversarial patterns",
+                "required": false
+              },
+              {
+                "name": "--format",
+                "short": "-f",
+                "type": "choice",
+                "choices": ["json", "csv", "yaml", "excel"],
+                "default": "json",
+                "description": "Output format",
+                "required": false
+              },
+              {
+                "name": "--pattern-types",
+                "short": "-pt",
+                "type": "multiple",
+                "description": "Specific pattern types to detect",
+                "required": false
+              },
+              {
+                "name": "--min-confidence",
+                "short": "-mc",
+                "type": "float",
+                "default": 0.5,
+                "description": "Minimum confidence threshold",
+                "required": false
+              }
+            ],
+            "examples": [
+              "rabbitmirror analyze detect-patterns data.html",
+              "rabbitmirror analyze detect-patterns data.html --threshold 0.8 --min-confidence 0.6",
+              "rabbitmirror analyze detect-patterns data.html --pattern-types recommendation --pattern-types engagement"
+            ],
+            "input_formats": ["HTML (parsed history data)"],
+            "output_formats": ["JSON", "CSV", "YAML", "Excel"],
+            "related_config": ["default_threshold", "output_dir"]
+          },
+          "simulate": {
+            "description": "Simulate a watch history profile",
+            "usage": "rabbitmirror analyze simulate HISTORY_FILE [OPTIONS]",
+            "arguments": [
+              {
+                "name": "history_file",
+                "type": "path",
+                "required": true,
+                "description": "Path to the history file",
+                "validation": "File must exist"
+              }
+            ],
+            "options": [
+              {
+                "name": "--duration",
+                "type": "integer",
+                "default": 30,
+                "description": "Simulation duration in days",
+                "required": false
+              },
+              {
+                "name": "--seed",
+                "type": "integer",
+                "description": "Random seed for simulation",
+                "required": false
+              },
+              {
+                "name": "--output",
+                "short": "-o",
+                "type": "path",
+                "description": "Output file for simulated profile",
+                "required": false
+              },
+              {
+                "name": "--format",
+                "short": "-f",
+                "type": "choice",
+                "choices": ["json", "csv", "yaml", "excel"],
+                "default": "json",
+                "description": "Output format",
+                "required": false
+              },
+              {
+                "name": "--profile-type",
+                "short": "-pt",
+                "type": "choice",
+                "choices": ["regular", "binge", "sporadic"],
+                "default": "regular",
+                "description": "Type of profile to simulate",
+                "required": false
+              },
+              {
+                "name": "--intensity",
+                "short": "-i",
+                "type": "float",
+                "default": 1.0,
+                "description": "Simulation intensity multiplier",
+                "required": false
+              }
+            ],
+            "examples": [
+              "rabbitmirror analyze simulate data.html",
+              "rabbitmirror analyze simulate data.html --duration 7 --profile-type binge",
+              "rabbitmirror analyze simulate data.html --seed 12345 --intensity 1.5"
+            ],
+            "input_formats": ["HTML (parsed history data)"],
+            "output_formats": ["JSON", "CSV", "YAML", "Excel"],
+            "related_config": ["output_dir", "default_format"]
+          },
+          "trend-analysis": {
+            "description": "Analyze trends in watch history",
+            "usage": "rabbitmirror analyze trend-analysis HISTORY_FILE [OPTIONS]",
+            "arguments": [
+              {
+                "name": "history_file",
+                "type": "path",
+                "required": true,
+                "description": "Path to the history file",
+                "validation": "File must exist"
+              }
+            ],
+            "options": [
+              {
+                "name": "--period",
+                "type": "choice",
+                "choices": ["daily", "weekly", "monthly"],
+                "default": "daily",
+                "description": "Analysis period",
+                "required": false
+              },
+              {
+                "name": "--metrics",
+                "short": "-m",
+                "type": "multiple",
+                "description": "Metrics to analyze",
+                "required": false
+              },
+              {
+                "name": "--output",
+                "short": "-o",
+                "type": "path",
+                "description": "Output file for trends",
+                "required": false
+              },
+              {
+                "name": "--format",
+                "short": "-f",
+                "type": "choice",
+                "choices": ["json", "csv", "yaml", "excel"],
+                "default": "json",
+                "description": "Output format",
+                "required": false
+              },
+              {
+                "name": "--normalize",
+                "short": "-n",
+                "type": "flag",
+                "description": "Normalize trend values",
+                "required": false
+              }
+            ],
+            "examples": [
+              "rabbitmirror analyze trend-analysis data.html",
+              "rabbitmirror analyze trend-analysis data.html --period weekly --normalize",
+              "rabbitmirror analyze trend-analysis data.html --metrics views --metrics duration"
+            ],
+            "input_formats": ["HTML (parsed history data)"],
+            "output_formats": ["JSON", "CSV", "YAML", "Excel"],
+            "related_config": ["output_dir", "default_format"]
+          }
+        }
+      },
+      "report": {
+        "description": "Commands for report generation",
+        "help": "Commands for report generation",
+        "commands": {
+          "generate-report": {
+            "description": "Generate a report using a template",
+            "usage": "rabbitmirror report generate-report DATA_FILE TEMPLATE_FILE OUTPUT_FILE [OPTIONS]",
+            "arguments": [
+              {
+                "name": "data_file",
+                "type": "path",
+                "required": true,
+                "description": "Data file for report generation",
+                "validation": "File must exist"
+              },
+              {
+                "name": "template_file",
+                "type": "path",
+                "required": true,
+                "description": "Template file for report",
+                "validation": "File must exist"
+              },
+              {
+                "name": "output_file",
+                "type": "path",
+                "required": true,
+                "description": "Output file path",
+                "validation": "Valid path"
+              }
+            ],
+            "options": [
+              {
+                "name": "--format",
+                "short": "-f",
+                "type": "choice",
+                "choices": ["html", "pdf", "md"],
+                "default": "html",
+                "description": "Report format",
+                "required": false
+              },
+              {
+                "name": "--theme",
+                "short": "-t",
+                "type": "choice",
+                "choices": ["light", "dark"],
+                "default": "light",
+                "description": "Report theme",
+                "required": false
+              },
+              {
+                "name": "--include-viz",
+                "short": "-v",
+                "type": "flag",
+                "description": "Include visualizations",
+                "required": false
+              }
+            ],
+            "examples": [
+              "rabbitmirror report generate-report data.json template.html report.html",
+              "rabbitmirror report generate-report data.json template.md report.pdf --format pdf --theme dark"
+            ],
+            "input_formats": ["JSON", "CSV", "YAML"],
+            "output_formats": ["HTML", "PDF", "Markdown"],
+            "related_config": ["output_dir"]
+          },
+          "export-dashboard": {
+            "description": "Export data as an interactive dashboard",
+            "usage": "rabbitmirror report export-dashboard DATA_FILE [OPTIONS]",
+            "arguments": [
+              {
+                "name": "data_file",
+                "type": "path",
+                "required": true,
+                "description": "Data file for dashboard",
+                "validation": "File must exist"
+              }
+            ],
+            "options": [
+              {
+                "name": "--template",
+                "short": "-t",
+                "type": "choice",
+                "choices": ["basic", "advanced", "custom"],
+                "default": "basic",
+                "description": "Dashboard template",
+                "required": false
+              },
+              {
+                "name": "--output",
+                "short": "-o",
+                "type": "path",
+                "description": "Output directory",
+                "required": false,
+                "default": "dashboard_output"
+              },
+              {
+                "name": "--interactive",
+                "short": "-i",
+                "type": "flag",
+                "description": "Generate interactive dashboard",
+                "required": false
+              },
+              {
+                "name": "--theme",
+                "short": "-th",
+                "type": "choice",
+                "choices": ["light", "dark"],
+                "default": "light",
+                "description": "Dashboard theme",
+                "required": false
+              },
+              {
+                "name": "--include-plots",
+                "short": "-p",
+                "type": "flag",
+                "description": "Include plot visualizations",
+                "required": false
+              }
+            ],
+            "examples": [
+              "rabbitmirror report export-dashboard data.json",
+              "rabbitmirror report export-dashboard data.json --template advanced --interactive --theme dark"
+            ],
+            "input_formats": ["JSON", "CSV", "YAML"],
+            "output_formats": ["HTML Dashboard", "Static Files"],
+            "related_config": ["output_dir"]
+          }
+        }
+      },
+      "utils": {
+        "description": "Utility commands",
+        "help": "Utility commands",
+        "commands": {
+          "validate": {
+            "description": "Validate a data file against a schema",
+            "usage": "rabbitmirror utils validate FILE [OPTIONS]",
+            "arguments": [
+              {
+                "name": "file",
+                "type": "path",
+                "required": true,
+                "description": "File to validate",
+                "validation": "File must exist"
+              }
+            ],
+            "options": [
+              {
+                "name": "--schema",
+                "short": "-s",
+                "type": "path",
+                "description": "Schema file for validation",
+                "required": false,
+                "validation": "File must exist if provided"
+              },
+              {
+                "name": "--format",
+                "short": "-f",
+                "type": "choice",
+                "choices": ["json", "yaml"],
+                "default": "json",
+                "description": "File format",
+                "required": false
+              }
+            ],
+            "examples": [
+              "rabbitmirror utils validate data.json",
+              "rabbitmirror utils validate data.yaml --format yaml --schema custom_schema.json"
+            ],
+            "input_formats": ["JSON", "YAML"],
+            "output_formats": ["Validation Report"],
+            "related_config": []
+          },
+          "convert": {
+            "description": "Convert a file between formats",
+            "usage": "rabbitmirror utils convert INPUT_FILE OUTPUT_FORMAT [OPTIONS]",
+            "arguments": [
+              {
+                "name": "input_file",
+                "type": "path",
+                "required": true,
+                "description": "Input file to convert",
+                "validation": "File must exist"
+              },
+              {
+                "name": "output_format",
+                "type": "choice",
+                "choices": ["json", "csv", "yaml", "excel"],
+                "required": true,
+                "description": "Target output format"
+              }
+            ],
+            "options": [
+              {
+                "name": "--output",
+                "short": "-o",
+                "type": "path",
+                "description": "Output file",
+                "required": false
+              }
+            ],
+            "examples": [
+              "rabbitmirror utils convert data.json csv",
+              "rabbitmirror utils convert input.yaml excel --output converted.xlsx"
+            ],
+            "input_formats": ["JSON", "CSV", "YAML", "Excel"],
+            "output_formats": ["JSON", "CSV", "YAML", "Excel"],
+            "related_config": ["output_dir"]
+          },
+          "generate-qr": {
+            "description": "Generate a QR code for the given data",
+            "usage": "rabbitmirror utils generate-qr DATA [OPTIONS]",
+            "arguments": [
+              {
+                "name": "data",
+                "type": "string",
+                "required": true,
+                "description": "Data to encode in QR code"
+              }
+            ],
+            "options": [
+              {
+                "name": "--output",
+                "short": "-o",
+                "type": "path",
+                "description": "Output file for QR code",
+                "required": false
+              },
+              {
+                "name": "--size",
+                "short": "-s",
+                "type": "integer",
+                "default": 10,
+                "description": "QR code size",
+                "required": false
+              },
+              {
+                "name": "--error-correction",
+                "short": "-e",
+                "type": "choice",
+                "choices": ["L", "M", "Q", "H"],
+                "default": "M",
+                "description": "Error correction level",
+                "required": false
+              },
+              {
+                "name": "--color",
+                "short": "-c",
+                "type": "string",
+                "default": "black",
+                "description": "QR code color",
+                "required": false
+              }
+            ],
+            "examples": [
+              "rabbitmirror utils generate-qr \"https://example.com\"",
+              "rabbitmirror utils generate-qr \"My data\" --size 15 --color red --output qr.png"
+            ],
+            "input_formats": ["Text/String"],
+            "output_formats": ["PNG Image"],
+            "related_config": ["output_dir"]
+          }
+        }
+      },
+      "config": {
+        "description": "Configuration commands",
+        "help": "Configuration commands",
+        "commands": {
+          "set": {
+            "description": "Set a configuration value",
+            "usage": "rabbitmirror config set KEY VALUE [OPTIONS]",
+            "arguments": [
+              {
+                "name": "key",
+                "type": "string",
+                "required": true,
+                "description": "Configuration key"
+              },
+              {
+                "name": "value",
+                "type": "string",
+                "required": true,
+                "description": "Configuration value"
+              }
+            ],
+            "options": [
+              {
+                "name": "--global/--local",
+                "type": "flag",
+                "default": false,
+                "description": "Store in global or local config",
+                "required": false
+              }
+            ],
+            "examples": [
+              "rabbitmirror config set output_dir /path/to/output",
+              "rabbitmirror config set default_format json --global"
+            ],
+            "input_formats": ["Key-Value pairs"],
+            "output_formats": ["Configuration file"],
+            "related_config": ["All configuration keys"]
+          },
+          "get": {
+            "description": "Get a configuration value",
+            "usage": "rabbitmirror config get KEY [OPTIONS]",
+            "arguments": [
+              {
+                "name": "key",
+                "type": "string",
+                "required": true,
+                "description": "Configuration key to retrieve"
+              }
+            ],
+            "options": [
+              {
+                "name": "--global/--local",
+                "type": "flag",
+                "default": false,
+                "description": "Read from global or local config",
+                "required": false
+              }
+            ],
+            "examples": [
+              "rabbitmirror config get output_dir",
+              "rabbitmirror config get default_threshold --global"
+            ],
+            "input_formats": ["Configuration key"],
+            "output_formats": ["Text value"],
+            "related_config": ["All configuration keys"]
+          },
+          "list": {
+            "description": "List all configuration values",
+            "usage": "rabbitmirror config list [OPTIONS]",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--global/--local",
+                "type": "flag",
+                "default": false,
+                "description": "List global or local config",
+                "required": false
+              },
+              {
+                "name": "--format",
+                "short": "-f",
+                "type": "choice",
+                "choices": ["text", "json", "yaml"],
+                "default": "text",
+                "description": "Output format",
+                "required": false
+              }
+            ],
+            "examples": [
+              "rabbitmirror config list",
+              "rabbitmirror config list --format json --global"
+            ],
+            "input_formats": ["Configuration file"],
+            "output_formats": ["Text", "JSON", "YAML"],
+            "related_config": ["All configuration keys"]
+          }
+        }
+      },
+      "database": {
+        "description": "Database management commands",
+        "help": "Database management commands",
+        "commands": {
+          "init": {
+            "description": "Initialize the database",
+            "usage": "rabbitmirror db init [OPTIONS]",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--database-url",
+                "type": "string",
+                "description": "Database URL (overrides environment)",
+                "required": false
+              },
+              {
+                "name": "--reset",
+                "type": "flag",
+                "description": "Reset existing database",
+                "required": false
+              }
+            ],
+            "examples": [
+              "rabbitmirror db init",
+              "rabbitmirror db init --database-url sqlite:///data.db --reset"
+            ],
+            "input_formats": ["Database URL"],
+            "output_formats": ["Database schema"],
+            "related_config": ["DATABASE_URL"]
+          },
+          "status": {
+            "description": "Check database status",
+            "usage": "rabbitmirror db status",
+            "arguments": [],
+            "options": [],
+            "examples": [
+              "rabbitmirror db status"
+            ],
+            "input_formats": ["Database connection"],
+            "output_formats": ["Status report"],
+            "related_config": ["DATABASE_URL"]
+          },
+          "migrate": {
+            "description": "Create a new database migration",
+            "usage": "rabbitmirror db migrate [OPTIONS]",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--message",
+                "short": "-m",
+                "type": "string",
+                "required": true,
+                "description": "Migration message"
+              },
+              {
+                "name": "--autogenerate",
+                "type": "flag",
+                "description": "Auto-generate migration from model changes",
+                "required": false
+              }
+            ],
+            "examples": [
+              "rabbitmirror db migrate -m \"Add new table\"",
+              "rabbitmirror db migrate -m \"Update schema\" --autogenerate"
+            ],
+            "input_formats": ["Model changes"],
+            "output_formats": ["Migration file"],
+            "related_config": ["DATABASE_URL"]
+          },
+          "upgrade": {
+            "description": "Apply database migrations",
+            "usage": "rabbitmirror db upgrade [OPTIONS]",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--revision",
+                "type": "string",
+                "description": "Target revision (default: head)",
+                "required": false
+              }
+            ],
+            "examples": [
+              "rabbitmirror db upgrade",
+              "rabbitmirror db upgrade --revision abc123"
+            ],
+            "input_formats": ["Migration files"],
+            "output_formats": ["Database schema changes"],
+            "related_config": ["DATABASE_URL"]
+          },
+          "downgrade": {
+            "description": "Rollback database migrations",
+            "usage": "rabbitmirror db downgrade REVISION",
+            "arguments": [
+              {
+                "name": "revision",
+                "type": "string",
+                "required": true,
+                "description": "Target revision"
+              }
+            ],
+            "options": [],
+            "examples": [
+              "rabbitmirror db downgrade abc123"
+            ],
+            "input_formats": ["Migration files"],
+            "output_formats": ["Database schema changes"],
+            "related_config": ["DATABASE_URL"]
+          },
+          "cleanup": {
+            "description": "Run data retention cleanup",
+            "usage": "rabbitmirror db cleanup [OPTIONS]",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--policy",
+                "type": "string",
+                "description": "Specific policy to run",
+                "required": false
+              },
+              {
+                "name": "--dry-run",
+                "type": "flag",
+                "description": "Show what would be cleaned up without doing it",
+                "required": false
+              }
+            ],
+            "examples": [
+              "rabbitmirror db cleanup",
+              "rabbitmirror db cleanup --policy old_entries --dry-run"
+            ],
+            "input_formats": ["Database records"],
+            "output_formats": ["Cleanup report"],
+            "related_config": ["DATABASE_URL"]
+          },
+          "clear-cache": {
+            "description": "Clear cache entries",
+            "usage": "rabbitmirror db clear-cache [OPTIONS]",
+            "arguments": [],
+            "options": [
+              {
+                "name": "--namespace",
+                "type": "string",
+                "description": "Cache namespace to clear",
+                "required": false
+              }
+            ],
+            "examples": [
+              "rabbitmirror db clear-cache",
+              "rabbitmirror db clear-cache --namespace analysis"
+            ],
+            "input_formats": ["Cache entries"],
+            "output_formats": ["Cache clear report"],
+            "related_config": ["REDIS_URL", "CACHE_CONFIG"]
+          },
+          "reset": {
+            "description": "Reset the database (WARNING: This will delete all data)",
+            "usage": "rabbitmirror db reset",
+            "arguments": [],
+            "options": [],
+            "examples": [
+              "rabbitmirror db reset"
+            ],
+            "input_formats": ["Database schema"],
+            "output_formats": ["Empty database"],
+            "related_config": ["DATABASE_URL"]
+          },
+          "shell": {
+            "description": "Open database shell",
+            "usage": "rabbitmirror db shell",
+            "arguments": [],
+            "options": [],
+            "examples": [
+              "rabbitmirror db shell"
+            ],
+            "input_formats": ["Database connection"],
+            "output_formats": ["Interactive shell"],
+            "related_config": ["DATABASE_URL"]
+          }
+        }
+      }
+    },
+    "standalone_commands": {
+      "tui": {
+        "description": "Launch the Terminal User Interface (TUI)",
+        "usage": "rabbitmirror tui [OPTIONS]",
+        "arguments": [],
+        "options": [
+          {
+            "name": "--theme",
+            "type": "choice",
+            "choices": ["dark", "light"],
+            "default": "dark",
+            "description": "TUI theme",
+            "required": false
+          }
+        ],
+        "examples": [
+          "rabbitmirror tui",
+          "rabbitmirror tui --theme light"
+        ],
+        "input_formats": ["Interactive interface"],
+        "output_formats": ["TUI interface"],
+        "related_config": ["All TUI settings"]
+      },
+      "completion": {
+        "description": "Output shell completion code",
+        "usage": "rabbitmirror completion SHELL",
+        "arguments": [
+          {
+            "name": "shell",
+            "type": "choice",
+            "choices": ["bash", "zsh", "fish"],
+            "required": true,
+            "description": "Shell type"
+          }
+        ],
+        "options": [],
+        "examples": [
+          "rabbitmirror completion bash",
+          "rabbitmirror completion zsh > ~/.zshrc"
+        ],
+        "input_formats": ["Shell type"],
+        "output_formats": ["Completion script"],
+        "related_config": []
+      }
+    },
+    "configuration_options": {
+      "global_config_file": "~/.rabbitmirror_config.json",
+      "local_config_file": "./.rabbitmirror_config.json",
+      "available_keys": {
+        "output_dir": {
+          "type": "string",
+          "description": "Default output directory for all commands",
+          "default": "current directory",
+          "example": "/path/to/output"
+        },
+        "default_format": {
+          "type": "string",
+          "description": "Default output format",
+          "choices": ["json", "csv", "yaml", "excel"],
+          "default": "json",
+          "example": "json"
+        },
+        "default_threshold": {
+          "type": "float",
+          "description": "Default analysis threshold (0.1 = sensitive, 1.0 = strict)",
+          "default": 0.7,
+          "range": "0.1-1.0",
+          "example": 0.7
+        }
+      },
+      "environment_variables": {
+        "DATABASE_URL": "Database connection URL",
+        "REDIS_URL": "Redis cache connection URL",
+        "RABBITMIRROR_CONFIG": "Path to config file override"
+      }
+    },
+    "input_output_formats": {
+      "input_formats": {
+        "HTML": "YouTube Takeout watch history files",
+        "JSON": "Parsed data files",
+        "CSV": "Comma-separated values",
+        "YAML": "YAML data files",
+        "Excel": "Excel spreadsheet files"
+      },
+      "output_formats": {
+        "JSON": "JavaScript Object Notation",
+        "CSV": "Comma-separated values",
+        "YAML": "YAML Ain't Markup Language",
+        "Excel": "Microsoft Excel format",
+        "HTML": "HyperText Markup Language reports",
+        "PDF": "Portable Document Format reports",
+        "Markdown": "Markdown text format",
+        "PNG": "Image format for QR codes"
+      }
+    },
+    "error_handling": {
+      "exit_codes": {
+        "0": "Success",
+        "1": "General error (file not found, parsing error, etc.)"
+      },
+      "error_format": "❌ Error message with context",
+      "success_format": "✅ Success message with details"
+    }
+  }
+}

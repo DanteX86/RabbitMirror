@@ -1,0 +1,19 @@
+{
+  "sequential_clustering": {
+    "total_time": 0.0960230827331543,
+    "peak_memory": 2239561728,
+    "avg_cpu": 0.0,
+    "datasets_processed": 5,
+    "total_entries": 2500,
+    "total_clusters": 0
+  },
+  "concurrent_clustering": {
+    "total_time": 0.089263916015625,
+    "peak_memory": 2239840256,
+    "avg_cpu": 0.0,
+    "datasets_processed": 5,
+    "total_entries": 2500,
+    "total_clusters": 0,
+    "speedup": 1.0757211538461537
+  }
+}
