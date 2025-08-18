@@ -156,16 +156,24 @@ class BenchmarkDataGenerator:
             "Performance Optimization",
         ]
         return (
-            random.choice(topics)
+            random.choice(
+                topics
+            )  # nosec B311 - non-cryptographic randomness acceptable for benchmarks
             + " "
-            + "".join(random.choices(string.ascii_letters, k=10))
+            + "".join(
+                random.choices(
+                    string.ascii_letters, k=10
+                )  # nosec B311 - test data generation
+            )
         )
 
     @staticmethod
     def _random_video_id() -> str:
         """Generate random YouTube video ID."""
         return "".join(
-            random.choices(string.ascii_letters + string.digits + "_-", k=11)
+            random.choices(  # nosec B311 - test data generation
+                string.ascii_letters + string.digits + "_-", k=11
+            )
         )
 
     @staticmethod
@@ -185,25 +193,25 @@ class BenchmarkDataGenerator:
             "Nov",
             "Dec",
         ]
-        month = random.choice(months)
-        day = random.randint(1, 28)
-        year = random.randint(2020, 2023)
-        hour = random.randint(1, 12)
-        minute = random.randint(0, 59)
-        second = random.randint(0, 59)
-        ampm = random.choice(["AM", "PM"])
+        month = random.choice(months)  # nosec B311 - test data generation
+        day = random.randint(1, 28)  # nosec B311 - test data generation
+        year = random.randint(2020, 2023)  # nosec B311 - test data generation
+        hour = random.randint(1, 12)  # nosec B311 - test data generation
+        minute = random.randint(0, 59)  # nosec B311 - test data generation
+        second = random.randint(0, 59)  # nosec B311 - test data generation
+        ampm = random.choice(["AM", "PM"])  # nosec B311 - test data generation
 
         return f"{month} {day}, {year}, {hour}:{minute:02d}:{second:02d} {ampm}"
 
     @staticmethod
     def _random_iso_timestamp() -> str:
         """Generate random ISO timestamp."""
-        year = random.randint(2020, 2023)
-        month = random.randint(1, 12)
-        day = random.randint(1, 28)
-        hour = random.randint(0, 23)
-        minute = random.randint(0, 59)
-        second = random.randint(0, 59)
+        year = random.randint(2020, 2023)  # nosec B311 - test data generation
+        month = random.randint(1, 12)  # nosec B311 - test data generation
+        day = random.randint(1, 28)  # nosec B311 - test data generation
+        hour = random.randint(0, 23)  # nosec B311 - test data generation
+        minute = random.randint(0, 59)  # nosec B311 - test data generation
+        second = random.randint(0, 59)  # nosec B311 - test data generation
 
         return f"{year}-{month:02d}-{day:02d}T{hour:02d}:{minute:02d}:{second:02d}Z"
 

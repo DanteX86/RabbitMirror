@@ -11,13 +11,19 @@ from werkzeug.utils import secure_filename
 # Add the parent directory to the Python path to import rabbitmirror modules
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+from loguru import logger  # noqa: E402
+
 # Import rabbitmirror modules
 from rabbitmirror.adversarial_profiler import AdversarialProfiler  # noqa: E402
 from rabbitmirror.cluster_engine import ClusterEngine  # noqa: E402
 from rabbitmirror.export_formatter import ExportFormatter  # noqa: E402
 from rabbitmirror.parser import HistoryParser  # noqa: E402
 from rabbitmirror.suppression_index import SuppressionIndex  # noqa: E402
+from rabbitmirror.symbolic_logger import SymbolicLogger  # noqa: E402
 from rabbitmirror.trend_analyzer import TrendAnalyzer  # noqa: E402
+
+# Initialize logging to logs/rabbitmirror.log
+_symbolic_logger = SymbolicLogger()
 
 app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = "static/uploads"
@@ -137,10 +143,13 @@ def export_analysis(filename, format):
                 flash(f"Unsupported export format: {format}")
                 return redirect(url_for("analyze_file", filename=filename))
 
+            # Build a readable download name
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            download_name = f"analysis_{filename}_{format}_{timestamp}.{format}"
             return send_file(
                 tmp_file.name,
                 as_attachment=True,
-                download_name=f'analysis_{filename}_{format}_{datetime.now().strftime("%Y%m%d_%H%M%S")}.{format}',
+                download_name=download_name,
             )
 
     except Exception as e:
@@ -177,9 +186,23 @@ def internal_error(e):
     return render_template("500.html"), 500
 
 
+# Basic request logging
+@app.before_request
+def _log_request():
+    try:
+        logger.info(f"request: method={request.method} path={request.path}")
+    except Exception as exc:  # nosec B110 - log unexpected logging failures
+        logger.exception("request logging failed: %s", exc)
+
+
 if __name__ == "__main__":
     # Ensure upload directory exists
     os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
-    app.run(
-        debug=os.getenv("FLASK_DEBUG", "False") == "True", host="127.0.0.1", port=5001
-    )
+
+    # Configurable host/port via environment
+    host = os.getenv("FLASK_HOST", "127.0.0.1")
+    port = int(os.getenv("FLASK_PORT", "5001"))
+    debug = os.getenv("FLASK_DEBUG", "False").lower() == "true"
+
+    logger.info(f"Starting RabbitMirror web app on {host}:{port}, debug={debug}")
+    app.run(debug=debug, host=host, port=port)

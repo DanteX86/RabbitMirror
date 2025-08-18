@@ -1,42 +1,48 @@
-.PHONY: help install test lint format clean docs build suggestions cl
+.PHONY: help install test lint format clean docs build suggestions cl venv-shell ensure-venv venv-pip-upgrade
+
+# Venv settings
+VENV_DIR ?= .venv
+PYTHON ?= /opt/homebrew/bin/python3
+VENV_BIN := $(VENV_DIR)/bin
 
 help: ## Show this help message
 	@echo "RabbitMirror Development Commands:"
 	@echo "=================================="
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
+	@grep -E '^[a-zA-Z_.-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
 
-install: ## Install development dependencies
-	pip install -r requirements.txt
-	pip install -e ".[dev]"
-	pre-commit install
+install: ensure-venv ## Install development dependencies
+	"$(VENV_BIN)/pip" install --upgrade pip
+	@if [ -f requirements.txt ]; then "$(VENV_BIN)/pip" install -r requirements.txt; fi
+	"$(VENV_BIN)/pip" install -e ".[dev]"
+	"$(VENV_BIN)/pre-commit" install
 
-test: ## Run all tests
-	pytest tests/ -v --cov=rabbitmirror --cov-report=html --cov-report=term
+test: ensure-venv ## Run all tests
+	"$(VENV_BIN)/pytest" tests/ -v --cov=rabbitmirror --cov-report=html --cov-report=term
 
-test-quick: ## Run tests without coverage
-	pytest tests/ -v
+test-quick: ensure-venv ## Run tests without coverage
+	"$(VENV_BIN)/pytest" tests/ -v
 
-lint: ## Run all linting tools
-	pylint rabbitmirror/ --score=yes --disable=C0103,C0114,C0115,C0116,W0613,R0903,R0913,E0401,C0411,W0611,E0602,R0914,R0912,R0915,R0911,C0302,R0902,R0917,E1101
-	flake8 rabbitmirror/ --max-line-length=127 --ignore=E203,W503,E501
-	bandit -r rabbitmirror/ -f json || true
+lint: ensure-venv ## Run all linting tools
+	"$(VENV_BIN)/pylint" rabbitmirror/ --score=yes --disable=C0103,C0114,C0115,C0116,W0613,R0903,R0913,E0401,C0411,W0611,E0602,R0914,R0912,R0915,R0911,C0302,R0902,R0917,E1101
+	"$(VENV_BIN)/flake8" rabbitmirror/ --max-line-length=127 --ignore=E203,W503,E501
+	"$(VENV_BIN)/bandit" -r rabbitmirror/ -f json || true
 
-format: ## Format code with black and isort
-	black rabbitmirror/ tests/
-	isort rabbitmirror/ tests/ --profile black
+format: ensure-venv ## Format code with black and isort
+	"$(VENV_BIN)/black" rabbitmirror/ tests/
+	"$(VENV_BIN)/isort" rabbitmirror/ tests/ --profile black
 
-format-check: ## Check if code is formatted correctly
-	black --check rabbitmirror/ tests/
-	isort --check-only rabbitmirror/ tests/ --profile black
+format-check: ensure-venv ## Check if code is formatted correctly
+	"$(VENV_BIN)/black" --check rabbitmirror/ tests/
+	"$(VENV_BIN)/isort" --check-only rabbitmirror/ tests/ --profile black
 
-security: ## Run security checks
-	bandit -r rabbitmirror/ -f json
+security: ensure-venv ## Run security checks
+	"$(VENV_BIN)/bandit" -r rabbitmirror/ -f json
 
-type-check: ## Run type checking (if mypy is installed)
-	mypy rabbitmirror/ || echo "Install mypy for type checking: pip install mypy"
+type-check: ensure-venv ## Run type checking (if mypy is installed)
+	"$(VENV_BIN)/mypy" rabbitmirror/ || echo "Install mypy for type checking: $(VENV_BIN)/pip install mypy"
 
-pre-commit: ## Run pre-commit hooks on all files
-	pre-commit run --all-files
+pre-commit: ensure-venv ## Run pre-commit hooks on all files
+	"$(VENV_BIN)/pre-commit" run --all-files
 
 clean: ## Clean up build artifacts and cache
 	rm -rf build/
@@ -50,20 +56,20 @@ clean: ## Clean up build artifacts and cache
 
 cl: clean ## Shorthand for clean
 
-build: ## Build the package
-	python -m build
+build: ensure-venv ## Build the package
+	"$(VENV_BIN)/python" -m build
 
 install-package: build ## Install the built package
-	pip install dist/*.whl
+	"$(VENV_BIN)/pip" install dist/*.whl
 
 docs: ## Generate documentation (if sphinx is installed)
 	@echo "Documentation generation not yet set up"
-	@echo "Install with: pip install -e '.[docs]'"
+	@echo "Install with: $(VENV_BIN)/pip install -e '.[docs]'"
 
-demo: ## Run a demo of the CLI tool
+demo: ensure-venv ## Run a demo of the CLI tool
 	@echo "RabbitMirror CLI Demo:"
 	@echo "====================="
-	python -m rabbitmirror.cli --help
+	"$(VENV_BIN)/python" -m rabbitmirror.cli --help
 
 all-checks: format-check lint type-check test security ## Run all quality checks
 
@@ -71,9 +77,9 @@ ci: all-checks ## Run CI pipeline locally
 
 dev-setup: install pre-commit ## Complete development setup
 
-upgrade-deps: ## Upgrade all dependencies
-	pip install --upgrade pip
-	pip install --upgrade -r requirements.txt
+upgrade-deps: ensure-venv ## Upgrade all dependencies
+	"$(VENV_BIN)/pip" install --upgrade pip
+	"$(VENV_BIN)/pip" install --upgrade -r requirements.txt
 
 benchmark: ## Run performance benchmarks (if available)
 	@echo "Benchmarks not yet implemented"
@@ -118,3 +124,44 @@ suggestions: ## Show development suggestions and next steps
 	@echo "  • Upload to PyPI: twine upload dist/*"
 	@echo ""
 	@echo "\033[1;33m💡 Tip: Run 'make help' to see all available commands\033[0m"
+
+# Venv helpers
+ensure-venv:
+	@if [ ! -d "$(VENV_DIR)" ]; then echo "Creating venv in $(VENV_DIR) with $(PYTHON)"; "$(PYTHON)" -m venv "$(VENV_DIR)"; fi
+
+venv-pip-upgrade: ensure-venv
+	"$(VENV_BIN)/python" -m pip install --upgrade pip
+
+venv-shell: ensure-venv ## Open a subshell with the venv activated
+	@echo "Activating virtual environment at $(VENV_DIR). Exit the shell to deactivate."
+	@. "$(VENV_BIN)/activate"; exec "$(SHELL)" -l
+
+# Convenience aliases
+.PHONY: similar similar.
+similar: suggestions ## Alias for 'suggestions'
+	@true
+
+similar.: suggestions ## Alias for 'suggestions' (handles trailing dot)
+	@true
+
+# Demo workflow: parse → analyze → patterns → combine → report
+.PHONY: demo-workflow
+_demo_python := /Users/romulusaugustus/Documents/RabbitMirror/.venv/bin/python
+
+demo-workflow: ## Run end-to-end demo (parse, analyze, patterns, report)
+	@echo "\n==> Ensuring output directories exist"
+	@mkdir -p exports report_output templates
+	@echo "\n==> Parsing watch-history.html"
+	@$(_demo_python) -m rabbitmirror.cli process parse watch-history.html youtube -o exports/parsed.json -f json
+	@echo "\n==> Clustering entries"
+	@$(_demo_python) -m rabbitmirror.cli analyze cluster watch-history.html --eps 0.3 --min-samples 5 -o exports/clusters.json -f json
+	@echo "\n==> Detecting adversarial patterns"
+	@$(_demo_python) -m rabbitmirror.cli analyze detect-patterns watch-history.html --threshold 0.7 -o exports/patterns.json -f json
+	@echo "\n==> Combining outputs into a single data file"
+	@$(_demo_python) scripts/combine_demo.py
+	@echo "\n==> Preparing report template"
+	@test -f templates/demo_report.html || cp demo_report.html templates/demo_report.html || true
+	@echo "\n==> Generating HTML report"
+	@$(_demo_python) -m rabbitmirror.cli report generate-report exports/demo_data.json templates/demo_report.html report_output/demo_report.html -f html
+	@echo "\n✅ Demo workflow complete. View report_output/demo_report.html"
+	@echo "REPORT_PATH=report_output/demo_report.html"

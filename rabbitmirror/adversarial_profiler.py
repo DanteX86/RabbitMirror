@@ -557,7 +557,8 @@ class AdversarialProfiler:
             tfidf_matrix = self.vectorizer.fit_transform(titles)
             similarity_matrix = cosine_similarity(tfidf_matrix)
         except ValueError:
-            # Handle empty vocabulary case (all titles are empty/None or only stop words)
+            # Handle empty vocabulary case (all titles are empty/None
+            # or only stop words)
             similarity_matrix = np.zeros((len(titles), len(titles)))
 
         # Detect various patterns
@@ -870,7 +871,8 @@ class AdversarialProfiler:
         # Check for very similar titles
         tfidf_matrix = self.vectorizer.fit_transform(titles)
         similarity_matrix = cosine_similarity(tfidf_matrix)
-        return np.min(similarity_matrix) > self.similarity_threshold
+        # Ensure a native Python bool is returned (not a numpy.bool_)
+        return bool(np.min(similarity_matrix) > self.similarity_threshold)
 
     def _identify_sequence_pattern(self, sequence: List[Dict[str, Any]]) -> str:
         """Identify the type of suspicious sequence pattern."""
@@ -894,6 +896,36 @@ class AdversarialProfiler:
         if len(intervals) < 2:
             return 0.0
         return float(1.0 - min(1.0, np.std(intervals) / np.mean(intervals)))
+
+    def _parse_time_value(self, val: Any) -> float:
+        """Parse a duration value.
+
+        Accepts seconds (int/float), a numeric string, or an "mm:ss" string.
+        """
+        if isinstance(val, (int, float)):
+            return float(val)
+        if isinstance(val, str):
+            m = re.fullmatch(r"\s*(\d+):(\d{1,2})\s*", val)
+            if m:
+                minutes, seconds = m.groups()
+                return int(minutes) * 60 + int(seconds)
+            try:
+                return float(val.strip())
+            except Exception:
+                return 0.0
+        return 0.0
+
+    def _get_duration_seconds(self, entry: Dict[str, Any]) -> float:
+        """Return duration in seconds from an entry.
+
+        Prefers a numeric duration_seconds field; otherwise parses
+        the duration string safely.
+        """
+        if "duration_seconds" in entry and isinstance(
+            entry.get("duration_seconds"), (int, float)
+        ):
+            return float(entry["duration_seconds"])
+        return self._parse_time_value(entry.get("duration", 0))
 
     def _analyze_behavioral_metrics(
         self, entries: List[Dict[str, Any]]
@@ -947,10 +979,43 @@ class AdversarialProfiler:
         completion_rates = []
         engagement_scores = []
 
+        def _parse_time_value(val: Any) -> float:
+            """Parse a duration value from various formats.
+
+            Accepts seconds (int/float), a numeric string, or an "mm:ss" string.
+            """
+            if isinstance(val, (int, float)):
+                return float(val)
+            if isinstance(val, str):
+                # Try mm:ss
+                m = re.fullmatch(r"\s*(\d+):(\d{1,2})\s*", val)
+                if m:
+                    minutes, seconds = m.groups()
+                    return int(minutes) * 60 + int(seconds)
+                # Fallback: numeric string
+                try:
+                    return float(val.strip())
+                except Exception:
+                    return 0.0
+            return 0.0
+
         for entry in entries:
-            duration = entry.get("duration", 0)
+            # Prefer normalized seconds if present
+            if "duration_seconds" in entry and isinstance(
+                entry.get("duration_seconds"), (int, float)
+            ):
+                duration = float(entry["duration_seconds"])
+            else:
+                duration = _parse_time_value(entry.get("duration", 0))
+
             watched = entry.get("watched_duration", 0)
+            watched = _parse_time_value(watched)
+
             interactions = entry.get("interaction_count", 0)
+            try:
+                interactions = float(interactions)
+            except Exception:
+                interactions = 0.0
 
             if duration > 0:
                 completion = watched / duration
@@ -1228,7 +1293,7 @@ class AdversarialProfiler:
 
         for entry in entries:
             # Analyze format preferences
-            duration = entry.get("duration", 0)
+            duration = self._get_duration_seconds(entry)
             for format_type, criteria in self.content_preferences[
                 "format_bias"
             ].items():
@@ -1447,8 +1512,8 @@ class AdversarialProfiler:
         self, entry: Dict[str, Any], content_timing: defaultdict
     ) -> None:
         """Process content-related timing information."""
-        duration = entry.get("duration", 0)
-        watched = entry.get("watched_duration", 0)
+        duration = self._get_duration_seconds(entry)
+        watched = self._parse_time_value(entry.get("watched_duration", 0))
         content_type = entry.get("content_type", "unknown")
 
         if duration > 0:
@@ -1769,7 +1834,7 @@ class AdversarialProfiler:
                 holiday_behavior["content_types"].append(
                     entry.get("content_type", "unknown")
                 )
-                holiday_behavior["durations"].append(entry.get("duration", 0))
+                holiday_behavior["durations"].append(self._get_duration_seconds(entry))
 
         self.viewing_habits["seasonal_patterns"].update(
             {
@@ -2214,7 +2279,7 @@ class AdversarialProfiler:
         interactions = []
 
         for entry in session:
-            durations.append(float(entry.get("duration", 0)))
+            durations.append(self._get_duration_seconds(entry))
             interactions.append(float(entry.get("interaction_count", 0)))
 
         return {
@@ -2834,7 +2899,7 @@ class AdversarialProfiler:
         if len(entries) < 2:
             return 1.0
 
-        durations = [entry.get("duration", 0) for entry in entries]
+        durations = [self._get_duration_seconds(entry) for entry in entries]
         completion_rates = [entry.get("completion_rate", 0) for entry in entries]
 
         duration_stability = (
@@ -3070,7 +3135,7 @@ class AdversarialProfiler:
             return {"type": "empty", "intensity": 0.0, "focus": 0.0}
 
         # Calculate session metrics
-        durations = [entry.get("duration", 0) for entry in session]
+        durations = [self._get_duration_seconds(entry) for entry in session]
         categories = [entry.get("category", "unknown") for entry in session]
 
         avg_duration = float(np.mean(durations)) if durations else 0.0
@@ -3729,7 +3794,9 @@ class AdversarialProfiler:
 
         # Analyze viewing duration patterns
         durations = [
-            entry.get("duration", 0) for entry in entries if "duration" in entry
+            self._get_duration_seconds(entry)
+            for entry in entries
+            if "duration" in entry or "duration_seconds" in entry
         ]
 
         if durations:

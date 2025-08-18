@@ -267,6 +267,7 @@ class RabbitMirrorTUI(App):
         Binding("q", "quit", "Quit"),
         Binding("h", "help", "Help"),
         Binding("r", "refresh", "Refresh"),
+        Binding("d", "run_demo_workflow", "Run Demo"),
         Binding("ctrl+c", "quit", "Quit"),
     ]
 
@@ -290,8 +291,11 @@ class RabbitMirrorTUI(App):
                 with Vertical():
                     yield Static("🎯 Welcome to RabbitMirror TUI", id="welcome")
                     yield Static(
-                        "RabbitMirror analyzes your YouTube watch history to detect algorithmic patterns,\n"
-                        "content suppression, and viewing trends. Get started by selecting your watch history file.",
+                        (
+                            "RabbitMirror analyzes your YouTube watch history to detect "
+                            "algorithmic patterns,\ncontent suppression, and viewing trends. "
+                            "Get started by selecting your watch history file."
+                        ),
                         id="intro-text",
                     )
 
@@ -325,6 +329,11 @@ class RabbitMirrorTUI(App):
                         yield Button(
                             "📈 View Results", id="view-results", variant="default"
                         )
+                        yield Button(
+                            "🚀 Run Demo Workflow",
+                            id="run-demo-workflow",
+                            variant="primary",
+                        )
 
                     yield Static("⏱️ Operation Status", id="status-header")
                     yield Static("Ready to process data", id="operation-status")
@@ -341,13 +350,19 @@ class RabbitMirrorTUI(App):
                 with Vertical():
                     yield Static("🔬 Advanced Analysis Tools", id="analysis-title")
                     yield Static(
-                        "These tools help you understand YouTube's algorithmic influence on your viewing patterns.",
+                        (
+                            "These tools help you understand YouTube's algorithmic "
+                            "influence on your viewing patterns."
+                        ),
                         id="analysis-desc",
                     )
 
                     yield Static("🔍 Pattern Detection", id="pattern-header")
                     yield Static(
-                        "Detect Patterns: Identifies algorithmic manipulation patterns in your recommendations",
+                        (
+                            "Detect Patterns: Identifies algorithmic manipulation "
+                            "patterns in your recommendations"
+                        ),
                         id="pattern-desc",
                     )
                     with Horizontal():
@@ -356,8 +371,11 @@ class RabbitMirrorTUI(App):
 
                     yield Static("📉 Content Analysis", id="content-header")
                     yield Static(
-                        "Analyze Suppression: Detects if certain content types are being suppressed\n"
-                        "Trend Analysis: Shows how your viewing patterns change over time",
+                        (
+                            "Analyze Suppression: Detects if certain content types are "
+                            "being suppressed\nTrend Analysis: Shows how your viewing "
+                            "patterns change over time"
+                        ),
                         id="content-desc",
                     )
                     with Horizontal():
@@ -398,6 +416,8 @@ class RabbitMirrorTUI(App):
                     yield DataTable(id="results-table")
                     yield Static("📜 Activity Log", id="log-title")
                     yield Log(id="results-log")
+                    with Horizontal():
+                        yield Button("Open Report", id="open-report", variant="primary")
 
             # Settings tab
             with TabPane("Settings", id="settings"):
@@ -419,7 +439,10 @@ class RabbitMirrorTUI(App):
 
                     yield Static("📄 Export Settings", id="export-header")
                     yield Static(
-                        "Choose the default format for exporting analysis data (json, csv, yaml, excel).",
+                        (
+                            "Choose the default format for exporting analysis data "
+                            "(json, csv, yaml, excel)."
+                        ),
                         id="export-desc",
                     )
                     with Horizontal():
@@ -428,7 +451,10 @@ class RabbitMirrorTUI(App):
 
                     yield Static("🎯 Analysis Settings", id="analysis-settings-header")
                     yield Static(
-                        "Set the default sensitivity threshold for pattern detection (0.1 = sensitive, 1.0 = strict).",
+                        (
+                            "Set the default sensitivity threshold for pattern detection "
+                            "(0.1 = sensitive, 1.0 = strict)."
+                        ),
                         id="analysis-settings-desc",
                     )
                     with Horizontal():
@@ -493,6 +519,10 @@ class RabbitMirrorTUI(App):
             self.generate_report()
         elif button_id == "save-settings":
             self.save_settings()
+        elif button_id == "run-demo-workflow":
+            self.run_demo_workflow()
+        elif button_id == "open-report":
+            self.open_demo_report()
 
     def select_file(self) -> None:
         """Open file selector"""
@@ -544,10 +574,16 @@ class RabbitMirrorTUI(App):
                 f"✅ Parsed {len(self.current_data)} entries", severity="success"
             )
 
-        except Exception as e:
+        except (FileNotFoundError, PermissionError) as e:
             self.complete_operation(False, f"❌ Parse failed: {str(e)}")
             self.notify(f"❌ Parse failed: {str(e)}", severity="error")
             self.logger.log_error("ParseError", e)
+            return
+        except ValueError as e:
+            self.complete_operation(False, f"❌ Invalid input: {str(e)}")
+            self.notify(f"❌ Invalid input: {str(e)}", severity="error")
+            self.logger.log_error("ParseInvalidInput", e)
+            return
 
     def quick_analysis(self) -> None:
         """Quick analysis of current data"""
@@ -584,7 +620,10 @@ class RabbitMirrorTUI(App):
 
             self.notify("✅ Quick analysis complete!", severity="success")
 
-        except Exception as e:
+        except ValueError as e:
+            self.notify(f"❌ Analysis input invalid: {str(e)}", severity="warning")
+            self.logger.log_error("AnalysisInputError", e)
+        except (RuntimeError, OSError) as e:
             self.notify(f"❌ Analysis failed: {str(e)}", severity="error")
             self.logger.log_error("AnalysisError", e)
 
@@ -610,7 +649,7 @@ class RabbitMirrorTUI(App):
             threshold = float(threshold_input.value) if threshold_input.value else 0.7
 
             # Run pattern detection
-            profiler = AdversarialProfiler(threshold=threshold)
+            profiler = AdversarialProfiler(similarity_threshold=threshold)
             patterns = profiler.identify_patterns(self.current_data)
 
             # Store and display results
@@ -619,7 +658,10 @@ class RabbitMirrorTUI(App):
 
             self.notify("✅ Pattern detection complete!", severity="success")
 
-        except Exception as e:
+        except ValueError as e:
+            self.notify(f"❌ Invalid threshold: {str(e)}", severity="warning")
+            self.logger.log_error("PatternDetectionInputError", e)
+        except (RuntimeError, OSError) as e:
             self.notify(f"❌ Pattern detection failed: {str(e)}", severity="error")
             self.logger.log_error("PatternDetectionError", e)
 
@@ -642,7 +684,10 @@ class RabbitMirrorTUI(App):
 
             self.notify("✅ Clustering complete!", severity="success")
 
-        except Exception as e:
+        except ValueError as e:
+            self.notify(f"❌ Clustering input invalid: {str(e)}", severity="warning")
+            self.logger.log_error("ClusteringInputError", e)
+        except (RuntimeError, OSError) as e:
             self.notify(f"❌ Clustering failed: {str(e)}", severity="error")
             self.logger.log_error("ClusteringError", e)
 
@@ -665,7 +710,12 @@ class RabbitMirrorTUI(App):
 
             self.notify("✅ Suppression analysis complete!", severity="success")
 
-        except Exception as e:
+        except ValueError as e:
+            self.notify(
+                f"❌ Suppression analysis input invalid: {str(e)}", severity="warning"
+            )
+            self.logger.log_error("SuppressionAnalysisInputError", e)
+        except (RuntimeError, OSError) as e:
             self.notify(f"❌ Suppression analysis failed: {str(e)}", severity="error")
             self.logger.log_error("SuppressionAnalysisError", e)
 
@@ -688,7 +738,10 @@ class RabbitMirrorTUI(App):
 
             self.notify("✅ Profile simulation complete!", severity="success")
 
-        except Exception as e:
+        except ValueError as e:
+            self.notify(f"❌ Simulation input invalid: {str(e)}", severity="warning")
+            self.logger.log_error("ProfileSimulationInputError", e)
+        except (RuntimeError, OSError) as e:
             self.notify(f"❌ Profile simulation failed: {str(e)}", severity="error")
             self.logger.log_error("ProfileSimulationError", e)
 
@@ -711,7 +764,10 @@ class RabbitMirrorTUI(App):
 
             self.notify("✅ Trend analysis complete!", severity="success")
 
-        except Exception as e:
+        except ValueError as e:
+            self.notify(f"❌ Trend analysis input invalid: {str(e)}", severity="warning")
+            self.logger.log_error("TrendAnalysisInputError", e)
+        except (RuntimeError, OSError) as e:
             self.notify(f"❌ Trend analysis failed: {str(e)}", severity="error")
             self.logger.log_error("TrendAnalysisError", e)
 
@@ -734,9 +790,105 @@ class RabbitMirrorTUI(App):
 
             self.notify(f"✅ Report generated: {report_path}", severity="success")
 
-        except Exception as e:
+        except (OSError, ValueError) as e:
             self.notify(f"❌ Report generation failed: {str(e)}", severity="error")
             self.logger.log_error("ReportGenerationError", e)
+
+    def action_run_demo_workflow(self) -> None:
+        """Key binding action to run the demo workflow."""
+        self.run_demo_workflow()
+
+    def run_demo_workflow(self) -> None:
+        """Run the Makefile demo-workflow and stream logs to the Results log."""
+        if getattr(self, "demo_task", None) and not self.demo_task.done():
+            self.notify("Demo workflow is already running", severity="warning")
+            return
+        self.notify("🚀 Starting demo workflow...", severity="information")
+        self.query_one("#results-log", Log).clear()
+        self.demo_report_path = None
+        # Disable Open Report until run completes
+        try:
+            self.query_one("#open-report", Button).disabled = True
+        except Exception as e:
+            # If button not present yet, log and continue
+            self.logger.log_error("OpenReportButtonMissing", e)
+        self.demo_task = asyncio.create_task(self._run_demo_workflow_task())
+
+    async def _run_demo_workflow_task(self) -> None:
+        import os
+        import re
+        from asyncio.subprocess import PIPE, create_subprocess_exec
+
+        log = self.query_one("#results-log", Log)
+        root = Path(__file__).resolve().parents[1]
+        env = os.environ.copy()
+        env.setdefault("TERM", "xterm-256color")
+        # Ensure Homebrew path for make if needed
+        hb = "/opt/homebrew/bin"
+        if hb not in env.get("PATH", ""):
+            env["PATH"] = f"{hb}:{env.get('PATH', '')}"
+        try:
+            proc = await create_subprocess_exec(
+                "make",
+                "demo-workflow",
+                cwd=str(root),
+                stdout=PIPE,
+                stderr=PIPE,
+                env=env,
+            )
+        except FileNotFoundError as e:
+            self.notify(
+                "❌ 'make' not found. Install Xcode command line tools or GNU make.",
+                severity="error",
+            )
+            self.logger.log_error("MakeNotFound", e)
+            return
+        pattern = re.compile(r"^REPORT_PATH=(.+)$")
+
+        async def reader(stream, is_err=False):
+            while True:
+                line = await stream.readline()
+                if not line:
+                    break
+                text = line.decode(errors="replace").rstrip()
+                if is_err:
+                    log.write(f"[stderr] {text}")
+                else:
+                    log.write(text)
+                m = pattern.match(text)
+                if m:
+                    self.demo_report_path = m.group(1).strip()
+
+        await asyncio.gather(reader(proc.stdout, False), reader(proc.stderr, True))
+        code = await proc.wait()
+        if code == 0:
+            msg = "✅ Demo workflow finished"
+            if self.demo_report_path:
+                msg += f" — report: {self.demo_report_path}"
+                try:
+                    btn = self.query_one("#open-report", Button)
+                    btn.disabled = False
+                    btn.label = f"Open Report ({self.demo_report_path})"
+                except Exception as e:
+                    self.logger.log_error("OpenReportEnableFailed", e)
+            self.notify(msg, severity="success")
+        else:
+            self.notify(
+                f"❌ Demo workflow failed with exit code {code}", severity="error"
+            )
+
+    def open_demo_report(self) -> None:
+        """Open the generated demo report in the default browser."""
+        import webbrowser
+
+        path = self.demo_report_path or "report_output/demo_report.html"
+        try:
+            p = Path(path)
+            url = p.resolve().as_uri()
+            webbrowser.open(url)
+            self.notify(f"Opening {url}", severity="information")
+        except Exception as e:
+            self.notify(f"Failed to open report: {e}", severity="error")
 
     def save_settings(self) -> None:
         """Save current settings"""
@@ -872,7 +1024,7 @@ class RabbitMirrorTUI(App):
         self.notify("🔄 Refreshing...", severity="information")
         # Refresh logic can be added here
 
-    def action_quit(self) -> None:
+    async def action_quit(self) -> None:
         """Quit the application"""
         self.exit()
 

@@ -8,7 +8,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
 
-from rabbitmirror.adversarial_profiler import AdversarialProfiler
+from rabbitmirror.adversarial_profiler import AdversarialProfiler  # noqa: E402
 
 
 def get_all_methods(cls):

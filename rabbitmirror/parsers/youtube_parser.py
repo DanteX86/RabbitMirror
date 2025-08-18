@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 
+import importlib
 import re
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
-
-from bs4 import BeautifulSoup
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 from ..exceptions import InvalidFormatError
 from .base_parser import BaseParser
+
+if TYPE_CHECKING:  # pragma: no cover
+    from bs4 import BeautifulSoup  # noqa: F401
 
 
 class YouTubeParser(BaseParser):
@@ -57,7 +59,7 @@ class YouTubeParser(BaseParser):
         except (IOError, UnicodeDecodeError):
             return False
 
-    def _parse_file_content(self, content: str) -> BeautifulSoup:
+    def _parse_file_content(self, content: str) -> "BeautifulSoup":
         """
         Parse YouTube HTML content using BeautifulSoup.
 
@@ -67,9 +69,10 @@ class YouTubeParser(BaseParser):
         Returns:
             BeautifulSoup object for parsing
         """
-        return BeautifulSoup(content, "lxml")
+        bs4 = importlib.import_module("bs4")
+        return bs4.BeautifulSoup(content, "lxml")
 
-    def _extract_entries(self, soup: BeautifulSoup) -> List[Any]:
+    def _extract_entries(self, soup: "BeautifulSoup") -> List[Any]:
         """
         Extract video entries from YouTube HTML.
 
@@ -157,7 +160,7 @@ class YouTubeParser(BaseParser):
             return entry
 
         except (AttributeError, ValueError, TypeError) as e:
-            self.logger.warning(f"Failed to parse YouTube entry: {e}")
+            self.logger.warning("Failed to parse YouTube entry: %s", e)
             return None
 
     def _extract_video_id(self, url: str) -> Optional[str]:

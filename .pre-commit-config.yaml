@@ -3,9 +3,13 @@ repos:
     rev: v4.4.0
     hooks:
       - id: trailing-whitespace
+        exclude: "^(node_modules/|\\.next/|benchmark_results/|venv/|\\.venv/)"
       - id: end-of-file-fixer
+        exclude: "^(node_modules/|\\.next/|benchmark_results/|venv/|\\.venv/)"
       - id: check-yaml
+        exclude: "^(node_modules/|\\.next/|benchmark_results/)"
       - id: check-added-large-files
+        exclude: "^(node_modules/|\\.next/|benchmark_results/)"
       - id: check-merge-conflict
       - id: debug-statements
 
@@ -28,7 +32,7 @@ repos:
         args: [
           "--max-line-length=127",
           "--ignore=E203,W503,E501",
-          "--exclude=.git,__pycache__,docs/source/conf.py,old,build,dist"
+          "--exclude=.git,__pycache__,docs/source/conf.py,old,build,dist,node_modules,.next,benchmark_results,venv,.venv"
         ]
 
   - repo: https://github.com/pycqa/pylint
@@ -49,8 +53,8 @@ repos:
   - repo: local
     hooks:
       - id: pytest
-        name: pytest
-        entry: pytest
+        name: pytest (venv)
+        entry: .venv/bin/pytest
         language: system
         types: [python]
         pass_filenames: false

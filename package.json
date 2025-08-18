@@ -1,0 +1,34 @@
+{
+  "name": "rabbitmirror",
+  "version": "1.0.0",
+  "description": "**Advanced YouTube Watch History Analysis Tool**",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "example": "examples",
+    "test": "tests"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DanteX86/RabbitMirror.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DanteX86/RabbitMirror/issues"
+  },
+  "homepage": "https://github.com/DanteX86/RabbitMirror#readme",
+  "dependencies": {
+    "next": "^15.4.6",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  }
+}

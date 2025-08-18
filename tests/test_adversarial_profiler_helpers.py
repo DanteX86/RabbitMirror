@@ -5,12 +5,13 @@ Additional tests for helper methods in AdversarialProfiler to improve coverage.
 """
 
 from datetime import datetime, timedelta
-from unittest.mock import Mock, patch
 
 import numpy as np
 import pytest
 
 from rabbitmirror.adversarial_profiler import AdversarialProfiler
+
+# unittest.mock is not used here; remove unused imports to satisfy flake8
 
 
 class TestAdversarialProfilerHelpers:
@@ -123,14 +124,14 @@ class TestAdversarialProfilerHelpers:
         curr_entry = {"location": "Los Angeles"}
 
         has_change = profiler._has_location_change(prev_entry, curr_entry)
-        assert has_change == True
+        assert has_change is True
 
         # Test without location change
         prev_entry = {"location": "New York"}
         curr_entry = {"location": "New York"}
 
         has_change = profiler._has_location_change(prev_entry, curr_entry)
-        assert has_change == False
+        assert has_change is False
 
     def test_has_temporal_regularity(self, profiler):
         """Test temporal regularity detection."""
@@ -142,7 +143,7 @@ class TestAdversarialProfilerHelpers:
         ]
 
         is_regular = profiler._has_temporal_regularity(regular_entries)
-        assert is_regular == True
+        assert is_regular is True
 
         # Test irregular intervals
         irregular_entries = [
@@ -151,7 +152,7 @@ class TestAdversarialProfilerHelpers:
         ]
 
         is_regular = profiler._has_temporal_regularity(irregular_entries)
-        assert is_regular == False
+        assert is_regular is False
 
     def test_calculate_engagement_metrics(self, profiler):
         """Test engagement metrics calculation."""
@@ -183,7 +184,7 @@ class TestAdversarialProfilerHelpers:
         }
 
         is_suspicious = profiler._is_suspicious_engagement(suspicious_metrics)
-        assert is_suspicious == True
+        assert is_suspicious is True
 
         # Test normal engagement
         normal_metrics = {

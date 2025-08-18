@@ -6,12 +6,13 @@ This module focuses on testing specific methods and edge cases.
 """
 
 from datetime import datetime, timedelta
-from unittest.mock import Mock, patch
 
 import numpy as np
 import pytest
 
 from rabbitmirror.adversarial_profiler import AdversarialProfiler
+
+# Note: Mock/patch are not used; avoid unused-import errors
 
 
 class TestAdversarialProfilerEnhanced:
@@ -67,14 +68,14 @@ class TestAdversarialProfilerEnhanced:
 
         for i in range(20):
             entry = {
-                "title": f"Video {i+1} - Programming Tutorial",
+                "title": f"Video {i + 1} - Programming Tutorial",
                 "timestamp": (base_time + timedelta(minutes=i * 30)).isoformat(),
-                "channel": f"Channel {i%3}",
-                "url": f"https://example.com/video{i+1}",
+                "channel": f"Channel {i % 3}",
+                "url": f"https://example.com/video{i + 1}",
                 "duration": 600 + (i * 60),  # 10-30 minutes
                 "watched_duration": 300 + (i * 30),  # 5-15 minutes
                 "interaction_count": i * 2,
-                "location": f"Location {i%5}",
+                "location": f"Location {i % 5}",
                 "device": ["mobile", "desktop", "tablet"][i % 3],
                 "language": ["en", "es", "fr"][i % 3],
                 "category": ["education", "entertainment", "news"][i % 3],
@@ -92,10 +93,10 @@ class TestAdversarialProfilerEnhanced:
         for i in range(15):
             entries.append(
                 {
-                    "title": f"Quick Video {i+1}",
+                    "title": f"Quick Video {i + 1}",
                     "timestamp": (base_time + timedelta(seconds=i * 30)).isoformat(),
                     "channel": "Fast Channel",
-                    "url": f"https://example.com/quick{i+1}",
+                    "url": f"https://example.com/quick{i + 1}",
                 }
             )
 
@@ -137,7 +138,7 @@ class TestAdversarialProfilerEnhanced:
         for i in range(12):
             entries.append(
                 {
-                    "title": f"Netflix Series S01E{i+1:02d}",
+                    "title": f"Netflix Series S01E{i + 1:02d}",
                     "timestamp": (base_time + timedelta(minutes=i * 50)).isoformat(),
                     "channel": "Netflix",
                     "duration": 2400,  # 40 minutes
@@ -378,15 +379,15 @@ class TestAdversarialProfilerEnhanced:
         """Test suspicious interval pattern detection."""
         # Test with regular intervals (suspicious)
         regular_intervals = np.array([5.0, 5.0, 5.0, 5.0])
-        assert profiler._is_suspicious_interval_pattern(regular_intervals) == True
+        assert profiler._is_suspicious_interval_pattern(regular_intervals) is True
 
         # Test with irregular intervals (not suspicious)
         irregular_intervals = np.array([2.0, 15.0, 8.0, 25.0])
-        assert profiler._is_suspicious_interval_pattern(irregular_intervals) == False
+        assert profiler._is_suspicious_interval_pattern(irregular_intervals) is False
 
         # Test with too few intervals
         few_intervals = np.array([5.0, 5.0])
-        assert profiler._is_suspicious_interval_pattern(few_intervals) == False
+        assert profiler._is_suspicious_interval_pattern(few_intervals) is False
 
     def test_calculate_session_metrics(self, profiler, comprehensive_entries):
         """Test session metrics calculation."""
@@ -423,7 +424,7 @@ class TestAdversarialProfilerEnhanced:
             "mean_interval": 3.0,  # Short intervals
             "duration": 45.0,
         }
-        assert profiler._is_anomalous_session(anomalous_metrics) == True
+        assert profiler._is_anomalous_session(anomalous_metrics) is True
 
         # Test with normal metrics
         normal_metrics = {
@@ -432,7 +433,7 @@ class TestAdversarialProfilerEnhanced:
             "mean_interval": 10.0,  # Normal intervals
             "duration": 50.0,
         }
-        assert profiler._is_anomalous_session(normal_metrics) == False
+        assert profiler._is_anomalous_session(normal_metrics) is False
 
     def test_is_suspicious_sequence(self, profiler):
         """Test suspicious sequence detection."""
@@ -442,7 +443,7 @@ class TestAdversarialProfilerEnhanced:
             {"title": "Same Title"},
             {"title": "Same Title"},
         ]
-        assert profiler._is_suspicious_sequence(identical_sequence) == True
+        assert profiler._is_suspicious_sequence(identical_sequence) is True
 
         # Test with different titles
         different_sequence = [
@@ -450,11 +451,11 @@ class TestAdversarialProfilerEnhanced:
             {"title": "Completely Different Title"},
             {"title": "Another Unique Title"},
         ]
-        assert profiler._is_suspicious_sequence(different_sequence) == False
+        assert profiler._is_suspicious_sequence(different_sequence) is False
 
         # Test with too few entries
         short_sequence = [{"title": "Title 1"}, {"title": "Title 2"}]
-        assert profiler._is_suspicious_sequence(short_sequence) == False
+        assert profiler._is_suspicious_sequence(short_sequence) is False
 
     def test_identify_sequence_pattern(self, profiler):
         """Test sequence pattern identification."""
@@ -542,11 +543,11 @@ class TestAdversarialProfilerEnhanced:
         """Test numeric progression detection."""
         # Test with numeric progression
         numeric_titles = ["Episode 1", "Episode 2", "Episode 3"]
-        assert profiler._has_numeric_progression(numeric_titles) == True
+        assert profiler._has_numeric_progression(numeric_titles) is True
 
         # Test without numeric progression
         non_numeric_titles = ["Random Title", "Another Title", "Different Title"]
-        assert profiler._has_numeric_progression(non_numeric_titles) == False
+        assert profiler._has_numeric_progression(non_numeric_titles) is False
 
     def test_has_similar_structure(self, profiler):
         """Test similar structure detection."""

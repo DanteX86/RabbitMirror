@@ -207,8 +207,9 @@ class TestTimeoutDecoratorDocumentation:
         # 3. Threading Issues: Python's GIL and threading can interfere with signals
         # 4. Reliability: It's better to skip an unreliable test than have flaky CI
 
-        # This is a common pattern in testing - skip tests that are environment-dependent
-        # rather than trying to make them work everywhere
+        # This is a common pattern in testing - skip tests that are
+        # environment-dependent rather than trying to make them work
+        # everywhere
 
         # The skip is intentional and not a bug to be fixed
         assert (

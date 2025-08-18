@@ -265,27 +265,65 @@ def with_circuit_breaker(
 
 
 def with_timeout(timeout_seconds: float) -> Callable:
-    """Decorator to add timeout protection to functions."""
+    """Decorator to add timeout protection to functions.
+
+    Uses signal.SIGALRM when running in the main thread; otherwise falls back to a
+    thread-based timeout that does not rely on signals (safe for worker threads).
+    """
+
+    import threading
 
     def decorator(func: Callable) -> Callable:
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            def timeout_handler(signum, frame):
-                raise CustomTimeoutError(
-                    f"Operation timed out after {timeout_seconds} seconds",
-                    timeout_duration=timeout_seconds,
-                    error_code="OPERATION_TIMEOUT",
-                )
-
-            # Set up timeout
-            old_handler = signal.signal(signal.SIGALRM, timeout_handler)
-            signal.alarm(int(timeout_seconds))
-
+            # If we're in the main thread, use signal-based timeout (Unix only)
             try:
-                return func(*args, **kwargs)
-            finally:
-                signal.alarm(0)
-                signal.signal(signal.SIGALRM, old_handler)
+                in_main_thread = threading.current_thread() is threading.main_thread()
+            except Exception:
+                in_main_thread = False
+
+            if in_main_thread:
+
+                def timeout_handler(signum, frame):
+                    raise CustomTimeoutError(
+                        f"Operation timed out after {timeout_seconds} seconds",
+                        timeout_duration=timeout_seconds,
+                        error_code="OPERATION_TIMEOUT",
+                    )
+
+                # Set up timeout
+                old_handler = signal.signal(signal.SIGALRM, timeout_handler)
+                signal.alarm(int(timeout_seconds))
+                try:
+                    return func(*args, **kwargs)
+                finally:
+                    signal.alarm(0)
+                    signal.signal(signal.SIGALRM, old_handler)
+            else:
+                # Fallback: run the function in a helper thread and join with timeout
+                result_holder: Dict[str, Any] = {}
+                exc_holder: Dict[str, BaseException] = {}
+
+                def target():
+                    try:
+                        result_holder["value"] = func(*args, **kwargs)
+                    except BaseException as e:  # capture any exception
+                        exc_holder["error"] = e
+
+                t = threading.Thread(target=target, daemon=True)
+                t.start()
+                t.join(timeout_seconds)
+                if t.is_alive():
+                    # Thread continues as daemon; raise timeout here
+                    raise CustomTimeoutError(
+                        f"Operation timed out after {timeout_seconds} seconds",
+                        timeout_duration=timeout_seconds,
+                        error_code="OPERATION_TIMEOUT",
+                    )
+                if "error" in exc_holder:
+                    # Re-raise the original exception
+                    raise exc_holder["error"]
+                return result_holder.get("value")
 
         return wrapper
 

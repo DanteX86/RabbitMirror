@@ -7,14 +7,13 @@ import os
 # Import the class we're testing
 import sys
 from datetime import datetime, timedelta
-from unittest.mock import MagicMock, patch
 
 import numpy as np
 import pytest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-from rabbitmirror.adversarial_profiler import AdversarialProfiler
+from rabbitmirror.adversarial_profiler import AdversarialProfiler  # noqa: E402
 
 
 class TestAdversarialProfilerAdditional:
@@ -687,7 +686,9 @@ class TestAdversarialProfilerAdditional:
         assert pattern["focus"] >= 0.5
 
         # Test binge session
-        binge_session = [{"duration": 300, "category": f"cat{i%3}"} for i in range(15)]
+        binge_session = [
+            {"duration": 300, "category": f"cat{i % 3}"} for i in range(15)
+        ]
 
         pattern = self.profiler._analyze_session_pattern(binge_session)
         assert pattern["type"] == "binge"

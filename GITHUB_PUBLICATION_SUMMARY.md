@@ -142,6 +142,6 @@ The GitHub-based distribution provides flexibility, transparency, and community 
 
 ---
 
-**Publication Date**: 2025-07-14  
-**Version**: 1.0.0  
+**Publication Date**: 2025-07-14
+**Version**: 1.0.0
 **Status**: ✅ LIVE and READY

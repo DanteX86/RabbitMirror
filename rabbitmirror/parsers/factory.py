@@ -1,20 +1,18 @@
 #!/usr/bin/env python3
 
-from typing import Optional, Type
+import importlib
+from typing import Dict, Optional, Type
 
 from .base_parser import BaseParser, ParserConfig
-from .netflix_parser import NetflixParser
-from .spotify_parser import SpotifyParser
-from .youtube_parser import YouTubeParser
 
 
 class ParserFactory:
     """Factory class for creating platform-specific parsers."""
 
-    _parsers = {
-        "youtube": YouTubeParser,
-        "netflix": NetflixParser,
-        "spotify": SpotifyParser,
+    _parsers: Dict[str, str] = {
+        "youtube": "rabbitmirror.parsers.youtube_parser.YouTubeParser",
+        "netflix": "rabbitmirror.parsers.netflix_parser.NetflixParser",
+        "spotify": "rabbitmirror.parsers.spotify_parser.SpotifyParser",
     }
 
     @classmethod
@@ -29,10 +27,16 @@ class ParserFactory:
         Returns:
             Parser instance or None if platform not supported
         """
-        parser_class = cls._parsers.get(platform.lower())
-        if parser_class:
-            return parser_class(config)
-        return None
+        target = cls._parsers.get(platform.lower())
+        if not target:
+            return None
+        module_name, class_name = target.rsplit(".", 1)
+        try:
+            module = importlib.import_module(module_name)
+            parser_cls: Type[BaseParser] = getattr(module, class_name)
+            return parser_cls(config)
+        except Exception:  # If optional deps missing (e.g., bs4), defer to caller
+            return None
 
     @classmethod
     def get_supported_platforms(cls) -> list[str]:

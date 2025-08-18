@@ -2,6 +2,13 @@ from pathlib import Path
 
 import pytest
 
+try:
+    import bs4  # type: ignore  # noqa: F401
+
+    _HAS_BS4 = True
+except Exception:  # pragma: no cover - optional dependency for HTML parsing
+    _HAS_BS4 = False
+
 from rabbitmirror.parser import HistoryParser
 
 
@@ -14,12 +21,16 @@ def sample_history_file():
 @pytest.fixture
 def sample_parser(sample_history_file):
     """Fixture providing a HistoryParser instance with sample data."""
+    if not _HAS_BS4:
+        pytest.skip("Skipping HTML parsing tests: beautifulsoup4 (bs4) not installed")
     return HistoryParser(str(sample_history_file), "youtube")
 
 
 @pytest.fixture
 def sample_entries(sample_parser):
     """Fixture providing parsed entries from sample history."""
+    if not _HAS_BS4:
+        pytest.skip("Skipping HTML parsing tests: beautifulsoup4 (bs4) not installed")
     result = sample_parser.parse()
     return result.entries
 
@@ -57,6 +68,8 @@ def temp_output_dir(tmp_path):
 @pytest.fixture
 def sample_history_dir(tmp_path):
     """Fixture providing a directory with sample history files for batch processing."""
+    if not _HAS_BS4:
+        pytest.skip("Skipping HTML parsing tests: beautifulsoup4 (bs4) not installed")
     history_dir = tmp_path / "history_files"
     history_dir.mkdir()
 

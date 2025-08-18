@@ -85,7 +85,7 @@ def config_group():
 def tui_command(theme: str):
     """Launch the Terminal User Interface (TUI)."""
     try:
-        from .tui import main as tui_main
+        from .tui import main as tui_main  # pylint: disable=import-outside-toplevel
 
         # Set theme (if needed)
         if theme == "light":
@@ -386,8 +386,20 @@ def simulate(
 )
 @click.option("--theme", "-t", type=click.Choice(["light", "dark"]), default="light")
 @click.option("--include-viz", "-v", is_flag=True, help="Include visualizations")
-def generate_report(data_file: str, template_file: str, output_file: str):
-    """Generate a report using a template."""
+def generate_report(
+    data_file: str,
+    template_file: str,
+    output_file: str,
+    format: str,  # noqa: A002 - name aligns with CLI option
+    theme: str,
+    include_viz: bool,
+):
+    """Generate a report using a template.
+
+    The current implementation renders an HTML template via Jinja2. The
+    'format', 'theme', and 'include_viz' parameters are accepted for CLI
+    compatibility and future use, but are not required by the renderer yet.
+    """
     try:
         # Load data from file
         exporter = ExportFormatter()
@@ -395,7 +407,10 @@ def generate_report(data_file: str, template_file: str, output_file: str):
 
         # Generate report
         generator = ReportGenerator()
-        generator.generate_report(data, template_file, output_file)
+        from pathlib import Path as _P
+
+        template_name = _P(template_file).name
+        generator.generate_report(data, template_name, output_file)
         click.echo(f"✅ Generated report at {output_file}")
 
     except (FileNotFoundError, ValueError, json.JSONDecodeError) as e:
@@ -874,7 +889,7 @@ def validate_file(file: str, schema: Optional[str], output_format: str):
                     # Show similarity scores for debugging
                     click.echo("\n   Similarity analysis:")
                     for schema_type in available_schemas[:3]:  # Show top 3
-                        score = schema_validator._calculate_structure_similarity(
+                        score = schema_validator.calculate_structure_similarity(
                             data, schema_type
                         )
                         click.echo(f"   - {schema_type}: {score}% similarity")

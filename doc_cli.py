@@ -7,7 +7,7 @@ A simple command-line interface for managing documentation tasks.
 
 import argparse
 import os
-import subprocess
+import subprocess  # nosec B404 - subprocess used for controlled local commands
 import sys
 from pathlib import Path
 
@@ -24,7 +24,9 @@ def build_docs():
         # Build HTML documentation using sphinx-build directly
         cmd = ["sphinx-build", "-b", "html", "docs/source", "docs/build/html"]
 
-        result = subprocess.run(cmd, capture_output=True, text=True)
+        result = subprocess.run(
+            cmd, capture_output=True, text=True
+        )  # nosec B603 - args are controlled
 
         if result.returncode == 0:
             print("✅ Documentation built successfully!")
@@ -56,7 +58,9 @@ def serve_docs(port=8000):
 
     try:
         os.chdir(docs_html)
-        subprocess.run([sys.executable, "-m", "http.server", str(port)])
+        subprocess.run(
+            [sys.executable, "-m", "http.server", str(port)]
+        )  # nosec B603 - serving local docs
     except KeyboardInterrupt:
         print("\n👋 Documentation server stopped")
         return True
@@ -105,7 +109,9 @@ def check_docs():
             "-q",  # Quiet mode
         ]
 
-        result = subprocess.run(cmd, capture_output=True, text=True)
+        result = subprocess.run(
+            cmd, capture_output=True, text=True
+        )  # nosec B603 - args are controlled
 
         if result.returncode == 0:
             print("✅ Documentation check passed!")
