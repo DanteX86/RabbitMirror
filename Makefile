@@ -24,7 +24,7 @@ test-quick: ensure-venv ## Run tests without coverage
 
 lint: ensure-venv ## Run all linting tools
 	"$(VENV_BIN)/pylint" rabbitmirror/ --score=yes --disable=C0103,C0114,C0115,C0116,W0613,R0903,R0913,E0401,C0411,W0611,E0602,R0914,R0912,R0915,R0911,C0302,R0902,R0917,E1101
-	"$(VENV_BIN)/flake8" rabbitmirror/ --max-line-length=127 --ignore=E203,W503,E501
+	"$(VENV_BIN)/flake8" rabbitmirror/ tests/
 	"$(VENV_BIN)/bandit" -r rabbitmirror/ -f json || true
 
 format: ensure-venv ## Format code with black and isort
