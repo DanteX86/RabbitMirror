@@ -34,6 +34,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install pytest-cov
+        pip install pylint flake8 bandit
 
     - name: Lint with pylint
       run: |
