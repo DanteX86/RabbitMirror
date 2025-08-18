@@ -203,6 +203,14 @@ demo-workflow: ## Run end-to-end demo (parse, analyze, patterns, report)
 	@echo "\n✅ Demo workflow complete. View report_output/demo_report.html"
 	@echo "REPORT_PATH=report_output/demo_report.html"
 
+# Repo maintenance
+.PHONY: update
+update: ## Update repository: upgrade deps, format, lint, and run quick tests
+	$(MAKE) upgrade-deps
+	$(MAKE) format
+	$(MAKE) lint
+	$(MAKE) test-quick
+
 # Next.js server management
 .PHONY: next-start next-stop
 NEXT_HOST ?= 0.0.0.0
