@@ -115,7 +115,7 @@ class SpotifyParser(BaseParser):
             return entry
 
         except (AttributeError, ValueError, TypeError) as e:
-            self.logger.warning(f"Failed to parse Spotify entry: {e}")
+            self.logger.warning("Failed to parse Spotify entry: %s", e)
             return None
 
     def _convert_spotify_timestamp(self, timestamp_str: str) -> str:

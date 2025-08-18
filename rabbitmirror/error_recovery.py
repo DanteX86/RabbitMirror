@@ -265,146 +265,65 @@ def with_circuit_breaker(
 
 
 def with_timeout(timeout_seconds: float) -> Callable:
-    """Decorator to add timeout protection to functions in a thread-safe way.
+    """Decorator to add timeout protection to functions.
 
-    Strategy selection (auto):
-    - If running in the main process and the target function appears picklable,
-      execute it in a separate process so it can be forcefully terminated on timeout.
-    - Otherwise, fall back to a thread-based execution that raises a timeout if the
-      thread doesn't finish in time. Note: Python cannot safely kill threads; in
-      this case, the worker thread is marked as daemon and will be cleaned up when
-      the process exits.
-
-    Edge cases handled:
-    - Nested timeouts and recursive calls: a context variable tracks nesting depth.
-      For nested timeouts or when already in a child process, the decorator uses
-      the thread-based strategy to avoid spawning multiple processes.
-
-    Function metadata is preserved via functools.wraps.
+    Uses signal.SIGALRM when running in the main thread; otherwise falls back to a
+    thread-based timeout that does not rely on signals (safe for worker threads).
     """
 
-    import contextvars
-    import multiprocessing as mp
-    import pickle
     import threading
-
-    # Track nested timeouts to avoid spawning nested workers
-    _timeout_depth: contextvars.ContextVar[int] = contextvars.ContextVar(
-        "_timeout_depth", default=0
-    )
-
-    def _is_picklable(obj: Any) -> bool:
-        try:
-            pickle.dumps(obj)
-            return True
-        except Exception:
-            return False
-
-    def _run_in_process(func: Callable, args, kwargs, timeout: float):
-        # Use a Queue to transfer result/exception
-        q: mp.Queue = mp.Queue()
-
-        def _target(q_: mp.Queue, f: Callable, a, kw):
-            try:
-                res = f(*a, **kw)
-                q_.put(("result", res))
-            except Exception as e:  # Must be pickleable
-                try:
-                    q_.put(("error", (e.__class__, str(e))))
-                except Exception:
-                    # Fallback when exception isn't pickleable
-                    q_.put(("error", (Exception, "Unpickleable exception in worker")))
-
-        proc = mp.Process(target=_target, args=(q, func, args, kwargs), daemon=True)
-        proc.start()
-        proc.join(timeout)
-
-        if proc.is_alive():
-            # Timeout: terminate process and clean up
-            proc.terminate()
-            proc.join(1.0)
-            try:
-                q.close()
-            except Exception:
-                pass
-            raise CustomTimeoutError(
-                f"Operation timed out after {timeout} seconds",
-                timeout_duration=timeout,
-                error_code="OPERATION_TIMEOUT",
-            )
-
-        # Process finished; fetch result
-        try:
-            kind, payload = q.get_nowait()
-        except Exception:
-            # Nothing in queue -> abnormal termination
-            raise RuntimeError("Worker process exited without returning a result")
-        finally:
-            try:
-                q.close()
-            except Exception:
-                pass
-
-        if kind == "result":
-            return payload
-        else:
-            exc_type, msg = payload
-            raise exc_type(msg)
-
-    def _run_in_thread(func: Callable, args, kwargs, timeout: float):
-        # Soft timeout: cannot kill threads; we raise timeout if still running
-        result_holder = {"result": None, "error": None}
-        done = threading.Event()
-
-        def _target():
-            try:
-                result_holder["result"] = func(*args, **kwargs)
-            except Exception as e:
-                result_holder["error"] = e
-            finally:
-                done.set()
-
-        t = threading.Thread(target=_target, daemon=True)
-        t.start()
-        finished = done.wait(timeout)
-        if not finished:
-            # No safe way to kill a thread; leave daemon thread running
-            raise CustomTimeoutError(
-                f"Operation timed out after {timeout} seconds",
-                timeout_duration=timeout,
-                error_code="OPERATION_TIMEOUT",
-            )
-        if result_holder["error"] is not None:
-            raise result_holder["error"]
-        return result_holder["result"]
 
     def decorator(func: Callable) -> Callable:
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            # Non-positive timeout means no timeout enforcement
-            if not timeout_seconds or timeout_seconds <= 0:
-                return func(*args, **kwargs)
-
-            # Detect nesting and process context
-            depth = _timeout_depth.get()
-            in_main_process = mp.current_process().name == "MainProcess"
-
-            token = _timeout_depth.set(depth + 1)
+            # If we're in the main thread, use signal-based timeout (Unix only)
             try:
-                # Avoid spawning processes in nested contexts or non-main processes
-                use_process = (
-                    depth == 0
-                    and in_main_process
-                    and _is_picklable(func)
-                    and _is_picklable((args, kwargs))
-                )
+                in_main_thread = threading.current_thread() is threading.main_thread()
+            except Exception:
+                in_main_thread = False
 
-                if use_process:
-                    return _run_in_process(func, args, kwargs, float(timeout_seconds))
-                else:
-                    return _run_in_thread(func, args, kwargs, float(timeout_seconds))
-            finally:
-                _timeout_depth.reset(token)
+            if in_main_thread:
+
+                def timeout_handler(signum, frame):
+                    raise CustomTimeoutError(
+                        f"Operation timed out after {timeout_seconds} seconds",
+                        timeout_duration=timeout_seconds,
+                        error_code="OPERATION_TIMEOUT",
+                    )
+
+                # Set up timeout
+                old_handler = signal.signal(signal.SIGALRM, timeout_handler)
+                signal.alarm(int(timeout_seconds))
+                try:
+                    return func(*args, **kwargs)
+                finally:
+                    signal.alarm(0)
+                    signal.signal(signal.SIGALRM, old_handler)
+            else:
+                # Fallback: run the function in a helper thread and join with timeout
+                result_holder: Dict[str, Any] = {}
+                exc_holder: Dict[str, BaseException] = {}
+
+                def target():
+                    try:
+                        result_holder["value"] = func(*args, **kwargs)
+                    except BaseException as e:  # capture any exception
+                        exc_holder["error"] = e
+
+                t = threading.Thread(target=target, daemon=True)
+                t.start()
+                t.join(timeout_seconds)
+                if t.is_alive():
+                    # Thread continues as daemon; raise timeout here
+                    raise CustomTimeoutError(
+                        f"Operation timed out after {timeout_seconds} seconds",
+                        timeout_duration=timeout_seconds,
+                        error_code="OPERATION_TIMEOUT",
+                    )
+                if "error" in exc_holder:
+                    # Re-raise the original exception
+                    raise exc_holder["error"]
+                return result_holder.get("value")
 
         return wrapper
 

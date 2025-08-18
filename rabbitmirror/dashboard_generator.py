@@ -20,6 +20,10 @@ class DashboardGenerator:
         interactive: bool = True,
         theme: str = "light",
         include_plots: bool = True,
+        metrics: List[str] | None = None,
+        top_n: int = 10,
+        hist_bins: int = 24,
+        velocity_cap: int = 10,
     ):
         """
         Initialize the dashboard generator.
@@ -29,11 +33,19 @@ class DashboardGenerator:
             interactive: Whether to generate interactive elements
             theme: Color theme ('light', 'dark')
             include_plots: Whether to include plot visualizations
+            metrics: List of panel identifiers to include (None for all)
+            top_n: Top-N items for videos/keywords panels
+            hist_bins: Number of bins for viewing time histogram
+            velocity_cap: Maximum value for velocity gauge
         """
         self.template = template
         self.interactive = interactive
         self.theme = theme
         self.include_plots = include_plots
+        self.metrics = set(m.lower() for m in metrics) if metrics else None
+        self.top_n = top_n
+        self.hist_bins = hist_bins
+        self.velocity_cap = velocity_cap
         self.logger = SymbolicLogger()
 
         # Set theme colors
@@ -164,84 +176,92 @@ class DashboardGenerator:
         timestamps = [entry.get("timestamp", "") for entry in entries]
         daily_counts = self._aggregate_daily_counts(timestamps)
 
-        fig.add_trace(
-            go.Scatter(
-                x=list(daily_counts.keys()),
-                y=list(daily_counts.values()),
-                mode="lines+markers",
-                name="Daily Watch Count",
-            ),
-            row=1,
-            col=1,
-        )
+        if self._want("time_series"):
+            fig.add_trace(
+                go.Scatter(
+                    x=list(daily_counts.keys()),
+                    y=list(daily_counts.values()),
+                    mode="lines+markers",
+                    name="Daily Watch Count",
+                ),
+                row=1,
+                col=1,
+            )
 
-        # Add category distribution
+        # Add category distribution (row 1 col 2)
         categories = self._extract_categories(entries)
-        fig.add_trace(
-            go.Bar(
-                x=list(categories.keys()),
-                y=list(categories.values()),
-                name="Category Distribution",
-            ),
-            row=1,
-            col=2,
-        )
+        if self._want("categories"):
+            fig.add_trace(
+                go.Bar(
+                    x=list(categories.keys()),
+                    y=list(categories.values()),
+                    name="Category Distribution",
+                ),
+                row=1,
+                col=2,
+            )
 
-        # Add top videos bar chart
+        # Add top videos bar chart (row 1 col 2) — will overlay if both selected
         top_videos = self._extract_top_videos(entries)
-        fig.add_trace(
-            go.Bar(
-                x=[video["title"] for video in top_videos],
-                y=[video["count"] for video in top_videos],
-                name="Top Watched Videos",
-            ),
-            row=1,
-            col=2,
-        )
+        if self._want("top_videos"):
+            fig.add_trace(
+                go.Bar(
+                    x=[video["title"] for video in top_videos],
+                    y=[video["count"] for video in top_videos],
+                    name="Top Watched Videos",
+                ),
+                row=1,
+                col=2,
+            )
 
-        # Add top categories bar chart
-        categories = self._extract_categories(entries)
-        fig.add_trace(
-            go.Bar(
-                x=list(categories.keys()),
-                y=list(categories.values()),
-                name="Category Distribution",
-            ),
-            row=2,
-            col=1,
-        )
+        # Add top categories bar chart (row 2 col 1)
+        if self._want("categories"):
+            fig.add_trace(
+                go.Bar(
+                    x=list(categories.keys()),
+                    y=list(categories.values()),
+                    name="Category Distribution",
+                ),
+                row=2,
+                col=1,
+            )
 
-        # Add viewing time distribution
+        # Add viewing time distribution (row 2 col 2)
         times = self._extract_viewing_times(entries)
-        fig.add_trace(
-            go.Histogram(x=times, nbinsx=24, name="Viewing Time Distribution"),
-            row=2,
-            col=2,
-        )
+        if self._want("viewing_time_distribution"):
+            fig.add_trace(
+                go.Histogram(
+                    x=times, nbinsx=self.hist_bins, name="Viewing Time Distribution"
+                ),
+                row=2,
+                col=2,
+            )
 
-        # Add video count by day
+        # Add video count by day (row 3 col 1)
         daily_video_counts = self._aggregate_daily_counts(timestamps)
-        fig.add_trace(
-            go.Bar(
-                x=list(daily_video_counts.keys()),
-                y=list(daily_video_counts.values()),
-                name="Video Count by Day",
-            ),
-            row=3,
-            col=1,
-        )
+        if self._want("video_count_by_day"):
+            fig.add_trace(
+                go.Bar(
+                    x=list(daily_video_counts.keys()),
+                    y=list(daily_video_counts.values()),
+                    name="Video Count by Day",
+                ),
+                row=3,
+                col=1,
+            )
 
-        # Add daily watch trends line chart
-        fig.add_trace(
-            go.Scatter(
-                x=list(daily_counts.keys()),
-                y=list(daily_counts.values()),
-                mode="lines",
-                name="Daily Watch Trends",
-            ),
-            row=3,
-            col=2,
-        )
+        # Add daily watch trends line chart (row 3 col 2)
+        if self._want("daily_trends"):
+            fig.add_trace(
+                go.Scatter(
+                    x=list(daily_counts.keys()),
+                    y=list(daily_counts.values()),
+                    mode="lines",
+                    name="Daily Watch Trends",
+                ),
+                row=3,
+                col=2,
+            )
 
         # Update layout
         fig.update_layout(
@@ -286,53 +306,65 @@ class DashboardGenerator:
 
         # Top keywords analysis
         keywords = self._analyze_title_keywords(entries)
-        fig.add_trace(
-            go.Bar(
-                x=list(keywords.keys()),
-                y=list(keywords.values()),
-                name="Top Keywords",
-                marker_color="skyblue",
-            ),
-            row=1,
-            col=1,
-        )
+        if self._want("title_keywords"):
+            fig.add_trace(
+                go.Bar(
+                    x=list(keywords.keys()),
+                    y=list(keywords.values()),
+                    name="Top Keywords",
+                    marker_color="skyblue",
+                ),
+                row=1,
+                col=1,
+            )
 
         # Channel distribution pie chart
         channels = self._extract_channels(entries)
-        fig.add_trace(
-            go.Pie(
-                labels=list(channels.keys()),
-                values=list(channels.values()),
-                name="Channel Distribution",
-            ),
-            row=1,
-            col=2,
-        )
+        if self._want("channel_distribution"):
+            fig.add_trace(
+                go.Pie(
+                    labels=list(channels.keys()),
+                    values=list(channels.values()),
+                    name="Channel Distribution",
+                ),
+                row=1,
+                col=2,
+            )
 
         # Watch velocity metrics
         velocity = self._calculate_watch_velocity(entries)
-        fig.add_trace(
-            go.Indicator(
-                mode="gauge+number+delta",
-                value=velocity.get("average_velocity", 0),
-                title={"text": "Avg Videos/Day"},
-                gauge={
-                    "axis": {"range": [None, 10]},
-                    "bar": {"color": "darkblue"},
-                    "steps": [
-                        {"range": [0, 2], "color": "lightgray"},
-                        {"range": [2, 5], "color": "gray"},
-                    ],
-                    "threshold": {
-                        "line": {"color": "red", "width": 4},
-                        "thickness": 0.75,
-                        "value": velocity.get("peak_day_count", 0),
+        if self._want("velocity_gauge"):
+            fig.add_trace(
+                go.Indicator(
+                    mode="gauge+number+delta",
+                    value=velocity.get("average_velocity", 0),
+                    title={"text": "Avg Videos/Day"},
+                    gauge={
+                        "axis": {"range": [None, self.velocity_cap]},
+                        "bar": {"color": "darkblue"},
+                        "steps": [
+                            {
+                                "range": [0, min(2, self.velocity_cap)],
+                                "color": "lightgray",
+                            },
+                            {
+                                "range": [
+                                    min(2, self.velocity_cap),
+                                    min(5, self.velocity_cap),
+                                ],
+                                "color": "gray",
+                            },
+                        ],
+                        "threshold": {
+                            "line": {"color": "red", "width": 4},
+                            "thickness": 0.75,
+                            "value": velocity.get("peak_day_count", 0),
+                        },
                     },
-                },
-            ),
-            row=2,
-            col=1,
-        )
+                ),
+                row=2,
+                col=1,
+            )
 
         # Hourly viewing pattern
         viewing_times = self._extract_viewing_times(entries)
@@ -340,45 +372,48 @@ class DashboardGenerator:
         for hour in viewing_times:
             hour_counts[hour] = hour_counts.get(hour, 0) + 1
 
-        fig.add_trace(
-            go.Bar(
-                x=list(hour_counts.keys()),
-                y=list(hour_counts.values()),
-                name="Hourly Pattern",
-                marker_color="orange",
-            ),
-            row=2,
-            col=2,
-        )
+        if self._want("hourly_pattern"):
+            fig.add_trace(
+                go.Bar(
+                    x=list(hour_counts.keys()),
+                    y=list(hour_counts.values()),
+                    name="Hourly Pattern",
+                    marker_color="orange",
+                ),
+                row=2,
+                col=2,
+            )
 
         # Weekly activity pattern
         timestamps = [entry.get("timestamp", "") for entry in entries]
         weekly_pattern = self._analyze_weekly_pattern(timestamps)
 
-        fig.add_trace(
-            go.Bar(
-                x=list(weekly_pattern.keys()),
-                y=list(weekly_pattern.values()),
-                name="Weekly Activity",
-                marker_color="green",
-            ),
-            row=3,
-            col=1,
-        )
+        if self._want("weekly_activity"):
+            fig.add_trace(
+                go.Bar(
+                    x=list(weekly_pattern.keys()),
+                    y=list(weekly_pattern.values()),
+                    name="Weekly Activity",
+                    marker_color="green",
+                ),
+                row=3,
+                col=1,
+            )
 
         # Video popularity index (mock data for demonstration)
         popularity_data = self._calculate_popularity_index(entries)
-        fig.add_trace(
-            go.Scatter(
-                x=list(range(len(popularity_data))),
-                y=popularity_data,
-                mode="markers+lines",
-                name="Popularity Index",
-                marker={"size": 8, "color": "red"},
-            ),
-            row=3,
-            col=2,
-        )
+        if self._want("popularity_index"):
+            fig.add_trace(
+                go.Scatter(
+                    x=list(range(len(popularity_data))),
+                    y=popularity_data,
+                    mode="markers+lines",
+                    name="Popularity Index",
+                    marker={"size": 8, "color": "red"},
+                ),
+                row=3,
+                col=2,
+            )
 
         # Update layout
         fig.update_layout(
@@ -591,6 +626,20 @@ class DashboardGenerator:
 
         return css_file
 
+    def _want(self, metric_name: str) -> bool:
+        """Return True if a metric/panel should be included based on selection.
+        If no metrics were specified, include all by default.
+        Also supports a legacy alias 'video_count_by_day' for clarity.
+        """
+        if self.metrics is None:
+            return True
+        # Always allow both aliases
+        if metric_name == "video_count_by_day":
+            return ("video_count_by_day" in self.metrics) or (
+                "time_series" in self.metrics
+            )
+        return metric_name in self.metrics
+
     def _aggregate_daily_counts(self, timestamps: List[str]) -> Dict[str, int]:
         """Aggregate watch counts by day."""
         daily_counts = {}
@@ -617,11 +666,14 @@ class DashboardGenerator:
             title = entry.get("title", "Unknown")
             video_counts[title] = video_counts.get(title, 0) + 1
 
-        # Sort and return top 5 videos
+        # Sort and return top-N videos
         top_videos = sorted(
             video_counts.items(), key=lambda item: item[1], reverse=True
         )
-        return [{"title": title, "count": count} for title, count in top_videos[:5]]
+        return [
+            {"title": title, "count": count}
+            for title, count in top_videos[: self.top_n]
+        ]
 
     def _extract_categories(self, entries: List[Dict[str, Any]]) -> Dict[str, int]:
         """Extract and count categories from entries."""
@@ -687,8 +739,10 @@ class DashboardGenerator:
                 if len(clean_word) > 2 and clean_word not in common_words:
                     keywords[clean_word] = keywords.get(clean_word, 0) + 1
 
-        # Return top 10 keywords
-        top_keywords = sorted(keywords.items(), key=lambda x: x[1], reverse=True)[:10]
+        # Return top-N keywords
+        top_keywords = sorted(keywords.items(), key=lambda x: x[1], reverse=True)[
+            : self.top_n
+        ]
         return dict(top_keywords)
 
     def _calculate_watch_velocity(

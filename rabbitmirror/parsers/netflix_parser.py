@@ -110,7 +110,7 @@ class NetflixParser(BaseParser):
             return entry
 
         except (AttributeError, ValueError, TypeError) as e:
-            self.logger.warning(f"Failed to parse Netflix entry: {e}")
+            self.logger.warning("Failed to parse Netflix entry: %s", e)
             return None
 
     def _convert_netflix_timestamp(self, timestamp_str: str) -> str:

@@ -65,6 +65,10 @@ class ParserResult:
     categories: Optional[List[str]] = None
     warnings: Optional[List[str]] = None
 
+    def __len__(self) -> int:
+        """Number of parsed entries (for convenience in aggregations)."""
+        return len(self.entries)
+
     @property
     def success_rate(self) -> float:
         """Calculate parsing success rate."""

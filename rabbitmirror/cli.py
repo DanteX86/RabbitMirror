@@ -112,7 +112,7 @@ def config_group(ctx, config: Optional[str]):
 def tui_command(theme: str):
     """Launch the Terminal User Interface (TUI)."""
     try:
-        from .tui import main as tui_main
+        from .tui import main as tui_main  # pylint: disable=import-outside-toplevel
 
         # Set theme (if needed)
         if theme == "light":
@@ -409,23 +409,46 @@ def simulate(
 @click.argument("template_file", type=click.Path(exists=True))
 @click.argument("output_file", type=click.Path())
 @click.option(
-    "--format", "-f", type=click.Choice(["html", "pdf", "md"]), default="html"
+    "--format",
+    "-f",
+    "out_format",
+    type=click.Choice(["html", "pdf", "md"]),
+    default="html",
 )
 @click.option("--theme", "-t", type=click.Choice(["light", "dark"]), default="light")
 @click.option("--include-viz", "-v", is_flag=True, help="Include visualizations")
-def generate_report(data_file: str, template_file: str, output_file: str):
-    """Generate a report using a template."""
+def generate_report(
+    data_file: str,
+    template_file: str,
+    output_file: str,
+    out_format: str,  # CLI option '--format' bound to parameter name
+    theme: str,
+    include_viz: bool,
+):
+    """Generate a report using a template.
+
+    The current implementation renders an HTML template via Jinja2. The
+    'format', 'theme', and 'include_viz' parameters are accepted for CLI
+    compatibility and future use, but are not required by the renderer yet.
+    """
     try:
         # Load data from file
         exporter = ExportFormatter()
         data = exporter.load_data(data_file)
 
         # Generate report
-        generator = ReportGenerator()
-        generator.generate_report(data, template_file, output_file)
+        template_path = Path(template_file)
+        generator = ReportGenerator(template_dir=str(template_path.parent))
+        template_name = template_path.name
+        generator.generate_report(data, template_name, output_file)
         click.echo(f"✅ Generated report at {output_file}")
 
-    except (FileNotFoundError, ValueError, json.JSONDecodeError) as e:
+    except (
+        RabbitMirrorError,
+        FileNotFoundError,
+        ValueError,
+        json.JSONDecodeError,
+    ) as e:
         symbolic_logger.log_error("report_generation_error", e)
         click.echo(f"❌ Error generating report: {str(e)}", err=True)
 
@@ -672,7 +695,9 @@ def trend_analysis(
         click.echo(f"❌ Error analyzing trends: {str(e)}", err=True)
 
 
-@report_group.command(name="export-dashboard")
+@report_group.command(
+    name="export-dashboard", help="Export data as an interactive dashboard"
+)
 @click.argument("data_file", type=click.Path(exists=True))
 @click.option(
     "--template",
@@ -715,7 +740,7 @@ def export_dashboard(
         # Generate dashboard files
         dashboard_files = dashboard.generate_dashboard(data, output_path)
 
-        # Print summary (commented out due to missing implementation)
+        # Print summary
         click.echo("\nDashboard Generation Complete:")
         click.echo(f"Template: {template}")
         click.echo(f"Interactive: {'Yes' if interactive else 'No'}")
@@ -735,7 +760,12 @@ def export_dashboard(
         else:
             click.echo(f"\nDashboard exported to: {output_path}")
 
-    except (FileNotFoundError, ValueError, json.JSONDecodeError) as e:
+    except (
+        RabbitMirrorError,
+        FileNotFoundError,
+        ValueError,
+        json.JSONDecodeError,
+    ) as e:
         symbolic_logger.log_error("dashboard_export_error", e)
         click.echo(f"❌ Error exporting dashboard: {str(e)}", err=True)
 
@@ -910,7 +940,7 @@ def validate_file(file: str, schema: Optional[str], output_format: str):
                     # Show similarity scores for debugging
                     click.echo("\n   Similarity analysis:")
                     for schema_type in available_schemas[:3]:  # Show top 3
-                        score = schema_validator._calculate_structure_similarity(
+                        score = schema_validator.calculate_structure_similarity(
                             data, schema_type
                         )
                         click.echo(f"   - {schema_type}: {score}% similarity")
@@ -945,7 +975,12 @@ def convert_file(input_file: str, output_format: str, output: Optional[str]):
 
         click.echo(f"✅ Converted {input_file} to {output_file}")
 
-    except (FileNotFoundError, ValueError, json.JSONDecodeError) as e:
+    except (
+        RabbitMirrorError,
+        FileNotFoundError,
+        ValueError,
+        json.JSONDecodeError,
+    ) as e:
         symbolic_logger.log_error("conversion_error", e)
         click.echo(f"❌ Error converting file: {str(e)}", err=True)
 
@@ -967,7 +1002,7 @@ def completion(shell: str):
         click.echo(script)
     except (ImportError, AttributeError) as e:
         click.echo(f"❌ Shell completion not available for {shell}: {e}", err=True)
-        raise SystemExit(1)
+        raise SystemExit(1) from e
 
 
 @utils_group.command(name="generate-qr")

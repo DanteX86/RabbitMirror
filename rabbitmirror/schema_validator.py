@@ -354,6 +354,12 @@ class SchemaValidator:
 
         return int((score / max_score * 100)) if max_score > 0 else 0
 
+    def calculate_structure_similarity(
+        self, data: Dict[str, Any], schema_type: str
+    ) -> int:
+        """Public wrapper around structure similarity calculation (0-100)."""
+        return self._calculate_structure_similarity(data, schema_type)
+
     def _matches_type(self, value: Any, expected_type: str) -> bool:
         """Check if a value matches the expected JSON schema type."""
         if expected_type == "string":
@@ -370,4 +376,5 @@ class SchemaValidator:
             return isinstance(value, dict)
         if expected_type == "null":
             return value is None
+        return False
         return False

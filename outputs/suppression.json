@@ -1,0 +1,23 @@
+{
+  "overall_suppression": 0.0,
+  "category_suppression": {
+    "unknown": 0.0
+  },
+  "temporal_patterns": {},
+  "baseline_metrics": {
+    "total_views": 10,
+    "unique_channels": 10,
+    "category_distribution": {
+      "unknown": 1.0
+    },
+    "view_velocity": 0.3333333333333333
+  },
+  "analysis_metrics": {
+    "total_views": 10,
+    "unique_channels": 10,
+    "category_distribution": {
+      "unknown": 1.0
+    },
+    "view_velocity": 0.3333333333333333
+  }
+}

@@ -1,16 +1,26 @@
+import importlib
 import logging
 import re
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
-from bs4 import BeautifulSoup
-
-from .exceptions import InvalidFormatError, ParsingError
+from .exceptions import DependencyError, InvalidFormatError, ParsingError
 from .parsers import BaseParser, ParserConfig, ParserFactory, ParserResult
+
+if TYPE_CHECKING:  # pragma: no cover - for type hints only
+    from bs4 import BeautifulSoup  # noqa: F401
 
 
 class HistoryParser:
-    def __init__(self, file_path: str, platform: str):
+    def __init__(self, file_path: str, platform: str = "youtube"):
+        """Initialize a HistoryParser.
+
+        Args:
+            file_path: Path to the history export file to parse.
+            platform: Platform identifier (e.g., "youtube", "netflix", "spotify").
+                Defaults to "youtube" for backward compatibility with callers
+                that only pass the file path.
+        """
         self.file_path = file_path
         self.platform = platform
 
@@ -33,7 +43,16 @@ class HistoryParser:
         for encoding in encodings:
             try:
                 with open(self.file_path, "r", encoding=encoding) as f:
-                    soup = BeautifulSoup(f, "lxml")
+                    try:
+                        bs4 = importlib.import_module("bs4")
+                    except ImportError as e:
+                        raise DependencyError(
+                            (
+                                "BeautifulSoup (bs4) is required to parse HTML. "
+                                "Install with 'pip install beautifulsoup4'."
+                            )
+                        ) from e
+                    soup = bs4.BeautifulSoup(f, "lxml")
                 return self._extract_entries(soup)
             except UnicodeDecodeError:
                 continue
@@ -45,7 +64,7 @@ class HistoryParser:
             error_code="ENCODING_FAILED",
         )
 
-    def _extract_entries(self, soup: BeautifulSoup) -> List[Dict[str, Any]]:
+    def _extract_entries(self, soup: Any) -> List[Dict[str, Any]]:
         """Extract individual entries from the parsed HTML."""
         entries = []
         failed_entries = 0
