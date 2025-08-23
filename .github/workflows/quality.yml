@@ -98,6 +98,84 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+  openapi:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+
+    - name: Install project (to generate OpenAPI)
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -e .
+
+    - name: Generate OpenAPI JSON artifact
+      run: |
+        mkdir -p _artifacts
+        python - << 'PY'
+        import json
+        from rabbitmirror.web.app import _OPENAPI_SPEC
+        with open('_artifacts/openapi.json', 'w', encoding='utf-8') as f:
+            json.dump(_OPENAPI_SPEC, f, ensure_ascii=False, indent=2)
+        print('Wrote _artifacts/openapi.json')
+        PY
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install Spectral CLI
+      run: |
+        npm install -g @stoplight/spectral-cli
+
+    - name: Lint OpenAPI with Spectral (with custom ruleset)
+      run: |
+        npx -y @stoplight/spectral-cli lint -r .spectral.yaml _artifacts/openapi.json --fail-severity=error
+
+    - name: Prepare baseline spec from main
+      run: |
+        set -euxo pipefail
+        git fetch --no-tags --depth=1 origin main || true
+        if git show origin/main:_artifacts/openapi.json > /dev/null 2>&1; then
+          echo "Using committed artifact from main"
+          git show origin/main:_artifacts/openapi.json > _artifacts/openapi.main.json
+        else
+          # Recreate from source at main
+          git show origin/main:rabbitmirror/web/app.py > /tmp/app.py || exit 0
+          python - << 'PY' || exit 0
+          import json, importlib.util
+          spec = importlib.util.spec_from_file_location('app', '/tmp/app.py')
+          mod = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(mod)
+          with open('_artifacts/openapi.main.json','w') as f:
+              json.dump(mod._OPENAPI_SPEC, f)
+          print('Wrote _artifacts/openapi.main.json from main')
+          PY
+        fi
+
+    - name: Run oasdiff (breaking changes)
+      if: ${{ hashFiles('_artifacts/openapi.main.json') != '' }}
+      run: |
+        docker run --rm -v "$PWD/_artifacts:/data" tufin/oasdiff:2.8.9 breaking /data/openapi.main.json /data/openapi.json
+
+    - name: Upload OpenAPI artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: openapi-spec
+        path: _artifacts/openapi.json
+
+  package-build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
     - name: Set up Python 3.11
       uses: actions/setup-python@v4
       with:

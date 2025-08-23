@@ -1,0 +1,56 @@
+name: API Demo Smoke Test
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  api-demo:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install project and minimal deps
+      run: |
+        python -m pip install --upgrade pip
+        # Prefer editable install to make module import -m rabbitmirror.web.app work
+        pip install -e .
+        # jq for pretty-print fallback (optional)
+        sudo apt-get update && sudo apt-get install -y jq lsof
+
+    - name: Run API demo (start server -> POST sample -> stop)
+      env:
+        WEB_HOST: 127.0.0.1
+        WEB_PORT: 5001
+      run: |
+        set -euxo pipefail
+        # Ensure sample exists (already in repo from examples/api/sample_watch_history.json)
+        test -f examples/api/sample_watch_history.json
+        # Run demo
+        make api-demo WEB_HOST=$WEB_HOST WEB_PORT=$WEB_PORT
+
+    - name: Show server logs on failure
+      if: failure()
+      run: |
+        echo "--- web log ---"
+        test -f /tmp/rabbitmirror_web.log && tail -n 200 /tmp/rabbitmirror_web.log || echo "no log"
+        echo "--- pids ---"
+        test -f /tmp/rabbitmirror_web.pid && cat /tmp/rabbitmirror_web.pid || true
+

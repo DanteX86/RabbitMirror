@@ -33,12 +33,12 @@ class TimestampMixin:
     """Mixin for adding timestamp fields to models."""
 
     created_at = Column(
-        DateTime(timezone=True), default=func.now(), nullable=False, index=True
+        DateTime(timezone=True), default=func.now(), nullable=False, index=True  # pylint: disable=not-callable
     )
     updated_at = Column(
         DateTime(timezone=True),
-        default=func.now(),
-        onupdate=func.now(),
+        default=func.now(),  # pylint: disable=not-callable
+        onupdate=func.now(),  # pylint: disable=not-callable
         nullable=False,
         index=True,
     )
@@ -115,7 +115,7 @@ class CacheEntry(Base, TimestampMixin):
     ttl = Column(Integer, nullable=False)  # Time to live in seconds
     expires_at = Column(DateTime(timezone=True), nullable=False, index=True)
     hit_count = Column(Integer, default=0, nullable=False)
-    last_accessed = Column(DateTime(timezone=True), default=func.now())
+    last_accessed = Column(DateTime(timezone=True), default=func.now())  # pylint: disable=not-callable
 
     # Composite unique constraint
     __table_args__ = (
@@ -178,7 +178,7 @@ class Session(Base, TimestampMixin):
 
     # Session metadata
     expires_at = Column(DateTime(timezone=True), nullable=False, index=True)
-    last_accessed = Column(DateTime(timezone=True), default=func.now())
+    last_accessed = Column(DateTime(timezone=True), default=func.now())  # pylint: disable=not-callable
 
     def is_expired(self) -> bool:
         """Check if session is expired."""

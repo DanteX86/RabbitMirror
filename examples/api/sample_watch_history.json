@@ -1,0 +1,14 @@
+[
+  {
+    "time": "2024-01-01T00:00:00Z",
+    "title": "Video A",
+    "timeWatchedSeconds": 120,
+    "channelName": "Channel A"
+  },
+  {
+    "time": "2024-01-02T12:34:56Z",
+    "titleUrl": "https://youtu.be/dQw4w9WgXcQ",
+    "timeWatchedSeconds": 240,
+    "subtitles": [{"name": "Channel B"}]
+  }
+]

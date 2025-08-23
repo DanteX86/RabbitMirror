@@ -10,6 +10,26 @@
 
 RabbitMirror is a comprehensive Python-based analysis tool designed to analyze and understand YouTube watch history patterns. It provides deep insights into viewing behavior, detects potential algorithmic manipulation, and offers both command-line and web-based interfaces for comprehensive analysis capabilities for researchers, content creators, and curious users.
 
+## Table of Contents
+
+- [Why RabbitMirror?](#-why-rabbitmirror)
+- [Features](#-features)
+- [Quick Start](#-quick-start)
+- [Documentation](#documentation)
+- [Installation](#installation)
+- [Usage](#-usage)
+- [Configuration](#-configuration)
+- [Troubleshooting](#-troubleshooting)
+- [Project Structure](#-project-structure)
+- [Analysis Types](#-analysis-types)
+- [Development](#-development)
+- [Privacy & Security](#-privacy--security)
+- [License](#-license)
+- [Support](#-support)
+- [Roadmap](#-roadmap)
+- [Acknowledgments](#-acknowledgments)
+- [Examples](#-examples)
+
 ## 🎯 Why RabbitMirror?
 
 - **🔍 Transparency**: Understand how algorithms shape your viewing experience
@@ -46,7 +66,100 @@ RabbitMirror is a comprehensive Python-based analysis tool designed to analyze a
 - Python 3.8 or higher
 - pip package manager
 
-### Installation
+## Documentation
+
+- Web app notes, including API rate limiting configuration: see docs/README_web.md
+- API Docs route (served by the Flask app): visit /docs when the web app is running for interactive Swagger UI and Redoc
+- OpenAPI spec (JSON): /openapi.json
+
+### Web API: POST /api/analyze (synchronous)
+
+Accepts a JSON array of watch history entries and returns an analysis summary.
+
+- Request Content-Type: application/json
+- Body schema: array of objects with required `time` (ISO 8601 date-time) and at least one of `title` or `titleUrl`.
+- Auth: optional X-API-Key header (if configured)
+- Errors: returns application/problem+json for 4xx/5xx (422 on validation failures)
+
+Example:
+
+```
+curl -s \
+  -H 'Content-Type: application/json' \
+  -d '[
+    {"time":"2024-01-01T00:00:00Z","title":"Video A","timeWatchedSeconds":120},
+    {"time":"2024-01-02T00:00:00Z","titleUrl":"https://youtu.be/xyz","timeWatchedSeconds":240}
+  ]' \
+  http://localhost:5001/api/analyze | jq
+```
+
+Successful 200 response (shape):
+
+```
+{
+  "id": "...",
+  "filename": "-",
+  "created_at": "...",
+  "source": "uploaded",
+  "status": "complete",
+  "total_videos": 2,
+  "date_range": { "start": "N/A", "end": "N/A" },
+  "cluster_count": 0,
+  "suppression_score": 0.0,
+  "risk_score": 0.0,
+  "total_watch_time": { "seconds": 360, "human": "6m" },
+  "version": "..."
+}
+```
+
+Validation error (422) example:
+
+```
+{
+  "type": "https://docs.rabbitmirror.dev/problems/validation-error",
+  "title": "Validation error",
+  "status": 422,
+  "detail": "...",
+  "instance": "/api/analyze",
+  "errors": [
+    {"pointer": "/0", "message": "..."}
+  ]
+}
+```
+
+### Makefile: API demo helper
+
+To quickly exercise the POST /api/analyze endpoint without manual setup, use the Makefile helpers:
+
+- Start the Flask app in the background, send a sample request, then stop it:
+
+```
+make api-demo
+```
+
+- Just start/stop the web app:
+
+```
+make web-start
+make web-stop
+```
+
+- Override host/port and/or provide an API key:
+
+```
+WEB_HOST=127.0.0.1 WEB_PORT=5001 make api-demo
+API_KEY={{YOUR_API_KEY}} make api-demo
+```
+
+- Call the endpoint against a running server directly:
+
+```
+API_BASE=http://127.0.0.1:5001 make api-analyze
+```
+
+These targets use a sample payload at examples/api/sample_watch_history.json and pretty-print the response using jq when available (falling back to python -m json.tool).
+
+## Installation
 
 RabbitMirror can be installed directly from GitHub.
 

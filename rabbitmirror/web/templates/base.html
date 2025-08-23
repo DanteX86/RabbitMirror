@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <title>{{ title or 'RabbitMirror' }}</title>
+    <style>
+      :root { color-scheme: light dark; }
+      body { font-family: -apple-system, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 0; }
+      header, footer { padding: 0.5rem 0.75rem; }
+      header { border-bottom: 1px solid #ccc; }
+      nav { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+      .brand { font-weight: 600; text-decoration: none; color: inherit; }
+      .nav-links { display: flex; align-items: center; gap: 0.75rem; }
+      main { padding: 1rem; }
+      .container { max-width: 980px; margin: 0 auto; }
+      .btn { display: inline-block; padding: 0.35rem 0.6rem; border: 1px solid #888; border-radius: 6px; background: transparent; color: inherit; cursor: pointer; }
+      .btn.small { font-size: 0.85em; }
+      .muted { opacity: 0.75; }
+      @media (prefers-color-scheme: dark) { header { border-color: #444; } }
+    </style>
+  </head>
+  <body data-theme="auto">
+    <header>
+      <div class="container">
+        <nav>
+          <a class="brand" href="/">🐰 RabbitMirror</a>
+          <div class="nav-links">
+            <a class="muted" href="/docs">Docs</a>
+            <a class="muted" href="/healthz">Health</a>
+            <button id="theme-toggle" class="btn small" title="Switch to dark mode" aria-label="Toggle theme" aria-pressed="false">🌓</button>
+          </div>
+        </nav>
+      </div>
+    </header>
+    <main>
+      <div class="container">
+        {% block content %}{% endblock %}
+      </div>
+    </main>
+    <footer>
+      <div class="container">
+        <span class="muted">Version: {{ version or 'unknown' }}</span>
+      </div>
+    </footer>
+    <script>
+      (function(){
+        const KEY = 'rm-theme';
+        const btn = document.getElementById('theme-toggle');
+        function label(v){ return v==='light' ? 'Switch to dark mode' : 'Switch to light mode'; }
+        function apply(v){
+          document.body.dataset.theme = v;
+          try { localStorage.setItem(KEY, v); } catch(e){}
+          if (btn){
+            btn.setAttribute('aria-pressed', v==='dark');
+            btn.title = label(v);
+          }
+        }
+        function current(){ try { return localStorage.getItem(KEY) || 'auto'; } catch(e){ return 'auto'; } }
+        if (btn) btn.addEventListener('click', function(){
+          const next = current()==='light' ? 'dark' : 'light';
+          apply(next);
+        });
+        apply(current());
+      })();
+    </script>
+  </body>
+</html>

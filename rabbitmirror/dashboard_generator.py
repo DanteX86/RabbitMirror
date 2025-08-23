@@ -625,7 +625,6 @@ class DashboardGenerator:
             f.write(css_content)
 
         return css_file
-
     def _want(self, metric_name: str) -> bool:
         """Return True if a metric/panel should be included based on selection.
         If no metrics were specified, include all by default.
@@ -633,12 +632,11 @@ class DashboardGenerator:
         """
         if self.metrics is None:
             return True
+        metrics_set = set(self.metrics)
         # Always allow both aliases
         if metric_name == "video_count_by_day":
-            return ("video_count_by_day" in self.metrics) or (
-                "time_series" in self.metrics
-            )
-        return metric_name in self.metrics
+            return ("video_count_by_day" in metrics_set) or ("time_series" in metrics_set)
+        return metric_name in metrics_set
 
     def _aggregate_daily_counts(self, timestamps: List[str]) -> Dict[str, int]:
         """Aggregate watch counts by day."""
