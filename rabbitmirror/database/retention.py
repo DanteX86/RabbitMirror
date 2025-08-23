@@ -238,9 +238,10 @@ class RetentionManager:
                 error_code="INVALID_COLUMN",
             )
 
-        # Build delete query with validated identifiers  # nosec B608
+        # Build delete query with validated identifiers
+        # nosec B608: Identifiers are validated against allowlists above.
         query = text(
-            f"DELETE FROM {policy.target_table} WHERE {policy.target_column} < :cutoff_date"
+            f"DELETE FROM {policy.target_table} WHERE {policy.target_column} < :cutoff_date"  # nosec B608
         )
 
         result = session.execute(query, {"cutoff_date": cutoff_date})

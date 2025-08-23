@@ -6,7 +6,7 @@ initialization, migrations, cleanup, and maintenance.
 """
 
 import os
-import subprocess
+import subprocess  # nosec B404 - usage constrained and shell is not used
 import sys
 from pathlib import Path
 from typing import Optional
@@ -118,7 +118,10 @@ def migrate(message: str, autogenerate: bool):
             cmd.append("--autogenerate")
 
         # Run alembic command
-        result = subprocess.run(cmd, cwd=project_root, capture_output=True, text=True)
+        # Inputs come from CLI options with constrained values; shell is not used.
+        result = subprocess.run(
+            cmd, cwd=project_root, capture_output=True, text=True
+        )  # nosec B603
 
         if result.returncode == 0:
             click.echo(f"✅ Migration created: {message}")
@@ -144,7 +147,10 @@ def upgrade(revision: Optional[str]):
         project_root = Path(__file__).parent.parent.parent
 
         cmd = ["alembic", "upgrade", revision or "head"]
-        result = subprocess.run(cmd, cwd=project_root, capture_output=True, text=True)
+        # Inputs come from CLI options with constrained values; shell is not used.
+        result = subprocess.run(
+            cmd, cwd=project_root, capture_output=True, text=True
+        )  # nosec B603
 
         if result.returncode == 0:
             click.echo("✅ Database upgraded successfully")
@@ -170,7 +176,10 @@ def downgrade(revision: str):
         project_root = Path(__file__).parent.parent.parent
 
         cmd = ["alembic", "downgrade", revision]
-        result = subprocess.run(cmd, cwd=project_root, capture_output=True, text=True)
+        # Inputs come from CLI options with constrained values; shell is not used.
+        result = subprocess.run(
+            cmd, cwd=project_root, capture_output=True, text=True
+        )  # nosec B603
 
         if result.returncode == 0:
             click.echo("✅ Database downgraded successfully")
@@ -299,7 +308,8 @@ def shell():
             sys.exit(1)
 
         click.echo(f"Opening database shell for: {config.database_url}")
-        subprocess.run(cmd)
+        # Interactive DB shells are user-invoked; arguments are constructed safely.
+        subprocess.run(cmd)  # nosec B603
 
     except FileNotFoundError as e:
         click.echo(f"❌ Database client not found: {e.filename}", err=True)

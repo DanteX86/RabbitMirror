@@ -193,6 +193,8 @@ def run_with_timeout(
             if "timeout_token" in sig.parameters and "timeout_token" not in kwargs:
                 kwargs = {**kwargs, "timeout_token": TimeoutToken()}
         except Exception:
+            # Fallback: if signature inspection fails, proceed without injecting a token.
+            # nosec B110 - intentional empty except to preserve behavior across runtimes
             pass
         return func(*args, **kwargs)
 
@@ -239,7 +241,8 @@ def run_with_timeout(
             raise RuntimeError("No result from thread worker")
         if res.ok:
             return res.value
-        assert res.error is not None
+        if res.error is None:
+            raise RuntimeError("Thread worker failed without an error object")
         raise res.error
 
     # process mode
@@ -251,6 +254,8 @@ def run_with_timeout(
         if "fork" in available:
             start_method = "fork"
     except Exception:
+        # If querying start methods fails, default to spawn which is safe on macOS
+        # nosec B110 - benign fallback
         pass
     ctx = mp.get_context(start_method)
     q: mp.Queue = ctx.Queue(maxsize=1)
@@ -269,6 +274,8 @@ def run_with_timeout(
                 p.kill()  # type: ignore[attr-defined]
                 p.join(grace_period)
             except Exception:
+                # If kill() is unavailable or fails, proceed to raise the timeout
+                # nosec B110 - best-effort cleanup
                 pass
         raise CustomTimeoutError(
             f"Operation timed out after {timeout_seconds} seconds (process mode)",
