@@ -1,0 +1,57 @@
+extends: spectral:oas
+
+rules:
+  # Ensure all operations declare tags
+  operations-have-tags:
+    description: "Every operation must have at least one tag"
+    message: "Operation is missing tags"
+    severity: error
+    given:
+      - "$.paths[*][get,put,post,delete,options,head,patch,trace]"
+    then:
+      field: tags
+      function: truthy
+
+  # Ensure operationId is present
+  operations-have-operationId:
+    description: "Every operation must define an operationId"
+    message: "Operation is missing operationId"
+    severity: error
+    given:
+      - "$.paths[*][get,put,post,delete,options,head,patch,trace]"
+    then:
+      field: operationId
+      function: truthy
+
+  # Enforce application/problem+json for 4xx/5xx responses
+  problem-json-for-errors:
+    description: "4xx/5xx responses must use application/problem+json"
+    message: "Error responses must define content application/problem+json"
+    severity: error
+    given:
+      - "$.paths[*][*].responses[/(4|5)\\d{2}/]"
+    then:
+      field: content.application/problem+json
+      function: truthy
+
+  # Disallow stray application/json on 4xx/5xx responses
+  no-generic-json-for-errors:
+    description: "Do not use application/json for 4xx/5xx responses"
+    message: "Remove application/json from error responses; use application/problem+json"
+    severity: warn
+    given:
+      - "$.paths[*][*].responses[/(4|5)\\d{2}/].content"
+    then:
+      function: falsy
+      field: application/json
+
+  # Require explicit additionalProperties on object schemas (top-level components)
+  explicit-additionalProperties-on-schemas:
+    description: "Object schemas in components must set additionalProperties explicitly"
+    message: "Set additionalProperties explicitly to false unless you really need it true"
+    severity: error
+    given:
+      - "$.components.schemas[*][?(@.type=='object')]"
+    then:
+      field: additionalProperties
+      function: defined

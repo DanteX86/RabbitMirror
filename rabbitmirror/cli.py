@@ -1103,7 +1103,7 @@ def generate_qr(
 
 def main():
     # Modern Click 8.0+ has built-in completion support
-    cli()
+    cli()  # pylint: disable=no-value-for-parameter
 
 
 if __name__ == "__main__":

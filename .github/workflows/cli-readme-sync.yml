@@ -1,0 +1,51 @@
+name: CLI-README Sync
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  cli_readme_sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-cli-sync-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-cli-sync-
+
+      - name: Install project
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -e .
+
+      - name: Generate CLI command tree
+        run: |
+          mkdir -p audit_out
+          python tools/cli_dump.py > audit_out/cli_tree.json
+          test -s audit_out/cli_tree.json
+
+      - name: Compare README examples against CLI
+        run: |
+          python tools/compare_cli_readme.py
+
+      - name: Upload diff summary (if any)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: readme-cli-diff
+          path: audit_out/readme_cli_diff.md

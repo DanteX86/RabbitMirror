@@ -268,6 +268,9 @@ watch_history.*
 my-activity.*
 takeout-*.html
 
+# Allow Jinja2 templates to be tracked
+!rabbitmirror/web/templates/*.html
+
 # Generated analysis files
 *_analysis.json
 *_clusters.json
