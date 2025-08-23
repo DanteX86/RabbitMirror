@@ -262,11 +262,16 @@ reports/
 !reports/.gitkeep
 
 # User watch history files
+# Ignore generic HTML files by default (downloaded watch history exports)
 *.html
 watch-history.*
 watch_history.*
 my-activity.*
 takeout-*.html
+
+# Allow tracking of Jinja2 HTML templates for the web UI
+!rabbitmirror/web/templates/*.html
+!rabbitmirror/templates/*.html
 
 # Generated analysis files
 *_analysis.json

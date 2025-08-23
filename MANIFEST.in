@@ -10,6 +10,10 @@ include Makefile
 
 # Include any template files
 recursive-include rabbitmirror/templates *.html *.md *.css *.js
+recursive-include rabbitmirror/web/templates *.html *.md *.css *.js
+
+# Include static assets for web UI
+recursive-include rabbitmirror/web/static *
 
 # Include test data and fixtures
 recursive-include tests *.py *.json *.html *.yaml

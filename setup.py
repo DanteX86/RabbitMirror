@@ -70,7 +70,14 @@ setup(
     },
     include_package_data=True,
     package_data={
-        "rabbitmirror": ["templates/*.html", "templates/*.md"],
+        "rabbitmirror": [
+            "templates/*.html",
+            "templates/*.md",
+            "web/templates/*.html",
+            "web/templates/*.md",
+            "web/static/css/*.css",
+            "web/static/js/*.js",
+        ],
     },
     keywords="youtube, data-analysis, privacy, watch-history, clustering, profiling",
     project_urls={
