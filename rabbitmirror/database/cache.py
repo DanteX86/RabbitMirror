@@ -7,7 +7,7 @@ and database as fallback storage.
 
 import json
 import logging
-import pickle
+import pickle  # nosec B403 - used only for trusted, internal data fallback when JSON encoding fails
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Optional
 
@@ -235,8 +235,11 @@ class CacheManager:
         try:
             return json.dumps(value)
         except (TypeError, ValueError):
-            # Fall back to pickle for non-JSON serializable objects
-            return pickle.dumps(value).hex()
+            # Fall back to pickle for non-JSON-serializable objects.
+            # Security: This path is used only for internal, trusted data objects
+            # persisted and retrieved within RabbitMirror. Never use with untrusted
+            # external inputs. The hex encoding ensures storage as text.
+            return pickle.dumps(value).hex()  # nosec B301
 
     def _deserialize(self, data: str) -> Any:
         """Deserialize value from storage."""
@@ -245,7 +248,9 @@ class CacheManager:
         except (json.JSONDecodeError, TypeError):
             # Try pickle
             try:
-                return pickle.loads(bytes.fromhex(data))
+                # Only decode objects previously encoded by this service.
+                # Do not pass untrusted user input here.
+                return pickle.loads(bytes.fromhex(data))  # nosec B301
             except Exception:
                 return data
 
@@ -278,7 +283,7 @@ class CacheManager:
                 if entry.data_type == "json":
                     return json.loads(entry.data.decode())
                 elif entry.data_type == "pickle":
-                    return pickle.loads(entry.data)
+                    return pickle.loads(entry.data)  # nosec B301
                 else:
                     return entry.data.decode()
 
@@ -304,7 +309,8 @@ class CacheManager:
                 data = json.dumps(value).encode()
                 data_type = "json"
             except (TypeError, ValueError):
-                data = pickle.dumps(value)
+                # Internal fallback to pickle when JSON encoding fails for trusted objects
+                data = pickle.dumps(value)  # nosec B301
                 data_type = "pickle"
 
             # Create new entry

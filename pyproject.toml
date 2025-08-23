@@ -102,7 +102,14 @@ packages = ["rabbitmirror", "rabbitmirror.web"]
 include-package-data = true
 
 [tool.setuptools.package-data]
-rabbitmirror = ["templates/*.html", "templates/*.md", "static/css/*.css", "static/js/*.js"]
+rabbitmirror = [
+  "templates/*.html",
+  "templates/*.md",
+  "web/templates/*.html",
+  "web/templates/*.md",
+  "web/static/css/*.css",
+  "web/static/js/*.js",
+]
 
 [tool.black]
 line-length = 88
