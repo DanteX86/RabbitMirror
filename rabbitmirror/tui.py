@@ -8,7 +8,7 @@ import os
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, cast
 
 from rich.console import Console
 from rich.panel import Panel
@@ -182,9 +182,9 @@ class RabbitMirrorTUI(App):
         )
         self.config = ConfigManager()
         self.logger = SymbolicLogger()
-        self.current_data = None
-        self.current_file = None
-        self.analysis_results = {}
+        self.current_data: Optional[Any] = None
+        self.current_file: Optional[str] = None
+        self.analysis_results: Dict[str, Any] = {}
 
     def compose(self) -> ComposeResult:
         """Create the main layout"""
@@ -305,7 +305,7 @@ class RabbitMirrorTUI(App):
         """Load saved settings"""
         try:
             # Load configuration
-            settings = self.config.list()
+            settings = cast(Dict[str, Any], self.config.list(as_json=False))
 
             # Update UI with saved settings
             if "output_dir" in settings:
@@ -607,22 +607,23 @@ class RabbitMirrorTUI(App):
     def generate_report(self) -> None:
         """Generate comprehensive report"""
         if not self.analysis_results:
-            self.notify(
-                "No analysis results to generate report from!", severity="error"
-            )
+            self.notify("No analysis results to generate report from!", severity="error")
             return
-
+        
         try:
             self.notify("📋 Generating report...", severity="information")
-
-            # Generate report
+            
+            # Generate report set into a directory and show index path
             dashboard_generator = DashboardGenerator()
-            report_path = dashboard_generator.generate_comprehensive_dashboard(
-                self.analysis_results, output_path="rabbitmirror_report.html"
+            output_dir = Path("rabbitmirror_report")
+            files = dashboard_generator.generate_comprehensive_dashboard(
+                self.analysis_results,
+                output_dir
             )
-
-            self.notify(f"✅ Report generated: {report_path}", severity="success")
-
+            index_path = files.get("index", output_dir / "index.html")
+            
+            self.notify(f"✅ Report generated: {index_path}", severity="success")
+            
         except Exception as e:
             self.notify(f"❌ Report generation failed: {str(e)}", severity="error")
             results_keys = list(self.analysis_results.keys())
@@ -637,7 +638,7 @@ class RabbitMirrorTUI(App):
                     "where": "generate_report",
                     "results_keys": results_keys,
                     "results_summary": results_summary,
-                    "output_path": "rabbitmirror_report.html",
+                    "output_path": "rabbitmirror_report/index.html",
                 },
             )
 
