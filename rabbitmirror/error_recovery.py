@@ -13,11 +13,11 @@ This module provides sophisticated error recovery capabilities including:
 import asyncio
 import functools
 import logging
+import queue
 import secrets
 import signal
-import time
 import threading
-import queue
+import time
 from datetime import datetime, timedelta
 from typing import Any, Callable, Dict, List, Optional, Type
 

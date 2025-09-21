@@ -3,71 +3,71 @@ Terminal User Interface for RabbitMirror
 Modern, interactive TUI using Textual framework
 """
 
+import asyncio
 import os
 import sys
-import asyncio
-from pathlib import Path
-from typing import Optional, Dict, Any, List
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
-from textual.app import App, ComposeResult
-from textual.containers import Container, Horizontal, Vertical, ScrollableContainer
-from textual.widgets import (
-    Header,
-    Footer,
-    Static,
-    Button,
-    Input,
-    Label,
-    DataTable,
-    Tree,
-    Log,
-    TabbedContent,
-    TabPane,
-    SelectionList,
-    Switch,
-    ProgressBar,
-    Markdown,
-)
-from textual.screen import Screen, ModalScreen
-from textual.binding import Binding
+from rich.console import Console
+from rich.panel import Panel
+from rich.progress import Progress
+from rich.table import Table
+from rich.text import Text
 from textual import events
+from textual.app import App, ComposeResult
+from textual.binding import Binding
+from textual.containers import Container, Horizontal, ScrollableContainer, Vertical
 from textual.message import Message
 from textual.reactive import reactive
+from textual.screen import ModalScreen, Screen
 from textual.validation import Function
-from rich.console import Console
-from rich.text import Text
-from rich.panel import Panel
-from rich.table import Table
-from rich.progress import Progress
+from textual.widgets import (
+    Button,
+    DataTable,
+    Footer,
+    Header,
+    Input,
+    Label,
+    Log,
+    Markdown,
+    ProgressBar,
+    SelectionList,
+    Static,
+    Switch,
+    TabbedContent,
+    TabPane,
+    Tree,
+)
 
 # Import RabbitMirror components
 try:
-    from .parser import parse_watch_history
-    from .cluster_engine import ClusterEngine
     from .adversarial_profiler import AdversarialProfiler
-    from .suppression_index import SuppressionIndex
-    from .profile_simulator import ProfileSimulator
-    from .trend_analyzer import TrendAnalyzer
-    from .export_formatter import ExportFormatter
-    from .dashboard_generator import DashboardGenerator
+    from .cluster_engine import ClusterEngine
     from .config_manager import ConfigManager
+    from .dashboard_generator import DashboardGenerator
+    from .export_formatter import ExportFormatter
+    from .parser import parse_watch_history
+    from .profile_simulator import ProfileSimulator
+    from .suppression_index import SuppressionIndex
     from .symbolic_logger import SymbolicLogger
+    from .trend_analyzer import TrendAnalyzer
 except ImportError:
     # Fallback for development
     import sys
 
     sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    from rabbitmirror.parser import parse_watch_history
-    from rabbitmirror.cluster_engine import ClusterEngine
     from rabbitmirror.adversarial_profiler import AdversarialProfiler
-    from rabbitmirror.suppression_index import SuppressionIndex
-    from rabbitmirror.profile_simulator import ProfileSimulator
-    from rabbitmirror.trend_analyzer import TrendAnalyzer
-    from rabbitmirror.export_formatter import ExportFormatter
-    from rabbitmirror.dashboard_generator import DashboardGenerator
+    from rabbitmirror.cluster_engine import ClusterEngine
     from rabbitmirror.config_manager import ConfigManager
+    from rabbitmirror.dashboard_generator import DashboardGenerator
+    from rabbitmirror.export_formatter import ExportFormatter
+    from rabbitmirror.parser import parse_watch_history
+    from rabbitmirror.profile_simulator import ProfileSimulator
+    from rabbitmirror.suppression_index import SuppressionIndex
     from rabbitmirror.symbolic_logger import SymbolicLogger
+    from rabbitmirror.trend_analyzer import TrendAnalyzer
 
 
 class FileSelector(ModalScreen):
