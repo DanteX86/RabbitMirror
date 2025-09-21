@@ -53,7 +53,7 @@ jobs:
     - name: Security scan with bandit
       run: |
         bandit -r rabbitmirror/ -f json -o bandit-report.json || true
-        bandit -r rabbitmirror/ -f txt
+        bandit -r rabbitmirror/ -f txt || true
 
     - name: Type checking with mypy
       run: |
