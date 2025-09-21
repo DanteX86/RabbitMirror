@@ -1,364 +1,325 @@
 /* RabbitMirror TUI Styles */
-
+/* Theme variables (default to light) */
 /* Global styles */
 Screen {
-    background: $surface;
-    color: $text;
+  background: #f9fafb;
+  color: #111827;
 }
 
 /* Header and Footer */
 Header {
-    background: $primary;
-    color: $text-muted;
-    dock: top;
-    height: 3;
+  background: #2563eb;
+  color: #6b7280;
+  dock: top;
+  height: 3;
 }
 
 Footer {
-    background: $surface-darken-1;
-    color: $text-muted;
-    dock: bottom;
-    height: 1;
+  background: #e5e7eb;
+  color: #6b7280;
+  dock: bottom;
+  height: 1;
 }
 
 /* Main layout */
 TabbedContent {
-    background: $surface;
-    height: 100%;
+  background: #f9fafb;
+  height: 100%;
 }
 
 TabPane {
-    padding: 1;
+  padding: 1;
 }
 
 /* Welcome section */
 #welcome {
-    text-align: center;
-    background: $surface-lighten-1;
-    padding: 1;
-    margin: 1;
-    border: solid $primary;
-    color: $text;
+  text-align: center;
+  background: #ffffff;
+  padding: 1;
+  margin: 1;
+  border: solid #2563eb;
+  color: #111827;
 }
 
 /* File selection section */
 #file-section {
-    height: 3;
-    margin: 1;
-    padding: 1;
-    background: $surface-lighten-1;
-    border: solid $accent;
+  height: 3;
+  margin: 1;
+  padding: 1;
+  background: #ffffff;
+  border: solid #7c3aed;
 }
 
 #file-status {
-    content-align: center middle;
-    padding: 0 1;
-    background: $surface-lighten-2;
+  content-align: center middle;
+  padding: 0 1;
+  background: #ffffff;
 }
 
 /* Quick actions */
 #quick-actions {
-    height: 3;
-    margin: 1;
-    padding: 1;
-    background: $surface-lighten-1;
+  height: 3;
+  margin: 1;
+  padding: 1;
+  background: #ffffff;
 }
 
 /* Analysis tools */
 #analysis-title {
-    text-align: center;
-    background: $surface-lighten-1;
-    padding: 1;
-    margin: 1;
-    border: solid $secondary;
+  text-align: center;
+  background: #ffffff;
+  padding: 1;
+  margin: 1;
+  border: solid #4b5563;
 }
 
 #options-title {
-    margin: 1 0;
-    padding: 1;
-    background: $surface-lighten-1;
+  margin: 1 0;
+  padding: 1;
+  background: #ffffff;
 }
 
 /* Results section */
 #results-title {
-    text-align: center;
-    background: $surface-lighten-1;
-    padding: 1;
-    margin: 1;
-    border: solid $success;
+  text-align: center;
+  background: #ffffff;
+  padding: 1;
+  margin: 1;
+  border: solid #059669;
 }
 
 #results-table {
-    height: 50%;
-    margin: 1;
-    border: solid $accent;
+  height: 50%;
+  margin: 1;
+  border: solid #7c3aed;
 }
 
 #results-log {
-    height: 50%;
-    margin: 1;
-    border: solid $warning;
+  height: 50%;
+  margin: 1;
+  border: solid #d97706;
 }
 
 /* Settings section */
 #settings-title {
-    text-align: center;
-    background: $surface-lighten-1;
-    padding: 1;
-    margin: 1;
-    border: solid $secondary;
+  text-align: center;
+  background: #ffffff;
+  padding: 1;
+  margin: 1;
+  border: solid #4b5563;
 }
 
 /* Buttons */
 Button {
-    margin: 0 1;
-    min-width: 16;
-    height: 3;
+  margin: 0 1;
+  min-width: 16;
+  height: 3;
 }
 
 Button:hover {
-    background: $accent;
+  background: #7c3aed;
 }
 
 Button.-primary {
-    background: $primary;
-    color: $text;
+  background: #2563eb;
+  color: #111827;
 }
 
 Button.-primary:hover {
-    background: $primary-lighten-1;
+  background: #3b82f6;
 }
 
 Button.-success {
-    background: $success;
-    color: $text;
+  background: #059669;
+  color: #111827;
 }
 
 Button.-success:hover {
-    background: $success-lighten-1;
+  background: #10b981;
 }
 
 Button.-error {
-    background: $error;
-    color: $text;
+  background: #dc2626;
+  color: #111827;
 }
 
 Button.-error:hover {
-    background: $error-lighten-1;
+  background: #ef4444;
 }
 
 Button.-warning {
-    background: $warning;
-    color: $text;
+  background: #d97706;
+  color: #111827;
 }
 
 Button.-warning:hover {
-    background: $warning-lighten-1;
+  background: #f59e0b;
 }
 
 /* Input fields */
 Input {
-    margin: 0 1;
-    background: $surface-lighten-2;
-    border: solid $accent;
+  margin: 0 1;
+  background: #ffffff;
+  border: solid #7c3aed;
 }
 
 Input:focus {
-    border: solid $primary;
+  border: solid #2563eb;
 }
 
 /* Labels */
 Label {
-    content-align: center middle;
-    padding: 0 1;
-    color: $text;
+  content-align: center middle;
+  padding: 0 1;
+  color: #111827;
 }
 
 /* Modal screens */
 #file-selector {
-    background: $surface;
-    border: solid $primary;
-    width: 60;
-    height: 15;
-    margin: 5;
-    padding: 2;
+  background: #f9fafb;
+  border: solid #2563eb;
+  width: 60;
+  height: 15;
+  margin: 5;
+  padding: 2;
 }
 
 #file-title {
-    text-align: center;
-    background: $primary;
-    color: $text;
-    padding: 1;
-    margin: 0 0 2 0;
+  text-align: center;
+  background: #2563eb;
+  color: #111827;
+  padding: 1;
+  margin: 0 0 2 0;
 }
 
 #results-viewer {
-    background: $surface;
-    border: solid $success;
-    width: 80;
-    height: 30;
-    margin: 2;
-    padding: 2;
+  background: #f9fafb;
+  border: solid #059669;
+  width: 80;
+  height: 30;
+  margin: 2;
+  padding: 2;
 }
 
 #results-title {
-    text-align: center;
-    background: $success;
-    color: $text;
-    padding: 1;
-    margin: 0 0 2 0;
+  text-align: center;
+  background: #059669;
+  color: #111827;
+  padding: 1;
+  margin: 0 0 2 0;
 }
 
 #results-content {
-    height: 80%;
-    border: solid $accent;
-    padding: 1;
-    margin: 1 0;
+  height: 80%;
+  border: solid #7c3aed;
+  padding: 1;
+  margin: 1 0;
 }
 
 /* Container styling */
 Container {
-    background: $surface;
+  background: #f9fafb;
 }
 
 Horizontal {
-    height: auto;
-    margin: 1;
+  height: auto;
+  margin: 1;
 }
 
 Vertical {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 ScrollableContainer {
-    background: $surface-lighten-1;
-    border: solid $accent;
-    padding: 1;
+  background: #ffffff;
+  border: solid #7c3aed;
+  padding: 1;
 }
 
 /* Data table styling */
 DataTable {
-    background: $surface-lighten-1;
-    color: $text;
+  background: #ffffff;
+  color: #111827;
 }
 
 DataTable .datatable--header {
-    background: $primary;
-    color: $text;
+  background: #2563eb;
+  color: #111827;
 }
 
 DataTable .datatable--row-hover {
-    background: $surface-lighten-2;
+  background: #ffffff;
 }
 
 DataTable .datatable--row-selected {
-    background: $accent;
+  background: #7c3aed;
 }
 
 /* Log widget */
 Log {
-    background: $surface-lighten-1;
-    color: $text;
-    border: solid $accent;
+  background: #ffffff;
+  color: #111827;
+  border: solid #7c3aed;
 }
 
 /* Progress bars */
 ProgressBar {
-    background: $surface-lighten-1;
-    color: $success;
-    border: solid $accent;
+  background: #ffffff;
+  color: #059669;
+  border: solid #7c3aed;
 }
 
 /* Markdown content */
 Markdown {
-    background: $surface-lighten-1;
-    color: $text;
-    padding: 1;
+  background: #ffffff;
+  color: #111827;
+  padding: 1;
 }
 
 /* Tree widget */
 Tree {
-    background: $surface-lighten-1;
-    color: $text;
-    border: solid $accent;
+  background: #ffffff;
+  color: #111827;
+  border: solid #7c3aed;
 }
 
 /* Static text */
 Static {
-    background: $surface-lighten-1;
-    color: $text;
-    padding: 1;
+  background: #ffffff;
+  color: #111827;
+  padding: 1;
 }
 
 /* Selection list */
 SelectionList {
-    background: $surface-lighten-1;
-    color: $text;
-    border: solid $accent;
+  background: #ffffff;
+  color: #111827;
+  border: solid #7c3aed;
 }
 
 /* Switch */
 Switch {
-    background: $surface-lighten-1;
-    color: $text;
+  background: #ffffff;
+  color: #111827;
 }
 
-/* Responsive adjustments */
-@media (max-width: 80) {
-    #file-selector {
-        width: 50;
-        height: 12;
-    }
-    
-    #results-viewer {
-        width: 70;
-        height: 25;
-    }
-    
-    Button {
-        min-width: 12;
-    }
+/* Responsive adjustments disabled for compatibility: Textual version in this environment doesn't support @media.
+To re-enable responsive tweaks, consider applying size-based classes from Python (on_resize) and target them below.
+
+Original (for reference):
+@media (width <= 80) {
+    #file-selector { width: 50; height: 12; }
+    #results-viewer { width: 70; height: 25; }
+    Button { min-width: 12; }
 }
 
-@media (max-width: 60) {
-    #file-selector {
-        width: 40;
-        height: 10;
-    }
-    
-    #results-viewer {
-        width: 55;
-        height: 20;
-    }
-    
-    Button {
-        min-width: 10;
-    }
+@media (width <= 60) {
+    #file-selector { width: 40; height: 10; }
+    #results-viewer { width: 55; height: 20; }
+    Button { min-width: 10; }
 }
+*/
+/* Dark/light theme overrides temporarily disabled: SCSS-style variable overrides are not supported inside selectors by the current CSS engine. */
 
-/* Dark theme specific adjustments */
-.dark {
-    --primary: #3b82f6;
-    --secondary: #6b7280;
-    --accent: #8b5cf6;
-    --success: #10b981;
-    --warning: #f59e0b;
-    --error: #ef4444;
-    --surface: #1f2937;
-    --text: #f3f4f6;
-    --text-muted: #9ca3af;
-}
-
-/* Light theme specific adjustments */
-.light {
-    --primary: #2563eb;
-    --secondary: #4b5563;
-    --accent: #7c3aed;
-    --success: #059669;
-    --warning: #d97706;
-    --error: #dc2626;
-    --surface: #f9fafb;
-    --text: #111827;
-    --text-muted: #6b7280;
-}
+/*# sourceMappingURL=tui.css.map */

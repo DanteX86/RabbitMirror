@@ -1,3 +1,29 @@
+# Existing targets above...
+
+.PHONY: tui-css tui
+
+# Compile SCSS to CSS for the TUI
+# Requires Sass (dart-sass). Install once via:
+#   brew install sass/sass/sass
+# Or without global install (Node required):
+#   npx -y sass rabbitmirror/tui.scss rabbitmirror/tui.css
+
+tui-css: ## Compile SCSS to CSS for TUI (rabbitmirror/tui.scss -> rabbitmirror/tui.css)
+	@if command -v sass >/dev/null 2>&1; then \
+		sass rabbitmirror/tui.scss rabbitmirror/tui.css; \
+	else \
+		echo "sass not found; using npx sass (Node required)"; \
+		npx -y sass rabbitmirror/tui.scss rabbitmirror/tui.css; \
+	fi
+
+# Convenience target to compile then launch the TUI (requires venv active)
+# Usage: make tui
+# Or: make tui THEME=light
+THEME ?= dark
+
+tui: tui-css ## Compile styles then launch the TUI (Textual)
+	python -m rabbitmirror.cli tui --theme $(THEME)
+
 .PHONY: help install test lint format clean docs build suggestions cl
 
 help: ## Show this help message
