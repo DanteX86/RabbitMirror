@@ -205,9 +205,16 @@ Decorator that adds timeout protection to functions.
 - ``timeout_seconds`` (float): Timeout duration in seconds
 
 .. note::
-   Timeout functionality may not work on all platforms due to signal handling differences.
+   Thread-aware timeout behavior:
 
-**Example:**
+   - In the main thread (when ``SIGALRM`` is available), the decorator uses a POSIX signal-based timeout.
+   - In worker threads or on platforms without ``SIGALRM``, the decorator falls back to a thread-based mechanism that runs the target in a daemon thread and waits with a timeout.
+   - On timeout via the fallback, a :class:`rabbitmirror.exceptions.CustomTimeoutError` is raised in the caller; the background thread cannot be forcibly terminated by Python and will continue until completion.
+   - Signal-based timeouts use integer-second granularity and restore previous handlers after execution.
+
+**Examples:**
+
+Basic usage:
 
 .. code-block:: python
 
@@ -216,7 +223,21 @@ Decorator that adds timeout protection to functions.
    @with_timeout(timeout_seconds=5.0)
    def time_sensitive_operation():
        # Your time-sensitive logic
-       pass
+       return compute()
+
+Usage inside a thread pool (fallback path):
+
+.. code-block:: python
+
+   import concurrent.futures
+   from rabbitmirror.error_recovery import with_timeout
+
+   @with_timeout(timeout_seconds=2.0)
+   def maybe_slow(x):
+       return work(x)
+
+   with concurrent.futures.ThreadPoolExecutor(max_workers=4) as ex:
+       results = list(ex.map(maybe_slow, range(10)))
 
 with_fallback
 ~~~~~~~~~~~~~

@@ -259,6 +259,12 @@ python --version
 
 If you're using an older version, please upgrade Python or use a virtual environment with the correct version.
 
+#### Timeout behavior in threaded contexts
+
+If you use timeouts inside worker threads (e.g., `ThreadPoolExecutor`), RabbitMirror's `with_timeout` decorator automatically switches to a thread-based fallback that raises `CustomTimeoutError` in the caller when the timeout elapses. The background worker cannot be forcefully terminated; it will continue running until it naturally completes.
+
+On the main thread (and platforms with `SIGALRM`), timeouts use POSIX signals and are enforced with integer-second granularity.
+
 #### Virtual Environment Issues
 
 If you're having issues with the virtual environment:

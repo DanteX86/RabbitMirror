@@ -231,6 +231,12 @@ tramp
 # Project-specific ignores
 # ======================
 
+# Benchmark artifacts
+benchmark_results/
+clusters.csv
+parsed.json
+rabbitmirror/*.css.map
+
 # User data files (potentially sensitive)
 data/
 !data/.gitkeep

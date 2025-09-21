@@ -50,14 +50,19 @@ def risky_operation():
 ```
 
 ### Timeout Handlers
-- **Purpose**: Limit the execution time of operations to avoid hanging.
-- **Implementation**: Use `@with_timeout` decorator to enforce execution time limits.
+- Purpose: Limit the execution time of operations to avoid hanging.
+- Implementation: Use `@with_timeout` to enforce execution time limits.
+
+Note on thread-safety and behavior:
+- In the main thread (where `SIGALRM` is available), timeouts are enforced using POSIX signals.
+- In worker threads or environments without `SIGALRM`, RabbitMirror falls back to a thread-based mechanism that raises `CustomTimeoutError` in the caller if the timeout is exceeded. The background thread cannot be forcefully stopped by Python and will continue until it returns.
 
 **Example**:
 ```python
 @with_timeout(timeout_seconds=5.0)
 def time_sensitive_function():
     # Operation that should complete quickly
+    return do_work()
 ```
 
 ## Monitoring & Health
