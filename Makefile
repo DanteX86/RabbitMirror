@@ -1,6 +1,6 @@
 # Existing targets above...
 
-.PHONY: tui-css tui
+.PHONY: tui-css tui tui-watch
 
 # Compile SCSS to CSS for the TUI
 # Requires Sass (dart-sass). Install once via:
@@ -14,6 +14,16 @@ tui-css: ## Compile SCSS to CSS for TUI (rabbitmirror/tui.scss -> rabbitmirror/t
 	else \
 		echo "sass not found; using npx sass (Node required)"; \
 		npx -y sass rabbitmirror/tui.scss rabbitmirror/tui.css; \
+	fi
+
+# Watch SCSS and rebuild on changes for the TUI
+# Start a watcher (Ctrl-C to stop). Uses dart-sass if available; otherwise falls back to npx sass.
+tui-watch: ## Watch SCSS and rebuild on changes (rabbitmirror/tui.scss -> rabbitmirror/tui.css)
+	@if command -v sass >/dev/null 2>&1; then \
+		sass --watch rabbitmirror/tui.scss:rabbitmirror/tui.css --style=expanded --source-map; \
+	else \
+		echo "sass not found; using npx sass (Node required)"; \
+		npx -y sass --watch rabbitmirror/tui.scss:rabbitmirror/tui.css --style=expanded --source-map; \
 	fi
 
 # Convenience target to compile then launch the TUI (requires venv active)
@@ -90,6 +100,20 @@ demo: ## Run a demo of the CLI tool
 	@echo "RabbitMirror CLI Demo:"
 	@echo "====================="
 	python -m rabbitmirror.cli --help
+
+.PHONY: plot
+plot: ## Generate matplotlib demo plot and exports (vars: OUT, WIDTH, HEIGHT, DPI, FORMAT, STYLE)
+	@echo "Generating matplotlib demo plot..."
+	python scripts/mpl_demo.py \
+		--out $(or $(OUT),images/mpl_demo.png) \
+		--width $(or $(WIDTH),8) \
+		--height $(or $(HEIGHT),4.5) \
+		--dpi $(or $(DPI),150) \
+		--format $(or $(FORMAT),png) \
+		--style $(or $(STYLE),seaborn-v0_8) \
+		--csv-out $(or $(CSV_OUT),exports/mpl_demo.csv) \
+		--yaml-out $(or $(YAML_OUT),exports/mpl_demo.yaml)
+	@echo "Done. See images/ and exports/"
 
 all-checks: format-check lint type-check test security ## Run all quality checks
 

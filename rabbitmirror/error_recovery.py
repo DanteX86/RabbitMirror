@@ -289,12 +289,14 @@ def with_timeout(timeout_seconds: float) -> Callable:
                 use_sigalrm = True
 
             if use_sigalrm:
+
                 def timeout_handler(signum, frame):
                     raise CustomTimeoutError(
                         f"Operation timed out after {timeout_seconds} seconds",
                         timeout_duration=timeout_seconds,
                         error_code="OPERATION_TIMEOUT",
                     )
+
                 old_handler = signal.signal(signal.SIGALRM, timeout_handler)
                 try:
                     # Note: signal.alarm uses integer seconds; this preserves existing behavior
@@ -313,7 +315,9 @@ def with_timeout(timeout_seconds: float) -> Callable:
                     try:
                         result = func(*args, **kwargs)
                         q.put(("result", result))
-                    except BaseException as e:  # capture any exception to re-raise in caller thread
+                    except (
+                        BaseException
+                    ) as e:  # capture any exception to re-raise in caller thread
                         q.put(("exception", e))
 
                 t = threading.Thread(target=target, daemon=True)

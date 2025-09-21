@@ -55,6 +55,7 @@ dependencies = [
     "flask-wtf",
     "textual",
     "rich",
+    "matplotlib>=3.6",
 ]
 
 [project.optional-dependencies]
@@ -108,7 +109,6 @@ rabbitmirror = ["templates/*.html", "templates/*.md", "static/css/*.css", "stati
 line-length = 88
 target-version = ['py39']
 include = '\.pyi?$'
-extend-ignore = ['E203', 'W503']
 
 [tool.isort]
 profile = "black"

@@ -150,3 +150,19 @@ class HistoryParser:
             file_path=self.file_path,
             error_code="INVALID_TIMESTAMP_FORMAT",
         )
+
+
+def parse_watch_history(file_path: str) -> List[Dict[str, Any]]:
+    """Backwards-compatible wrapper for legacy code paths.
+
+    Parses a YouTube watch history HTML file using HistoryParser and returns
+    the list of parsed entry dictionaries.
+
+    Args:
+        file_path: Path to the watch history HTML file.
+
+    Returns:
+        A list of parsed entries as dictionaries.
+    """
+    parser = HistoryParser(file_path)
+    return parser.parse()

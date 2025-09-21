@@ -18,6 +18,7 @@ flask
 flask-wtf
 textual
 rich
+matplotlib>=3.6
 
 # Testing dependencies
 pytest>=7.0.0

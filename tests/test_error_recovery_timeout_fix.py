@@ -25,10 +25,10 @@ class TestTimeoutDecoratorFix:
     def test_timeout_decorator_mock_success(self):
         """Test timeout decorator with mocked signal functionality"""
         # Mock the signal handling to avoid platform-specific issues
-        with patch("signal.signal") as mock_signal, patch(
-            "signal.alarm"
-        ) as mock_alarm, patch(
-            "signal.SIGALRM", 14
+        with (
+            patch("signal.signal") as mock_signal,
+            patch("signal.alarm") as mock_alarm,
+            patch("signal.SIGALRM", 14),
         ):  # Standard SIGALRM value
 
             @with_timeout(timeout_seconds=1.0)
@@ -46,9 +46,11 @@ class TestTimeoutDecoratorFix:
     def test_timeout_decorator_mock_timeout(self):
         """Test timeout decorator with mocked timeout scenario"""
         # Mock the signal handling and simulate timeout
-        with patch("signal.signal") as mock_signal, patch(
-            "signal.alarm"
-        ) as mock_alarm, patch("signal.SIGALRM", 14):
+        with (
+            patch("signal.signal") as mock_signal,
+            patch("signal.alarm") as mock_alarm,
+            patch("signal.SIGALRM", 14),
+        ):
             # Create a mock that raises timeout
             def timeout_handler(signum, frame):
                 raise CustomTimeoutError("Function timed out after 1.0 seconds")
